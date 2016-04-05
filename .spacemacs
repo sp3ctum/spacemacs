@@ -223,14 +223,19 @@ executes.
 before packages are loaded. If you are unsure, you should try in setting them in
 `dotspacemacs/user-config' first.")
 
+(defun my-undo-bindings ()
+  (evil-define-key 'normal global-map "-" 'goto-last-change)
+  (evil-define-key 'normal global-map "+" 'goto-last-change-reverse))
+
 (defun my-dired-bindings ()
   (add-hook 'dired-mode-hook
             (lambda ()
               (define-key dired-mode-map (kbd "<") 'dired-up-directory))))
 
-(defun my-undo-bindings ()
-  (evil-define-key 'normal global-map "-" 'goto-last-change)
-  (evil-define-key 'normal global-map "+" 'goto-last-change-reverse))
+(defun my-g-prefixed-normal-mode-commands ()
+  (evil-define-key 'normal global-map
+    "gs" #'save-buffer
+    "gb" #'helm-mini))
 
 (defun dotspacemacs/user-config ()
   "Configuration function for user code.
@@ -240,7 +245,8 @@ This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place you code here."
   (my-undo-bindings)
-  (my-dired-bindings))
+  (my-dired-bindings)
+  (my-g-prefixed-normal-mode-commands))
 
 
 
