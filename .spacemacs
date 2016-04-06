@@ -211,7 +211,8 @@ values."
    ;; `trailing' to delete only the whitespace at end of lines, `changed'to
    ;; delete only whitespace for changed lines or `nil' to disable cleanup.
    ;; (default nil)
-   dotspacemacs-whitespace-cleanup 'changed))
+   dotspacemacs-whitespace-cleanup 'changed)
+  (my-windows-customizations))
 
 (defun dotspacemacs/user-init ()
   "Initialization function for user code.
@@ -229,6 +230,14 @@ before packages are loaded. If you are unsure, you should try in setting them in
 (defun my-undo-bindings ()
   (evil-define-key 'normal global-map "-" 'goto-last-change)
   (evil-define-key 'normal global-map "+" 'goto-last-change-reverse))
+
+(defun my-windows-customizations ()
+  (when (eq system-type 'windows-nt)
+    (setq dotspacemacs-default-font '("Ubuntu Mono"
+                                      :size 14
+                                      :weight normal
+                                      :width normal
+                                      :powerline-scale 1.1))))
 
 (defun dotspacemacs/user-config ()
   "Configuration function for user code.
