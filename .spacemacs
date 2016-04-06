@@ -247,6 +247,10 @@ before packages are loaded. If you are unsure, you should try in setting them in
                                       :width normal
                                       :powerline-scale 1.1))))
 
+(defun my-auto-complete-bindings ()
+  (global-company-mode)
+  (define-key evil-insert-state-map (kbd "C-SPC") 'company-complete))
+
 (defun dotspacemacs/user-config ()
   "Configuration function for user code.
 This function is called at the very end of Spacemacs initialization after
