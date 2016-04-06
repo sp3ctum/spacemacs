@@ -13,13 +13,15 @@ values."
    dotspacemacs-distribution 'spacemacs
    ;; List of additional paths where to look for configuration layers.
    ;; Paths must have a trailing slash (i.e. `~/.mycontribs/')
-   dotspacemacs-configuration-layer-path '()
+   dotspacemacs-configuration-layer-path '("~/.emacs.d/private/")
    ;; List of configuration layers to load. If it is the symbol `all' instead
    ;; of a list then all discovered layers will be installed.
    dotspacemacs-configuration-layers
    '(auto-completion
      emacs-lisp
      git
+     auto-capitalization
+     eyebrowse
      markdown)
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
@@ -222,14 +224,19 @@ executes.
 before packages are loaded. If you are unsure, you should try in setting them in
 `dotspacemacs/user-config' first.")
 
+(defun my-undo-bindings ()
+  (evil-define-key 'normal global-map "-" 'goto-last-change)
+  (evil-define-key 'normal global-map "+" 'goto-last-change-reverse))
+
 (defun my-dired-bindings ()
   (add-hook 'dired-mode-hook
             (lambda ()
               (define-key dired-mode-map (kbd "<") 'dired-up-directory))))
 
-(defun my-undo-bindings ()
-  (evil-define-key 'normal global-map "-" 'goto-last-change)
-  (evil-define-key 'normal global-map "+" 'goto-last-change-reverse))
+(defun my-g-prefixed-normal-mode-commands ()
+  (evil-define-key 'normal global-map
+    "gs" #'save-buffer
+    "gb" #'helm-mini))
 
 (defun my-windows-customizations ()
   (when (eq system-type 'windows-nt)
@@ -247,7 +254,8 @@ This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place you code here."
   (my-undo-bindings)
-  (my-dired-bindings))
+  (my-dired-bindings)
+  (my-g-prefixed-normal-mode-commands))
 
 
 
