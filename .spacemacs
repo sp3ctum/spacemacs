@@ -19,6 +19,8 @@ values."
    dotspacemacs-configuration-layers
    '((auto-completion :variables
                       auto-completion-enable-sort-by-usage t)
+     (colors :variables
+             colors-enable-rainbow-identifiers t)
      emacs-lisp
      git
      auto-capitalization
