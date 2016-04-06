@@ -236,10 +236,11 @@ before packages are loaded. If you are unsure, you should try in setting them in
             (lambda ()
               (define-key dired-mode-map (kbd "<") 'dired-up-directory))))
 
-(defun my-g-prefixed-normal-mode-commands ()
+(defun my-custom-normal-mode-commands ()
   (evil-define-key 'normal global-map
     "gs" #'save-buffer
-    "gb" #'helm-mini))
+    "gb" #'helm-mini)
+  (spacemacs/set-leader-keys "." 'helm-M-x))
 
 (defun my-windows-customizations ()
   (when (eq system-type 'windows-nt)
@@ -265,7 +266,7 @@ you should place you code here."
 
   (my-undo-bindings)
   (my-dired-bindings)
-  (my-g-prefixed-normal-mode-commands)
+  (my-custom-normal-mode-commands)
   (my-auto-complete-bindings))
 
 
