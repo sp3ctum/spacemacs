@@ -254,6 +254,7 @@ layers configuration.
 This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place you code here."
+  (global-aggressive-indent-mode)
   (my-undo-bindings)
   (my-dired-bindings)
   (my-g-prefixed-normal-mode-commands))
