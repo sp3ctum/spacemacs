@@ -9,7 +9,7 @@
 
 (defun lispy/init-evil-lispy ()
   (use-package evil-lispy
-    :init (add-hook emacs-lisp-mode-hook #'evil-lispy-mode)
+    :init (add-hook 'emacs-lisp-mode-hook #'evil-lispy-state-entry)
     :defer t))
 
 ;; todo call spacemacs|add-toggle
