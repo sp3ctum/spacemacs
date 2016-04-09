@@ -21,11 +21,15 @@ values."
                       auto-completion-enable-sort-by-usage t)
      (colors :variables
              colors-enable-rainbow-identifiers t)
+     syntax-checking
+     org
      emacs-lisp
      git
      auto-capitalization
      eyebrowse
-     markdown)
+     markdown
+     lispy
+     clojure)
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
@@ -254,6 +258,9 @@ before packages are loaded. If you are unsure, you should try in setting them in
   (global-company-mode)
   (define-key evil-insert-state-map (kbd "C-SPC") 'company-complete))
 
+(defun my-org-mode-bindings ()
+  (add-hook 'org-mode-hook 'auto-fill-mode))
+
 (defun dotspacemacs/user-config ()
   "Configuration function for user code.
 This function is called at the very end of Spacemacs initialization after
@@ -267,8 +274,8 @@ you should place you code here."
   (my-undo-bindings)
   (my-dired-bindings)
   (my-custom-normal-mode-commands)
-  (my-auto-complete-bindings))
-
+  (my-auto-complete-bindings)
+  (my-org-mode-bindings))
 
 
 
