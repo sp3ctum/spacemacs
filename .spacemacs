@@ -233,7 +233,10 @@ before packages are loaded. If you are unsure, you should try in setting them in
 
 (defun my-undo-bindings ()
   (evil-define-key 'normal global-map "-" 'goto-last-change)
-  (evil-define-key 'normal global-map "+" 'goto-last-change-reverse))
+  (evil-define-key 'normal global-map "+" 'goto-last-change-reverse)
+
+  ;; they are laggy
+  (setq undo-tree-visualizer-timestamps nil))
 
 (defun my-dired-bindings ()
   (add-hook 'dired-mode-hook
