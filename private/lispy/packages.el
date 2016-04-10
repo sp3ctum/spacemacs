@@ -18,6 +18,9 @@
               (spacemacs|diminish evil-lispy-mode " Ⓛ" " L")
 
               (when (configuration-layer/package-usedp 'cider)
+
+                ;; todo better mechanism of loading cider
+                (require 'cider)
                 ;; show eval results in a cider overlay, next to point
                 (add-to-list 'lispy-compat 'cider)
                 (setq lispy-eval-display-style 'overlay))
