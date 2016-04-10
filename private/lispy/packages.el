@@ -6,7 +6,8 @@
 
 (defun lispy/init-lispy ()
   (use-package lispy
-    :defer t))
+    :defer t
+    :config (spacemacs|diminish lispy-mode "" "")))
 
 (defun lispy/init-evil-lispy ()
   (use-package evil-lispy
