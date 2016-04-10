@@ -12,10 +12,16 @@
 (defun lispy/init-evil-lispy ()
   (use-package evil-lispy
     :defer t
-    :init (add-hook 'emacs-lisp-mode-hook #'evil-lispy-mode)
+    :init (progn (add-hook 'emacs-lisp-mode-hook #'evil-lispy-mode)
+                 (evil-lispy-configure-colorization))
     :commands (evil-lispy-mode)
     :config (progn
               (spacemacs|diminish evil-lispy-mode " Ⓛ" " L")
+
+              (define-key lispy-mode-map "o" 'special-lispy-different)
+              (define-key lispy-mode-map "d" 'special-lispy-other-mode)
+              (define-key lispy-mode-map "i" 'special-lispy-flow)
+              (define-key lispy-mode-map "f" 'special-lispy-tab)
 
               (when (configuration-layer/package-usedp 'cider)
 
@@ -23,9 +29,21 @@
                 (require 'cider)
                 ;; show eval results in a cider overlay, next to point
                 (add-to-list 'lispy-compat 'cider)
-                (setq lispy-eval-display-style 'overlay))
+                (setq lispy-eval-display-style 'overlay)))))
 
-              (define-key lispy-mode-map "o" 'special-lispy-different)
-              (define-key lispy-mode-map "d" 'special-lispy-other-mode)
-              (define-key lispy-mode-map "i" 'special-lispy-flow)
-              (define-key lispy-mode-map "f" 'special-lispy-tab))))
+;; todo backspace on {} characters is broken
+;; todo yanking marked stuff is broken
+;; todo insert double ;; (lispy default) on empty lines
+;; todo a hydra/map to show lispy keys?
+
+(defun evil-lispy-configure-colorization ()
+  ;; this will be displayed in the modeline
+  (defface spacemacs-lispy-face
+    `((t :inherit 'mode-line
+         :background "firebrick1"))
+    "lispy state face."
+    :group 'spacemacs)
+
+  (setq evil-lispy-state-cursor
+        (list (when dotspacemacs-colorize-cursor-according-to-state "firebrick1")
+              'box)))
