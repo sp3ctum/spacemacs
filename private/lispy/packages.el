@@ -28,7 +28,6 @@
 
 ;; todo backspace on {} characters is broken
 ;; todo yanking marked stuff is broken
-;; todo insert double ;; (lispy default) on empty lines
 ;; todo a hydra/map to show lispy keys?
 
 (defun evil-lispy-configure-colorization ()
