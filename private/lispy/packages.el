@@ -13,7 +13,7 @@
   (use-package evil-lispy
     :defer t
     :init (progn (add-hook 'emacs-lisp-mode-hook #'evil-lispy-mode)
-                 (evil-lispy-configure-colorization))
+                 (evil-lispy-layer-configure-colorization))
     :commands (evil-lispy-mode)
     :config (progn
               (spacemacs|diminish evil-lispy-mode " Ⓛ" " L")
@@ -30,20 +30,17 @@
 ;; todo yanking marked stuff is broken
 ;; todo a hydra/map to show lispy keys?
 
-(defun evil-lispy-configure-colorization ()
+(defun evil-lispy-layer-configure-colorization ()
   ;; this will be displayed in the modeline
   (let ((mode-color "light sea green"))
+
     (defface spacemacs-lispy-face
       `((t :inherit 'mode-line
-           :background))
+           :background ,mode-color))
       "lispy state face."
       :group 'spacemacs)
-    (setq evil-lispy-state-cursor '(mode-color box))
 
-    ;; flash current expression when evaluating
-    ;; todo nicer face
-    (define-eval-sexp-fu-flash-command special-lispy-eval
-      (eval-sexp-fu-flash (lispy--bounds-dwim)))
+    (setq evil-lispy-state-cursor '(mode-color box))
 
     (setq evil-lispy-state-cursor
           (list (when dotspacemacs-colorize-cursor-according-to-state mode-color)
