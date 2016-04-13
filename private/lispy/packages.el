@@ -18,11 +18,6 @@
     :config (progn
               (spacemacs|diminish evil-lispy-mode " Ⓛ" " L")
 
-              (define-key lispy-mode-map "o" 'special-lispy-different)
-              (define-key lispy-mode-map "d" 'special-lispy-other-mode)
-              (define-key lispy-mode-map "i" 'special-lispy-flow)
-              (define-key lispy-mode-map "f" 'special-lispy-tab)
-
               (when (configuration-layer/package-usedp 'cider)
 
                 ;; todo better mechanism of loading cider
