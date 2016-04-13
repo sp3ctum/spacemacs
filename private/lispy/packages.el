@@ -44,6 +44,10 @@
     "lispy state face."
     :group 'spacemacs)
 
+  ;; flash current expression when evaluating
+  (define-eval-sexp-fu-flash-command special-lispy-eval
+    (eval-sexp-fu-flash (lispy--bounds-dwim)))
+
   (setq evil-lispy-state-cursor
         (list (when dotspacemacs-colorize-cursor-according-to-state "firebrick1")
               'box)))
