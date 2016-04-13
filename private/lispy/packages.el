@@ -32,16 +32,19 @@
 
 (defun evil-lispy-configure-colorization ()
   ;; this will be displayed in the modeline
-  (defface spacemacs-lispy-face
-    `((t :inherit 'mode-line
-         :background "firebrick1"))
-    "lispy state face."
-    :group 'spacemacs)
+  (let ((mode-color "light sea green"))
+    (defface spacemacs-lispy-face
+      `((t :inherit 'mode-line
+           :background))
+      "lispy state face."
+      :group 'spacemacs)
+    (setq evil-lispy-state-cursor '(mode-color box))
 
-  ;; flash current expression when evaluating
-  (define-eval-sexp-fu-flash-command special-lispy-eval
-    (eval-sexp-fu-flash (lispy--bounds-dwim)))
+    ;; flash current expression when evaluating
+    ;; todo nicer face
+    (define-eval-sexp-fu-flash-command special-lispy-eval
+      (eval-sexp-fu-flash (lispy--bounds-dwim)))
 
-  (setq evil-lispy-state-cursor
-        (list (when dotspacemacs-colorize-cursor-according-to-state "firebrick1")
-              'box)))
+    (setq evil-lispy-state-cursor
+          (list (when dotspacemacs-colorize-cursor-according-to-state mode-color)
+                'box))))
