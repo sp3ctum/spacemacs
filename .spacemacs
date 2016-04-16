@@ -264,6 +264,9 @@ before packages are loaded. If you are unsure, you should try in setting them in
 (defun my-org-mode-bindings ()
   (add-hook 'org-mode-hook 'auto-fill-mode))
 
+(defun my-projectile-config ()
+  (setq projectile-use-git-grep t))
+
 (defun dotspacemacs/user-config ()
   "Configuration function for user code.
 This function is called at the very end of Spacemacs initialization after
@@ -278,7 +281,8 @@ you should place you code here."
   (my-dired-bindings)
   (my-custom-normal-mode-commands)
   (my-auto-complete-bindings)
-  (my-org-mode-bindings))
+  (my-org-mode-bindings)
+  (my-projectile-config))
 
 
 
