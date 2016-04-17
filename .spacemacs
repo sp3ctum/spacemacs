@@ -29,7 +29,8 @@ values."
      eyebrowse
      markdown
      lispy
-     clojure)
+     clojure
+     prodigy)
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
@@ -267,6 +268,13 @@ before packages are loaded. If you are unsure, you should try in setting them in
 (defun my-projectile-config ()
   (setq projectile-use-git-grep t))
 
+(defun my-prodigy-config ()
+  (prodigy-define-service
+    :name "Evil-lispy tests"
+    :command "sh"
+    :args '("run-tests.sh")
+    :cwd "~/git/evil-lispy/"))
+
 (defun dotspacemacs/user-config ()
   "Configuration function for user code.
 This function is called at the very end of Spacemacs initialization after
@@ -282,7 +290,8 @@ you should place you code here."
   (my-custom-normal-mode-commands)
   (my-auto-complete-bindings)
   (my-org-mode-bindings)
-  (my-projectile-config))
+  (my-projectile-config)
+  (my-prodigy-config))
 
 
 
