@@ -2,12 +2,14 @@
 ** dependencies
 - Ubuntu Fonts http://font.ubuntu.com/
 - emacs-version ~25.0.92.1~
+- Python27 and Cask
 
 ** Installation instructions
 - clone repo as =~/.emacs.d=
 - symlink =~/.emacs.d/.spacemacs= as =~/.spacemacs=
+- todo how to set up magit with ssh?
 
-Environment variables
+** Environment variables
 | name | value         |
 |------+---------------|
 | HOME | %userprofile% |
