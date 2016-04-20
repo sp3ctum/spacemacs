@@ -12,8 +12,23 @@ Environment variables
 |------+---------------|
 | HOME | %userprofile% |
 
-Things on ~PATH~
+Things on ~PATH~: (~C-c~ to eval so you can copy the result)
 
-| name      | value                        |
-|-----------+------------------------------|
-| git tools | C:\Program Files\Git\usr\bin |
+#+NAME: path-table
+| name           | value                                                     |
+|----------------+-----------------------------------------------------------|
+| git tools      | C:\Program Files\Git\usr\bin                              |
+| python         | C:\Python27\                                              |
+| cask           | %userprofile%\.cask\bin                                   |
+| own binaries   | C:\Users\mvi\bin                                          |
+| emacs binaries | C:\Users\mvi\emacs-bin\emacs-bin-w64-25.0.92-O2\emacs\bin |
+
+#+begin_src emacs-lisp :exports code :var data=path-table
+(->> data
+     (-map 'cadr)
+     (s-join ";")
+     (s-prepend ";"))
+#+end_src
+
+#+RESULTS:
+: ;C:\Program Files\Git\usr\bin;C:\Python27\;%userprofile%\.cask\bin;C:\Users\mvi\bin;C:\Users\mvi\emacs-bin\emacs-bin-w64-25.0.92-O2\emacs\bin
