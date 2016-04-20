@@ -15,13 +15,15 @@ Environment variables
 Things on ~PATH~: (~C-c~ to eval so you can copy the result)
 
 #+NAME: path-table
-| name           | value                                                     |
-|----------------+-----------------------------------------------------------|
-| git tools      | C:\Program Files\Git\usr\bin                              |
-| python         | C:\Python27\                                              |
-| cask           | %userprofile%\.cask\bin                                   |
-| own binaries   | C:\Users\mvi\bin                                          |
-| emacs binaries | C:\Users\mvi\emacs-bin\emacs-bin-w64-25.0.92-O2\emacs\bin |
+| name           | value                                               |
+|----------------+-----------------------------------------------------|
+| git tools      | C:\Program Files\Git\usr\bin                        |
+| python         | C:\Python27\                                        |
+| cask           | %userprofile%\.cask\bin                             |
+| own binaries   | %home%\bin                                          |
+| emacs binaries | %home%\emacs-bin\emacs-bin-w64-25.0.92-O2\emacs\bin |
+| leiningen      | %home%\.lein\bin                                    |
+|                |                                                     |
 
 #+begin_src emacs-lisp :exports code :var data=path-table
 (->> data
@@ -31,4 +33,4 @@ Things on ~PATH~: (~C-c~ to eval so you can copy the result)
 #+end_src
 
 #+RESULTS:
-: ;C:\Program Files\Git\usr\bin;C:\Python27\;%userprofile%\.cask\bin;C:\Users\mvi\bin;C:\Users\mvi\emacs-bin\emacs-bin-w64-25.0.92-O2\emacs\bin
+: ;C:\Program Files\Git\usr\bin;C:\Python27\;%userprofile%\.cask\bin;%home%\bin;%home%\emacs-bin\emacs-bin-w64-25.0.92-O2\emacs\bin;%home%\.lein\bin;
