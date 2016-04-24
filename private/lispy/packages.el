@@ -13,6 +13,7 @@
   (use-package evil-lispy
     :defer t
     :init (progn (add-hook 'emacs-lisp-mode-hook #'evil-lispy-mode)
+                 (add-hook 'clojure-mode-hook #'evil-lispy-mode)
                  (evil-lispy-layer-configure-colorization))
     :commands (evil-lispy-mode)
     :config (progn
