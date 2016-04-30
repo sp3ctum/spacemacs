@@ -276,11 +276,7 @@ before packages are loaded. If you are unsure, you should try in setting them in
     :cwd "~/git/evil-lispy/"))
 
 (defun my-clojure-config ()
-  (setq clojure-enable-fancify-symbols t)
-  (setq cider-cljs-lein-repl
-        "(do (require 'figwheel-sidecar.repl-api)
-             (figwheel-sidecar.repl-api/start-figwheel!)
-             (figwheel-sidecar.repl-api/cljs-repl))"))
+  (setq clojure-enable-fancify-symbols t))
 
 (defun dotspacemacs/user-config ()
   "Configuration function for user code.
