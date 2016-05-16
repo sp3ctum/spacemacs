@@ -276,6 +276,9 @@ before packages are loaded. If you are unsure, you should try in setting them in
     :args '("run-tests.sh")
     :cwd "~/git/evil-lispy/"))
 
+(defun my-clojure-config ()
+  (setq clojure-enable-fancify-symbols t))
+
 (defun dotspacemacs/user-config ()
   "Configuration function for user code.
 This function is called at the very end of Spacemacs initialization after
@@ -292,7 +295,8 @@ you should place you code here."
   (my-auto-complete-bindings)
   (my-org-mode-bindings)
   (my-projectile-config)
-  (my-prodigy-config))
+  (my-prodigy-config)
+  (my-clojure-config))
 
 
 
