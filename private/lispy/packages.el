@@ -27,9 +27,7 @@
                 (add-to-list 'lispy-compat 'cider)
                 (setq lispy-eval-display-style 'overlay)))))
 
-;; todo backspace on {} characters is broken
 ;; todo yanking marked stuff is broken
-;; todo a hydra/map to show lispy keys?
 
 (defun evil-lispy-layer-configure-colorization ()
   ;; this will be displayed in the modeline
