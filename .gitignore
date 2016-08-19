@@ -49,3 +49,4 @@ python-*-docs-html
 !private/local/README.md
 /games/
 /recentf
+ensime/
