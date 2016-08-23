@@ -280,6 +280,12 @@ before packages are loaded. If you are unsure, you should try in setting them in
 (defun my-clojure-config ()
   (setq clojure-enable-fancify-symbols t))
 
+(defun my-scala-config ()
+  (with-eval-after-load 'ensime
+    ;; https://github.com/syl20bnr/spacemacs/issues/4746
+    (setq ensime-sem-high-faces
+          (assq-delete-all 'implicitConversion ensime-sem-high-faces))))
+
 (defun dotspacemacs/user-config ()
   "Configuration function for user code.
 This function is called at the very end of Spacemacs initialization after
@@ -297,7 +303,8 @@ you should place you code here."
   (my-org-mode-bindings)
   (my-projectile-config)
   (my-prodigy-config)
-  (my-clojure-config))
+  (my-clojure-config)
+  (my-scala-config))
 
 
 
