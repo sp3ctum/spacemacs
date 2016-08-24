@@ -312,7 +312,8 @@ before packages are loaded. If you are unsure, you should try in setting them in
   (let ((eval-result (save-window-excursion
                        (save-excursion
                          (ensime-inf-eval-result)))))
-    (popup-tip eval-result)
+    (kill-new eval-result)
+    (popup-tip (s-concat eval-result "\n\n(copied to kill ring)"))
     eval-result))
 
 (defun my-scala-config ()
