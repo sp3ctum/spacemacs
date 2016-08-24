@@ -304,7 +304,9 @@ before packages are loaded. If you are unsure, you should try in setting them in
 (defun my-scala-config ()
   (with-eval-after-load 'ensime
     (spacemacs/set-leader-keys-for-major-mode 'scala-mode
-      "ä" 'my-ensime-eval-dwim)
+      "ä" 'my-ensime-eval-dwim
+      ;; mnemonic: go to member in file
+      "gm" 'helm-imenu)
 
     ;; hide implicitConversion underlinings because they make it hard to see the
     ;; actual code
