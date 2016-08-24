@@ -305,6 +305,9 @@ before packages are loaded. If you are unsure, you should try in setting them in
   (with-eval-after-load 'ensime
     (spacemacs/set-leader-keys-for-major-mode 'scala-mode
       "ä" 'my-ensime-eval-dwim)
+
+    ;; hide implicitConversion underlinings because they make it hard to see the
+    ;; actual code
     ;; https://github.com/syl20bnr/spacemacs/issues/4746
     (setq ensime-sem-high-faces
           (assq-delete-all 'implicitConversion ensime-sem-high-faces))))
