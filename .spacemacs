@@ -295,6 +295,13 @@ before packages are loaded. If you are unsure, you should try in setting them in
   (evil-visual-restore)
   (evil-normal-state t))
 
+(defun my-prefix-lines (prefix multiline-text)
+  (->> (s-lines multiline-text)
+       (--filter (not (s-blank? it)))
+       (--map (s-trim-left (s-prepend prefix it)))
+       (s-join "\n")
+       (s-append "\n")))
+
 (defun my-ensime-eval-dwim (start end)
   (interactive "r")
   (require 'popup)
@@ -307,13 +314,13 @@ before packages are loaded. If you are unsure, you should try in setting them in
 
   ;; ugly hack: give some time to read the output
   ;; this could take considerably longer than this, which is not accounted for.
-  ;; todo block until a response has been sent
-  (sit-for 0.2)
+  ;; todo block until a response has been received
+  (sit-for 0.3)
   (let ((eval-result (save-window-excursion
                        (save-excursion
                          (ensime-inf-eval-result)))))
-    (kill-new eval-result)
-    (popup-tip (s-concat eval-result "\n\n(copied to kill ring)"))
+    (kill-new (my-prefix-lines "// " eval-result))
+    (popup-tip (s-concat eval-result "\n\n(copied as code comments to kill ring)"))
     eval-result))
 
 (defun my-scala-config ()
