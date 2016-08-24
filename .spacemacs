@@ -282,24 +282,38 @@ before packages are loaded. If you are unsure, you should try in setting them in
 
 (defmacro comment (&rest _))
 
-(defun my-evil-flash-region (func)
+(defun my-evil-flash-region ()
   (require 'flash-region)
   (evil-normal-state t)
-  (funcall func)
+
+  (let ((face (defface my-ensime-eval-region-face
+                `((t :inherit 'default
+                     :background "light sea green"))
+                "lispy state face."
+                :group 'spacemacs)))
+    (flash-region start end face 0.1))
   (evil-visual-restore)
   (evil-normal-state t))
 
 (defun my-ensime-eval-dwim (start end)
   (interactive "r")
+  (require 'popup)
+
+  (with-current-buffer ensime-inf-buffer-name
+    ;; if the buffer gets too large (a few kilobytes?), perforce will suffer
+    (comint-clear-buffer))
+  (my-evil-flash-region)
   (ensime-inf-eval-region start end)
-  (my-evil-flash-region
-   (lambda ()
-     (let ((face (defface my-ensime-eval-region-face
-                   `((t :inherit 'default
-                        :background "light sea green"))
-                   "lispy state face."
-                   :group 'spacemacs)))
-       (flash-region start end face 0.1)))))
+
+  ;; ugly hack: give some time to read the output
+  ;; this could take considerably longer than this, which is not accounted for.
+  ;; todo block until a response has been sent
+  (sit-for 0.2)
+  (let ((eval-result (save-window-excursion
+                       (save-excursion
+                         (ensime-inf-eval-result)))))
+    (popup-tip eval-result)
+    eval-result))
 
 (defun my-scala-config ()
   (with-eval-after-load 'ensime
