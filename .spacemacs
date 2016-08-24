@@ -37,7 +37,7 @@ values."
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '()
+   dotspacemacs-additional-packages '(flash-region)
    ;; A list of packages and/or extensions that will not be install and loaded.
    dotspacemacs-excluded-packages '()
    ;; If non-nil spacemacs will delete any orphan packages, i.e. packages that
@@ -280,8 +280,31 @@ before packages are loaded. If you are unsure, you should try in setting them in
 (defun my-clojure-config ()
   (setq clojure-enable-fancify-symbols t))
 
+(defmacro comment (&rest _))
+
+(defun my-evil-flash-region (func)
+  (require 'flash-region)
+  (evil-normal-state t)
+  (funcall func)
+  (evil-visual-restore)
+  (evil-normal-state t))
+
+(defun my-ensime-eval-dwim (start end)
+  (interactive "r")
+  (ensime-inf-eval-region start end)
+  (my-evil-flash-region
+   (lambda ()
+     (let ((face (defface my-ensime-eval-region-face
+                   `((t :inherit 'default
+                        :background "light sea green"))
+                   "lispy state face."
+                   :group 'spacemacs)))
+       (flash-region start end face 0.1)))))
+
 (defun my-scala-config ()
   (with-eval-after-load 'ensime
+    (spacemacs/set-leader-keys-for-major-mode 'scala-mode
+      "ä" 'my-ensime-eval-dwim)
     ;; https://github.com/syl20bnr/spacemacs/issues/4746
     (setq ensime-sem-high-faces
           (assq-delete-all 'implicitConversion ensime-sem-high-faces))))
