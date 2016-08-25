@@ -326,6 +326,16 @@ before packages are loaded. If you are unsure, you should try in setting them in
     ;; if the buffer gets too large (a few kilobytes?), perforce will suffer
     (comint-clear-buffer)))
 
+(defun my-scala-show-repl-output ()
+  "Sometimes the repl output is displayed only partially. Use this to show the
+last output as it exists right now."
+  (interactive)
+  (let ((eval-result (my-scala-wait-for-repl-output)))
+    (when (not (s-blank? eval-result))
+      (kill-new (my-prefix-lines "// " eval-result))
+      (popup-tip (s-concat eval-result "\n\n(copied as code comments to kill ring)")))
+    eval-result))
+
 (defun my-ensime-eval-dwim (start end)
   (interactive "r")
   (require 'popup)
@@ -333,17 +343,13 @@ before packages are loaded. If you are unsure, you should try in setting them in
   (my-scala-clear-repl-buffer)
   (my-evil-flash-region)
   (ensime-inf-eval-region start end)
-
-  (let ((eval-result (my-scala-wait-for-repl-output)))
-    (when (not (s-blank? eval-result))
-      (kill-new (my-prefix-lines "// " eval-result))
-      (popup-tip (s-concat eval-result "\n\n(copied as code comments to kill ring)")))
-    eval-result))
+  (my-scala-show-repl-output))
 
 (defun my-scala-config ()
   (with-eval-after-load 'ensime
     (spacemacs/set-leader-keys-for-major-mode 'scala-mode
       "ä" 'my-ensime-eval-dwim
+      "Ä" 'my-scala-show-repl-output
       ;; mnemonic: go to member in file
       "gm" 'helm-imenu)
 
