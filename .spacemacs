@@ -302,25 +302,42 @@ before packages are loaded. If you are unsure, you should try in setting them in
        (s-join "\n")
        (s-append "\n")))
 
+(defun my-scala-get-repl-output ()
+  ;; if no result has yet arrived, will signal an error.
+  ;; (ensime-inf-eval-result) may also return the empty string
+  (ignore-errors
+    (s-trim (ensime-inf-eval-result))))
+
+(defun my-scala-wait-for-repl-output ()
+  ;; having save-window-excursion and save-excursion are required, lest the
+  ;; current window change position. this is a drawback in emacs's ensime
+  ;; implementation.
+  (save-window-excursion
+    (save-excursion
+      (with-timeout (5 (message "scala repl evaluation timed out."))
+        ;; only get the result once for performance
+        (let (result)
+          (while (s-blank? (setq result (my-scala-get-repl-output)))
+            (sit-for 0.05))
+          result)))))
+
+(defun my-scala-clear-repl-buffer ()
+  (with-current-buffer ensime-inf-buffer-name
+    ;; if the buffer gets too large (a few kilobytes?), perforce will suffer
+    (comint-clear-buffer)))
+
 (defun my-ensime-eval-dwim (start end)
   (interactive "r")
   (require 'popup)
 
-  (with-current-buffer ensime-inf-buffer-name
-    ;; if the buffer gets too large (a few kilobytes?), perforce will suffer
-    (comint-clear-buffer))
+  (my-scala-clear-repl-buffer)
   (my-evil-flash-region)
   (ensime-inf-eval-region start end)
 
-  ;; ugly hack: give some time to read the output
-  ;; this could take considerably longer than this, which is not accounted for.
-  ;; todo block until a response has been received
-  (sit-for 0.3)
-  (let ((eval-result (save-window-excursion
-                       (save-excursion
-                         (ensime-inf-eval-result)))))
-    (kill-new (my-prefix-lines "// " eval-result))
-    (popup-tip (s-concat eval-result "\n\n(copied as code comments to kill ring)"))
+  (let ((eval-result (my-scala-wait-for-repl-output)))
+    (when (not (s-blank? eval-result))
+      (kill-new (my-prefix-lines "// " eval-result))
+      (popup-tip (s-concat eval-result "\n\n(copied as code comments to kill ring)")))
     eval-result))
 
 (defun my-scala-config ()
