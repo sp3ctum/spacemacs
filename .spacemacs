@@ -347,6 +347,7 @@ last output as it exists right now."
 
 (defun my-scala-config ()
   (with-eval-after-load 'ensime
+    (setq ensime-startup-snapshot-notification nil)
     (spacemacs/set-leader-keys-for-major-mode 'scala-mode
       "ä" 'my-ensime-eval-dwim
       "Ä" 'my-scala-show-repl-output
