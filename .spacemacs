@@ -346,6 +346,11 @@ last output as it exists right now."
   (my-scala-show-repl-output))
 
 (defun my-scala-config ()
+  ;; workaround for this bug:
+  ;; https://github.com/syl20bnr/spacemacs/issues/6578
+  (with-eval-after-load 'scala-mode
+    (require 'ensime))
+
   (with-eval-after-load 'ensime
     (setq ensime-startup-snapshot-notification nil)
     (spacemacs/set-leader-keys-for-major-mode 'scala-mode
