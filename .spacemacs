@@ -353,6 +353,9 @@ last output as it exists right now."
 
   (add-hook 'scala-mode-hook 'smartparens-mode)
 
+  ;; jump out of a pair of delimiters with )
+  (evil-define-key 'insert smartparens-mode-map (kbd ")") 'sp-up-sexp)
+
   (with-eval-after-load 'ensime
     (setq ensime-startup-snapshot-notification nil)
     (spacemacs/set-leader-keys-for-major-mode 'scala-mode
