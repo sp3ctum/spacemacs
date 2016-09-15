@@ -32,7 +32,8 @@ values."
      clojure
      prodigy
      html
-     scala)
+     scala
+     my-scala-extensions)
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
@@ -282,69 +283,6 @@ before packages are loaded. If you are unsure, you should try in setting them in
 
 (defmacro comment (&rest _))
 
-(defun my-evil-flash-region ()
-  (require 'flash-region)
-  (evil-normal-state t)
-
-  (let ((face (defface my-ensime-eval-region-face
-                `((t :inherit 'default
-                     :background "light sea green"))
-                "lispy state face."
-                :group 'spacemacs)))
-    (flash-region start end face 0.1))
-  (evil-visual-restore)
-  (evil-normal-state t))
-
-(defun my-prefix-lines (prefix multiline-text)
-  (->> (s-lines multiline-text)
-       (--filter (not (s-blank? it)))
-       (--map (s-trim-left (s-prepend prefix it)))
-       (s-join "\n")
-       (s-append "\n")))
-
-(defun my-scala-get-repl-output ()
-  ;; if no result has yet arrived, will signal an error.
-  ;; (ensime-inf-eval-result) may also return the empty string
-  (ignore-errors
-    (s-trim (ensime-inf-eval-result))))
-
-(defun my-scala-wait-for-repl-output ()
-  ;; having save-window-excursion and save-excursion are required, lest the
-  ;; current window change position. this is a drawback in emacs's ensime
-  ;; implementation.
-  (save-window-excursion
-    (save-excursion
-      (with-timeout (5 (message "scala repl evaluation timed out."))
-        ;; only get the result once for performance
-        (let (result)
-          (while (s-blank? (setq result (my-scala-get-repl-output)))
-            (sit-for 0.05))
-          result)))))
-
-(defun my-scala-clear-repl-buffer ()
-  (with-current-buffer ensime-inf-buffer-name
-    ;; if the buffer gets too large (a few kilobytes?), perforce will suffer
-    (comint-clear-buffer)))
-
-(defun my-scala-show-repl-output ()
-  "Sometimes the repl output is displayed only partially. Use this to show the
-last output as it exists right now."
-  (interactive)
-  (let ((eval-result (my-scala-wait-for-repl-output)))
-    (when (not (s-blank? eval-result))
-      (kill-new (my-prefix-lines "// " eval-result))
-      (popup-tip (s-concat eval-result "\n\n(copied as code comments to kill ring)")))
-    eval-result))
-
-(defun my-ensime-eval-dwim (start end)
-  (interactive "r")
-  (require 'popup)
-
-  (my-scala-clear-repl-buffer)
-  (my-evil-flash-region)
-  (ensime-inf-eval-region start end)
-  (my-scala-show-repl-output))
-
 (defun my-scala-config ()
   ;; workaround for this bug:
   ;; https://github.com/syl20bnr/spacemacs/issues/6578
@@ -367,7 +305,8 @@ last output as it exists right now."
       "ä" 'my-ensime-eval-dwim
       "Ä" 'my-scala-show-repl-output
       ;; mnemonic: go to member in file
-      "gm" 'helm-imenu)
+      "gm" 'helm-imenu
+      "hT" 'my-ensime-insert-function-type-at-point)
 
     ;; hide implicitConversion underlinings because they make it hard to see the
     ;; actual code
