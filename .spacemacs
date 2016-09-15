@@ -355,6 +355,11 @@ last output as it exists right now."
 
   ;; jump out of a pair of delimiters with )
   (evil-define-key 'insert smartparens-mode-map (kbd ")") 'sp-up-sexp)
+  (evil-define-key 'normal scala-mode-map (kbd ")") 'sp-up-sexp)
+
+  ;; fix indenting this weirldy: foo.map(a => {
+  ;; }
+  (setq scala-indent:align-parameters nil)
 
   (with-eval-after-load 'ensime
     (setq ensime-startup-snapshot-notification nil)
