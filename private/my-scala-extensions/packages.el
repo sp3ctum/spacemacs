@@ -117,10 +117,11 @@ last output as it exists right now."
 (defun my-ensime-insert-function-type-at-point ()
   "point must be on the line where the function starts"
   (interactive)
-  (let ((type (ensime-print-type-at-point t)))
-    (re-search-forward "(")
-    (sp-end-of-sexp)
-    (forward-char 1)
-    (insert ": " type)))
+  (save-excursion
+    (let ((type (ensime-print-type-at-point t)))
+      (re-search-forward "(")
+      (sp-end-of-sexp)
+      (forward-char 1)
+      (insert ": " type))))
 
 ;;; packages.el ends here
