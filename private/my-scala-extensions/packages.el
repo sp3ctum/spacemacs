@@ -21,7 +21,7 @@
 ;;; Code:
 
 (defconst my-scala-extensions-packages
-  '(scala-mode ensime)
+  '(scala-mode smartparens ensime)
   "The list of Lisp packages required by the my-scala-extensions layer.
 
 Each entry is either:
