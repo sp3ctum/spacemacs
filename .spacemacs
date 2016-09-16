@@ -306,7 +306,8 @@ before packages are loaded. If you are unsure, you should try in setting them in
       "Ä" 'my-scala-show-repl-output
       ;; mnemonic: go to member in file
       "gm" 'helm-imenu
-      "hT" 'my-ensime-insert-function-type-at-point)
+      "hT" 'my-ensime-insert-function-type-at-point
+      "rs" 'my-scala-split-literal-string-at-point)
 
     ;; hide implicitConversion underlinings because they make it hard to see the
     ;; actual code

@@ -124,4 +124,11 @@ last output as it exists right now."
       (forward-char 1)
       (insert ": " type))))
 
+(defun my-scala-split-literal-string-at-point ()
+  (interactive)
+  (save-excursion
+    (insert "\" + \n\"")
+    (indent-region (line-beginning-position)
+                   (line-beginning-position 2))))
+
 ;;; packages.el ends here
