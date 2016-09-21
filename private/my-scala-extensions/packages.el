@@ -101,8 +101,7 @@ last output as it exists right now."
   (interactive)
   (let ((eval-result (my-scala-wait-for-repl-output)))
     (when (not (s-blank? eval-result))
-      (kill-new (my-prefix-lines "// " eval-result))
-      (popup-tip (s-concat eval-result "\n\n(copied as code comments to kill ring)")))
+      (kill-new (my-prefix-lines "// " eval-result)))
     eval-result))
 
 (defun my-ensime-eval-dwim (start end)
