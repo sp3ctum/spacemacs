@@ -41,7 +41,8 @@ values."
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '(flash-region)
+   dotspacemacs-additional-packages '(flash-region
+                                      smart-dash)
    ;; A list of packages and/or extensions that will not be install and loaded.
    dotspacemacs-excluded-packages '()
    ;; If non-nil spacemacs will delete any orphan packages, i.e. packages that
@@ -318,6 +319,9 @@ before packages are loaded. If you are unsure, you should try in setting them in
     (setq ensime-sem-high-faces
           (assq-delete-all 'implicitConversion ensime-sem-high-faces))))
 
+(defun my-ruby-config ()
+  (add-hook 'ruby-mode-hook 'smart-dash-mode))
+
 (defun dotspacemacs/user-config ()
   "Configuration function for user code.
 This function is called at the very end of Spacemacs initialization after
@@ -336,7 +340,8 @@ you should place you code here."
   (my-projectile-config)
   (my-prodigy-config)
   (my-clojure-config)
-  (my-scala-config))
+  (my-scala-config)
+  (my-ruby-config))
 
 
 
