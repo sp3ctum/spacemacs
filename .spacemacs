@@ -324,6 +324,11 @@ before packages are loaded. If you are unsure, you should try in setting them in
   (add-hook 'ruby-mode-hook 'smart-dash-mode)
   (add-to-list 'aggressive-indent-excluded-modes 'ruby-mode))
 
+(defun my-git-config ()
+  ;; open new window always in a side split
+  (setq split-height-threshold nil)
+  (setq split-width-threshold 0))
+
 (defun dotspacemacs/user-config ()
   "Configuration function for user code.
 This function is called at the very end of Spacemacs initialization after
@@ -343,7 +348,8 @@ you should place you code here."
   (my-prodigy-config)
   (my-clojure-config)
   (my-scala-config)
-  (my-ruby-config))
+  (my-ruby-config)
+  (my-git-config))
 
 
 
