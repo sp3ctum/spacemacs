@@ -320,7 +320,9 @@ before packages are loaded. If you are unsure, you should try in setting them in
           (assq-delete-all 'implicitConversion ensime-sem-high-faces))))
 
 (defun my-ruby-config ()
-  (add-hook 'ruby-mode-hook 'smart-dash-mode))
+  (require 'smart-dash)
+  (add-hook 'ruby-mode-hook 'smart-dash-mode)
+  (add-to-list 'aggressive-indent-excluded-modes 'ruby-mode))
 
 (defun dotspacemacs/user-config ()
   "Configuration function for user code.
