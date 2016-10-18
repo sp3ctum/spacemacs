@@ -11,27 +11,33 @@
 
 ;; List of all packages to install and/or initialize. Built-in packages
 ;; which require an initialization must be listed explicitly in the list.
-(defvar d-packages
-  '(
-    d-mode
-    flycheck-dmd-dub
+(setq d-packages
+      '(
+        company
+        d-mode
+        flycheck
+        (flycheck-dmd-dub :toggle (configuration-layer/package-usedp 'flycheck))
+        ggtags
+        helm-gtags
+        ))
 
-    flycheck
-    company
-    ))
+(defun d/post-init-company ()
+  ;; Need to convince company that this C-derived mode is a code mode.
+  (with-eval-after-load 'company-dabbrev-code (push 'd-mode company-dabbrev-code-modes))
+  (spacemacs|add-company-hook d-mode))
 
 (defun d/init-d-mode ()
   (use-package d-mode :defer t))
 
-(when (configuration-layer/layer-usedp 'syntax-checking)
-  (defun d/post-init-flycheck ()
-    (spacemacs/add-flycheck-hook 'd-mode-hook))
-  (defun d/init-flycheck-dmd-dub ()
-    (use-package flycheck-dmd-dub :defer t
-      :init (add-hook 'd-mode-hook 'flycheck-dmd-dub-set-include-path))))
+(defun d/post-init-flycheck ()
+  (spacemacs/add-flycheck-hook 'd-mode))
 
-(when (configuration-layer/layer-usedp 'auto-completion)
-  (defun d/post-init-company ()
-    ;; Need to convince company that this C-derived mode is a code mode.
-    (with-eval-after-load 'company-dabbrev-code (push 'd-mode company-dabbrev-code-modes))
-    (spacemacs|add-company-hook d-mode)))
+(defun d/init-flycheck-dmd-dub ()
+  (use-package flycheck-dmd-dub :defer t
+    :init (add-hook 'd-mode-hook 'flycheck-dmd-dub-set-include-path)))
+
+(defun d/post-init-ggtags ()
+  (add-hook 'd-mode-local-vars-hook #'spacemacs/ggtags-mode-enable))
+
+(defun d/post-init-helm-gtags ()
+  (spacemacs/helm-gtags-define-keys-for-mode 'd-mode))

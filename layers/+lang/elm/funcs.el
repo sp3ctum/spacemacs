@@ -10,11 +10,10 @@
 ;;; License: GPLv3
 
 
+;; elm-mode
 
 (defun spacemacs//elm-find-root ()
   (setq default-directory (elm--find-dependency-file-path)))
-
-
 
 (defun spacemacs/elm-compile-buffer-output ()
   (interactive)

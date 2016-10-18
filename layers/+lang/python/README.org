@@ -1,32 +1,38 @@
 #+TITLE: Python layer
-#+HTML_HEAD_EXTRA: <link rel="stylesheet" type="text/css" href="../../../css/readtheorg.css" />
 
 [[file:img/python.png]]
 
-* Table of Contents                                         :TOC_4_org:noexport:
- - [[Description][Description]]
-   - [[Features:][Features:]]
- - [[Install][Install]]
-   - [[Layer][Layer]]
-   - [[Test runner][Test runner]]
-   - [[Anaconda dependencies][Anaconda dependencies]]
-   - [[Automatic buffer formatting on save][Automatic buffer formatting on save]]
-   - [[Automatic activation of local pyenv version][Automatic activation of local pyenv version]]
-   - [[autoflake][autoflake]]
-   - [[pylookup][pylookup]]
- - [[Key Bindings][Key Bindings]]
-   - [[Inferior REPL process][Inferior REPL process]]
-   - [[Running Python Script in shell][Running Python Script in shell]]
-   - [[Testing][Testing]]
-   - [[Refactoring][Refactoring]]
-   - [[Other Python commands][Other Python commands]]
- - [[Configuration][Configuration]]
-   - [[Fill column][Fill column]]
+* Table of Contents                                         :TOC_4_gh:noexport:
+ - [[#description][Description]]
+   - [[#features][Features]]
+ - [[#install][Install]]
+   - [[#layer][Layer]]
+   - [[#test-runner][Test runner]]
+   - [[#anaconda-dependencies][Anaconda dependencies]]
+   - [[#automatic-buffer-formatting-on-save][Automatic buffer formatting on save]]
+   - [[#autoflake][autoflake]]
+   - [[#pylookup][pylookup]]
+   - [[#hy-mode][Hy-mode]]
+ - [[#management-of-python-versions-and-virtual-environments][Management of Python versions and virtual environments]]
+   - [[#manage-virtual-environments-with-pyvenv][Manage virtual environments with pyvenv]]
+   - [[#manage-multiple-python-versions-with-pyenv][Manage multiple Python versions with pyenv]]
+     - [[#automatic-activation-of-local-pyenv-version][Automatic activation of local pyenv version]]
+ - [[#key-bindings][Key Bindings]]
+   - [[#inferior-repl-process][Inferior REPL process]]
+   - [[#running-python-script-in-shell][Running Python Script in shell]]
+   - [[#testing][Testing]]
+   - [[#refactoring][Refactoring]]
+   - [[#live-coding][Live coding]]
+   - [[#hy-repl-process][Hy REPL process]]
+   - [[#other-python-commands][Other Python commands]]
+ - [[#configuration][Configuration]]
+   - [[#fill-column][Fill column]]
+   - [[#sort-imports][Sort imports]]
 
 * Description
 This layer adds support for the Python language.
 
-** Features:
+** Features
 - Auto-completion using [[https://github.com/proofit404/anaconda-mode][anaconda-mode]]
 - Code Navigation using  [[https://github.com/proofit404/anaconda-mode][anaconda-mode]]
 - Documentation Lookup using  [[https://github.com/proofit404/anaconda-mode][anaconda-mode]]  and [[https://github.com/tsgates/pylookup][pylookup]]
@@ -34,8 +40,10 @@ This layer adds support for the Python language.
 - Virtual Environment using  [[https://github.com/jorgenschaefer/pyvenv][pyvenv]] and [[https://github.com/yyuu/pyenv][pyenv]]
 - semantic mode is enabled
 - PEP8 compliant formatting via [[https://github.com/google/yapf][YAPF]]
+- PEP8 checks with [[https://pypi.python.org/pypi/flake8][flake8]] or [[https://pypi.python.org/pypi/pylint/1.6.4][pylint]]
 - Suppression of unused import with [[https://github.com/myint/autoflake][autoflake]]
 - Use the ~%~ key to jump between blocks with [[https://github.com/redguardtoo/evil-matchit][evil-matchit]]
+- Sort imports with [[https://pypi.python.org/pypi/isort][isort]]
 
 * Install
 ** Layer
@@ -48,12 +56,26 @@ Both =nose= and =pytest= are supported. By default =nose= is used.
 To choose your test runner set the layer variable =python-test-runner= to
 either =nose= or =pytest=.
 
-The root of the project is detected with a =.git= directory or a =setup.cfg= file.
-
 #+BEGIN_SRC emacs-lisp
 (setq-default dotspacemacs-configuration-layers
   '((python :variables python-test-runner 'pytest)))
 #+END_SRC
+
+If you need both then you can set =python-test-runner= to a list like this:
+#+BEGIN_SRC emacs-lisp
+(setq-default dotspacemacs-configuration-layers
+  '((python :variables python-test-runner '(pytest nose))))
+#+END_SRC
+
+This means that =pytest= is your primary test runner. To use the secondary test
+runner you can call the test functions with a prefix argument e.g. ~SPC u SPC m
+t t~ to run one test with =nose=.
+
+To set project specific test runners you can set =python-test-runner= in a
+directory local variable in your project root. ~SPC f v d~ in Spacemacs. See
+[[https://www.gnu.org/software/emacs/manual/html_node/emacs/Directory-Variables.html][the official documentation]] for more information.
+
+The root of the project is detected with a =.git= directory or a =setup.cfg= file.
 
 ** Anaconda dependencies
 =anaconda-mode= tries to install the dependencies itself but sometimes
@@ -85,17 +107,6 @@ To enable automatic buffer formatting on save with  [[https://github.com/google/
     (python :variables python-enable-yapf-format-on-save t)))
 #+END_SRC
 
-** Automatic activation of local pyenv version
-A project-specific pyenv version may be written to a file called
-=.python-version= using the [[https://github.com/yyuu/pyenv/blob/master/COMMANDS.md#pyenv-local][pyenv local]] command.
-
-Spacemacs can search in parent directories for this file, and automatically set
-the pyenv version. The behavior can be set with the variable
-=python-auto-set-local-pyenv-version= to:
-- =on-visit= (default) set the version when you visit a python buffer,
-- =on-project-switch= set the version when you switch projects,
-- =nil= to disable.
-
 ** autoflake
 To be able to suppress unused imports easily, install [[https://github.com/myint/autoflake][autoflake]]:
 
@@ -105,7 +116,58 @@ To be able to suppress unused imports easily, install [[https://github.com/myint
 
 ** pylookup
 To use =pylookup= on ~SPC m h H~, make sure you update the database first, using
-~SPC : pylookup-update~.
+~SPC SPC pylookup-update~.
+
+** Hy-mode
+To be able to connect to an inferior lisp repl in =hy-mode=, you need to make sure
+that hy is installed.
+
+#+BEGIN_SRC sh
+  pip install hy
+#+END_SRC
+
+* Management of Python versions and virtual environments
+
+** Manage virtual environments with pyvenv
+A virtual environment provides isolation of your Python package versions. For a
+general overview see [[http://docs.python-guide.org/en/latest/dev/virtualenvs/][this site]]. [[http://virtualenvwrapper.readthedocs.org/en/latest/index.html][Virtualenvwrapper]] which is also explained in the
+previous link, is a program which manages your virtual environments in a central
+location set by the ~WORKON_HOME~ environment variable.
+
+Spacemacs integration of virtual environments and virtualenvwrapper is provided
+by the [[https://github.com/jorgenschaefer/pyvenv][pyvenv]] package. It provides the following keybindings:
+
+| Key Binding | Description                                     |
+|-------------+-------------------------------------------------|
+| ~SPC m V a~ | activate a virtual environment in any directory |
+| ~SPC m V d~ | deactivate active virtual environment           |
+| ~SPC m V w~ | work on virtual environment in ~WORKON_HOME~    |
+
+** Manage multiple Python versions with pyenv
+If you need multiple Python versions (e.g. Python 2 and Python 3) then take a
+look at [[https://github.com/yyuu/pyenv][pyenv]]. It enables the installation and managment of multiple
+Python versions.
+[[https://www.brianthicks.com/post/2015/04/15/automate-your-python-environment-with-pyenv/][This blogpost]] gives a good overview on how to use the tool. Spacemacs
+integration is provided by [[https://github.com/proofit404/pyenv-mode][pyenv mode]] which has the following keybindings.
+
+| Key Binding | Description                          |
+|-------------+--------------------------------------|
+| ~SPC m v s~ | set a pyenv environment with [[https://github.com/yyuu/pyenv][pyenv]]   |
+| ~SPC m v u~ | unset a pyenv environment with [[https://github.com/yyuu/pyenv][pyenv]] |
+
+Pyenv can also manage virtual environments for each of the Python versions it
+has installed. Those will be listed alongside your Python versions.
+
+*** Automatic activation of local pyenv version
+A project-specific pyenv version may be written to a file called
+=.python-version= using the [[https://github.com/yyuu/pyenv/blob/master/COMMANDS.md#pyenv-local][pyenv local]] command.
+
+Spacemacs can search in parent directories for this file, and automatically set
+the pyenv version. The behavior can be set with the variable
+=python-auto-set-local-pyenv-version= to:
+- =on-visit= (default) set the version when you visit a python buffer,
+- =on-project-switch= set the version when you switch projects,
+- =nil= to disable.
 
 * Key Bindings
 
@@ -145,7 +207,8 @@ modules.
 compilation command.
 
 ** Testing
-Test commands start with ~m t~:
+Test commands start with ~m t~. To use the secondary test runner call the
+function with a prefix argument, for example ~SPC u SPC m t a~.
 
 | No Debug    | Description                                              |
 |-------------+----------------------------------------------------------|
@@ -168,6 +231,34 @@ Test commands start with ~m t~:
 | Key Binding | Description                          |
 |-------------+--------------------------------------|
 | ~SPC m r i~ | remove unused imports with [[https://github.com/myint/autoflake][autoflake]] |
+| ~SPC m r I~ | sort imports with [[https://pypi.python.org/pypi/isort][isort]]              |
+
+** Live coding
+
+Live coding is provided by the [[https://github.com/donkirkby/live-py-plugin][live-py-plugin.]]
+
+| Key Binding | Description         |
+|-------------+---------------------|
+| ~SPC m l~   | Toggle live-py-mode |
+
+** Hy REPL process
+Start a Hy inferior repel process with ~SPC m s i~. If =hy= is
+available in system executable search paths, =hy= will be used to
+launch the shell. You may change your system executable search path
+by activating a virtual enviornment.
+
+Send code to hy REPL commands:
+
+| Key Binding | Description                                               |
+|-------------+-----------------------------------------------------------|
+| ~SPC m s b~ | send buffer and keep code buffer focused                  |
+| ~SPC m s B~ | switch to REPL                                            |
+| ~SPC m s e~ | send sexp in front of the cursor to the REPL              |
+| ~SPC m s f~ | send function to REPL and stay in buffer                  |
+| ~SPC m s F~ | send function to REPL and switch to repl buffer           |
+| ~SPC m s i~ | start inferior hy repl                                    |
+| ~SPC m s r~ | send current region to the REPL and stay in buffer        |
+| ~SPC m s R~ | send current region to the REPL and switch to repl buffer |
 
 ** Other Python commands
 
@@ -177,17 +268,35 @@ Test commands start with ~m t~:
 | ~SPC m d b~ | toggle a breakpoint                                                          |
 | ~SPC m g g~ | go to definition using =anaconda-mode-find-definitions= (~C-o~ to jump back) |
 | ~SPC m g a~ | go to assignment using =anaconda-mode-find-assignments= (~C-o~ to jump back) |
+| ~SPC m g b~ | jump back                                                                    |
 | ~SPC m g u~ | navigate between usages with =anaconda-mode-find-references=                 |
 | ~SPC m h d~ | look for documentation using =helm-pydoc=                                    |
 | ~SPC m h h~ | quick documentation using anaconda                                           |
 | ~SPC m h H~ | open documentation in =firefox= using [[https://github.com/tsgates/pylookup][pylookup]]                               |
-| ~SPC m v s~ | activate a virtual environment with [[https://github.com/yyuu/pyenv][pyenv]]                                    |
-| ~SPC m v u~ | deactivate a virtual environment with [[https://github.com/yyuu/pyenv][pyenv]]                                  |
-| ~SPC m V~   | activate a virtual environment with  [[https://github.com/jorgenschaefer/pyvenv][pyvenv]]                                  |
+| ~SPC m v s~ | set a pyenv environment with [[https://github.com/yyuu/pyenv][pyenv]]                                           |
+| ~SPC m v u~ | unset a pyenv environment with [[https://github.com/yyuu/pyenv][pyenv]]                                         |
+| ~SPC m V w~ | work on virtual environment in ~WORKON_HOME~                                 |
+| ~SPC m V a~ | activate a virtual environment in any directory                              |
+| ~SPC m V d~ | deactivate active virtual environment                                        |
+
 * Configuration
 ** Fill column
-If you want to customize the fill column value, use something like this inside the ~user-init~ function in your ~.spacemacs~:
+If you want to customize the fill column value, use something like this inside
+the ~user-init~ function in your ~.spacemacs~:
 
 #+BEGIN_SRC elisp
-(setq python-fill-column 99)
+(setq-default dotspacemacs-configuration-layers '(
+    (python :variables python-fill-column 99)))
 #+END_SRC
+
+** Sort imports
+If you want imports to be automatically sorted when you save a file (using
+[[https://pypi.python.org/pypi/isort][isort]]), set the =python-sort-imports-on-save= variable in the python layer
+config section:
+
+#+BEGIN_SRC elisp
+(setq-default dotspacemacs-configuration-layers
+  '((python :variables python-sort-imports-on-save t)))
+#+END_SRC
+
+or as a directory-local variable (for per-project settings).

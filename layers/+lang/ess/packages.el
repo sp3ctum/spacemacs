@@ -11,13 +11,12 @@
 
 (setq ess-packages
   '(
-    company
     ess
     ess-R-data-view
     ess-R-object-popup
     ess-smart-equals
-    rainbow-delimiters
-    ))
+    golden-ratio
+    org))
 
 (defun ess/init-ess ()
   (use-package ess-site
@@ -52,6 +51,13 @@
     :commands (R stata julia SAS)
     :init
     (progn
+      (spacemacs/register-repl 'ess-site 'julia)
+      (spacemacs/register-repl 'ess-site 'R)
+      (spacemacs/register-repl 'ess-site 'SAS)
+      (spacemacs/register-repl 'ess-site 'stata)
+      ;; Explicitly run prog-mode hooks since ess-mode does not derive from
+      ;; prog-mode major-mode
+      (add-hook 'ess-mode-hook 'spacemacs/run-prog-mode-hooks)
       (when (configuration-layer/package-usedp 'company)
           (add-hook 'ess-mode-hook 'company-mode))))
 
@@ -73,8 +79,10 @@
        ((string= "SAS" ess-language) (call-interactively 'SAS))))
 
     (spacemacs/set-leader-keys-for-major-mode 'ess-julia-mode
+      "'"  'julia
       "si" 'julia)
     (spacemacs/set-leader-keys-for-major-mode 'ess-mode
+      "'"  'spacemacs/ess-start-repl
       "si" 'spacemacs/ess-start-repl
       ;; noweb
       "cC" 'ess-eval-chunk-and-go
@@ -107,9 +115,6 @@
 
 (defun ess/init-ess-R-object-popup ())
 
-(defun ess/post-init-rainbow-delimiters ()
-  (add-hook 'ess-mode-hook #'rainbow-delimiters-mode))
-
 (defun ess/init-ess-smart-equals ()
   (use-package ess-smart-equals
     :defer t
@@ -118,3 +123,15 @@
     (progn
       (add-hook 'ess-mode-hook 'ess-smart-equals-mode)
       (add-hook 'inferior-ess-mode-hook 'ess-smart-equals-mode))))
+
+(defun ess/pre-init-golden-ratio ()
+  (spacemacs|use-package-add-hook golden-ratio
+    :post-config
+    (dolist (f '(ess-eval-buffer-and-go
+                 ess-eval-function-and-go
+                 ess-eval-line-and-go))
+      (add-to-list 'golden-ratio-extra-commands f))))
+
+(defun ess/pre-init-org ()
+  (spacemacs|use-package-add-hook org
+    :post-config (add-to-list 'org-babel-load-languages '(R . t))))

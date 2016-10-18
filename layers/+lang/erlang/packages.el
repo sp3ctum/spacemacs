@@ -13,6 +13,8 @@
   '(
     company
     erlang
+    ggtags
+    helm-gtags
     flycheck
     ))
 
@@ -26,7 +28,7 @@
     (progn
       ;; explicitly run prog-mode hooks since erlang mode does is not
       ;; derived from prog-mode major-mode
-      (add-hook 'erlang-mode-hook (lambda () (run-hooks 'prog-mode-hook)))
+      (add-hook 'erlang-mode-hook 'spacemacs/run-prog-mode-hooks)
       ;; (setq erlang-root-dir "/usr/lib/erlang/erts-5.10.3")
       ;; (add-to-list 'exec-path "/usr/lib/erlang/erts-5.10.3/bin")
       ;; (setq erlang-man-root-dir "/usr/lib/erlang/erts-5.10.3/man")
@@ -41,4 +43,10 @@
     (require 'erlang-start)))
 
 (defun erlang/post-init-flycheck ()
-  (spacemacs/add-flycheck-hook 'erlang-mode-hook))
+  (spacemacs/add-flycheck-hook 'erlang-mode))
+
+(defun erlang/post-init-ggtags ()
+  (add-hook 'erlang-mode-local-vars-hook #'spacemacs/ggtags-mode-enable))
+
+(defun erlang/post-init-helm-gtags ()
+  (spacemacs/helm-gtags-define-keys-for-mode 'erlang-mode))

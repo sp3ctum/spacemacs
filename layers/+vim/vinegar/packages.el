@@ -10,13 +10,11 @@
 ;;; License: GPLv3
 
 (setq vinegar-packages
-  '(
-    diff-hl
-    ;; dired+
-    (dired :location built-in)
-    ))
-
-(setq vinegar-excluded-packages '())
+      '(
+        diff-hl
+        ;; dired+
+        (dired :location built-in)
+        ))
 
 (defun vinegar/init-dired+ ()
   (use-package dired+
@@ -39,7 +37,7 @@
       (add-hook 'dired-mode-hook 'diff-hl-dired-mode)
       )))
 
-(defun vinegar/init-dired ()
+(defun vinegar/post-init-dired ()
   (use-package dired
     :defer t
     :config
@@ -56,7 +54,9 @@
       (kbd "RET") (if vinegar-reuse-dired-buffer
                       'dired-find-alternate-file
                     'dired-find-file)
-      "f"         'helm-find-files
+      "f"         (if (configuration-layer/layer-usedp 'ivy)
+                      'counsel-find-file
+                    'helm-find-files)
       "J"         'dired-goto-file
       (kbd "C-f") 'find-name-dired
       "H"         'diredp-dired-recent-dirs

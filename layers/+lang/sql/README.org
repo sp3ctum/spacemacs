@@ -1,16 +1,15 @@
 #+TITLE: SQL layer
-#+HTML_HEAD_EXTRA: <link rel="stylesheet" type="text/css" href="../../../css/readtheorg.css" />
 
 [[file:img/sql.png]]
 
-* Table of Contents                                         :TOC_4_org:noexport:
- - [[Description][Description]]
- - [[Install][Install]]
- - [[Key bindings][Key bindings]]
-   - [[Highlighting][Highlighting]]
-   - [[Inferior Process Interactions (SQLi)][Inferior Process Interactions (SQLi)]]
-     - [[Send SQL queries to SQLi:][Send SQL queries to SQLi:]]
-   - [[SQLi buffer][SQLi buffer]]
+* Table of Contents                                         :TOC_4_gh:noexport:
+ - [[#description][Description]]
+ - [[#install][Install]]
+ - [[#key-bindings][Key bindings]]
+   - [[#highlighting][Highlighting]]
+   - [[#inferior-process-interactions-sqli][Inferior Process Interactions (SQLi)]]
+     - [[#send-sql-queries-to-sqli][Send SQL queries to SQLi:]]
+   - [[#sqli-buffer][SQLi buffer]]
 
 * Description
 
@@ -41,17 +40,17 @@ file.
 
 *** Send SQL queries to SQLi:
 
-| Key Binding | Description                                                                              |
-|-------------+------------------------------------------------------------------------------------------|
-| ~SPC m s b~ | Send the whole buffer to the SQLi buffer                                                 |
-| ~SPC m s B~ | Send the whole buffer to the SQLi buffer and switch to it in =insert state=              |
-| ~SPC m s i~ | Start the SQLi process                                                                   |
-| ~SPC m s f~ | Send the paragraph under the point to the SQLi buffer                                    |
-| ~SPC m s F~ | Send the paragraph under the point to the SQLi buffer and switch to it in =insert state= |
-| ~SPC m s q~ | Prompt for a string to send to the SQLi buffer                                           |
-| ~SPC m s Q~ | Prompt for a string to send to the SQLi buffer and switch to it in =insert state=        |
-| ~SPC m s r~ | Send the selected region to the SQLi buffer                                              |
-| ~SPC m s R~ | Send the selected region to the SQLi buffer and switch to it in =insert state=           |
+| Key Binding | Description                                                                           |
+|-------------+---------------------------------------------------------------------------------------|
+| ~SPC m s b~ | Send the whole buffer to the SQLi buffer                                              |
+| ~SPC m s B~ | Send the whole buffer to the SQLi buffer and switch to it in =insert state=           |
+| ~SPC m s i~ | Start the SQLi process                                                                |
+| ~SPC m s f~ | Send the paragraph around point to the SQLi buffer                                    |
+| ~SPC m s F~ | Send the paragraph around point to the SQLi buffer and switch to it in =insert state= |
+| ~SPC m s q~ | Prompt for a string to send to the SQLi buffer                                        |
+| ~SPC m s Q~ | Prompt for a string to send to the SQLi buffer and switch to it in =insert state=     |
+| ~SPC m s r~ | Send the selected region to the SQLi buffer                                           |
+| ~SPC m s R~ | Send the selected region to the SQLi buffer and switch to it in =insert state=        |
 
 ** SQLi buffer
 

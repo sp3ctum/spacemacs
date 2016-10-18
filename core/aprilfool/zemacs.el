@@ -8,7 +8,6 @@
 ;; This file is not part of GNU Emacs.
 ;;
 ;;; License: GPLv3
-(require 'help-mode)
 
 (setq spacemacs-buffer-name "*zemacs*")
 (setq spacemacs-buffer-logo-title "[Z E M A C S]")
@@ -32,7 +31,7 @@
     (ad-disable-advice 'spacemacs-buffer/insert-banner-and-buttons
                        'after 'zemacs/insert-banner-and-buttons)
     (ad-activate 'spacemacs-buffer/insert-banner-and-buttons)
-    (load-file (concat user-emacs-directory "core/core-spacemacs-buffer.el"))
+    (load-file (concat spacemacs-start-directory "core/core-spacemacs-buffer.el"))
     (setq dotspacemacs-startup-banner 'official)
     (kill-buffer)
     (insert "

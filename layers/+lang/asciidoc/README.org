@@ -1,20 +1,19 @@
 #+TITLE: Asciidoc layer
-#+HTML_HEAD_EXTRA: <link rel="stylesheet" type="text/css" href="../../../css/readtheorg.css" />
 
-* Table of Contents                                         :TOC_4_org:noexport:
- - [[Description][Description]]
-   - [[Feature][Feature]]
- - [[Install][Install]]
- - [[Key bindings][Key bindings]]
-   - [[Element insertion][Element insertion]]
-   - [[Promotion, Demotion][Promotion, Demotion]]
+* Table of Contents                                         :TOC_4_gh:noexport:
+ - [[#description][Description]]
+   - [[#feature][Feature]]
+ - [[#install][Install]]
+ - [[#key-bindings][Key bindings]]
+   - [[#element-insertion][Element insertion]]
+   - [[#promotion-demotion][Promotion, Demotion]]
 
 * Description
 This layer adds [[https://asciidoctor.org][AsciiDoc]] markup language support to Spacemacs.
 
 ** Feature
 - asciidoc format support via [[https://github.com/sensorflo/adoc-mode][adoc-mode]]
-- `.adoc` files are associated with `adoc-mode` by default
+- =.adoc= files are associated with =adoc-mode= by default
 
 * Install
 To use this configuration layer, add it to your =~/.spacemacs=. You will need to
@@ -42,5 +41,5 @@ file.
 | Key Binding | Description         |
 |-------------+---------------------|
 | ~M-h~       | Promote title level |
-| ~M-l~       | Denote title level  |
+| ~M-l~       | Demote title level  |
 

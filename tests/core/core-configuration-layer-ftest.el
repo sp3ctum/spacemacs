@@ -11,18 +11,26 @@
 (require 'core-configuration-layer)
 
 ;; ---------------------------------------------------------------------------
-;; configuration-layer//declare-layers
+;; configuration-layer//declare-used-layers
 ;; ---------------------------------------------------------------------------
 
-(ert-deftest test-declare-layers--distribution-layer-always-first ()
+(ert-deftest test-declare-layers--bootstrap-layer-always-first ()
   (let ((dotspacemacs-distribution 'spacemacs)
         (dotspacemacs-configuration-layers '(emacs-lisp
-                                             (git :variables foo 'bar))))
-    (configuration-layer//declare-layers)
-    (should (eq 'spacemacs (oref (first configuration-layer--layers) :name)))))
+                                             (git :variables foo 'bar)))
+        configuration-layer--used-layers
+        (configuration-layer--indexed-layers (make-hash-table :size 1024)))
+    (configuration-layer/discover-layers)
+    (configuration-layer//declare-used-layers dotspacemacs-configuration-layers)
+    (should (eq 'spacemacs-bootstrap
+                (first configuration-layer--used-layers)))))
 
-(ert-deftest test-declare-layers--distribution-layer-always-first-all ()
-  (let ((dotspacemacs-distribution 'spacemacs)
-        (dotspacemacs-configuration-layers 'all))
-    (configuration-layer//declare-layers)
-    (should (eq 'spacemacs (oref (first configuration-layer--layers) :name)))))
+(ert-deftest test-declare-layers--distribution-layer-is-second ()
+  (let ((dotspacemacs-distribution 'spacemacs-base)
+        (dotspacemacs-configuration-layers '(emacs-lisp
+                                             (git :variables foo 'bar)))
+        configuration-layer--used-layers
+        (configuration-layer--indexed-layers (make-hash-table :size 1024)))
+    (configuration-layer/discover-layers)
+    (configuration-layer//declare-used-layers dotspacemacs-configuration-layers)
+    (should (eq 'spacemacs-base (second configuration-layer--used-layers)))))

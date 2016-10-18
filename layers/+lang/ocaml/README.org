@@ -1,20 +1,19 @@
 #+TITLE: Ocaml layer
-#+HTML_HEAD_EXTRA: <link rel="stylesheet" type="text/css" href="../../../css/readtheorg.css" />
 
 [[file:img/ocaml.png]]
 
-* Table of Content                                          :TOC_4_org:noexport:
- - [[Description][Description]]
-   - [[Features:][Features:]]
- - [[Install][Install]]
-   - [[Layer][Layer]]
-   - [[OPAM packages][OPAM packages]]
- - [[Key Bindings][Key Bindings]]
-   - [[REPL (utop)][REPL (utop)]]
- - [[TODOS][TODOS]]
-   - [[Add more proper spacemacs key-bindings for basic merlin tasks][Add more proper spacemacs key-bindings for basic merlin tasks]]
-   - [[Add proper keybindings for ocamldebug][Add proper keybindings for ocamldebug]]
-   - [[Add more keybindings for tuareg-mode][Add more keybindings for tuareg-mode]]
+* Table of Content                                          :TOC_4_gh:noexport:
+ - [[#description][Description]]
+   - [[#features][Features:]]
+ - [[#install][Install]]
+   - [[#layer][Layer]]
+   - [[#opam-packages][OPAM packages]]
+ - [[#key-bindings][Key Bindings]]
+   - [[#repl-utop][REPL (utop)]]
+ - [[#todos][TODOS]]
+   - [[#add-more-proper-spacemacs-key-bindings-for-basic-merlin-tasks][Add more proper spacemacs key-bindings for basic merlin tasks]]
+   - [[#add-proper-keybindings-for-ocamldebug][Add proper keybindings for ocamldebug]]
+   - [[#add-more-keybindings-for-tuareg-mode][Add more keybindings for tuareg-mode]]
 
 * Description
 This is a very basic layer for editing ocaml files.
@@ -38,7 +37,7 @@ This layer requires some [[http://opam.ocaml.org][opam]] packages:
 - =utop=
 - =ocp-indent=
 
-To install them, use the following command: 
+To install them, use the following command:
 
 #+BEGIN_SRC sh
   opam install merlin utop ocp-indent
@@ -55,6 +54,7 @@ Make sure opam is initialized and configured.
 
 | Key Binding | Description                                              |
 |-------------+----------------------------------------------------------|
+| ~SPC m =~   | Indent buffer.                                           |
 | ~SPC m c c~ | Compile                                                  |
 | ~SPC m c p~ | Check .merlin for errors                                 |
 | ~SPC m c r~ | Refresh changed .cmis in merlin                          |
@@ -65,6 +65,7 @@ Make sure opam is initialized and configured.
 | ~SPC m g b~ | Go back to the last position where the user did a locate |
 | ~SPC m g g~ | Locate the identifier under point (same window)          |
 | ~SPC m g G~ | Locate the identifier under point (different window)     |
+| ~SPC m g o~ | List occurrences for identifier under point              |
 | ~SPC m g l~ | Prompt for identifier and locate                         |
 | ~SPC m g i~ | Prompt for module name and switch to ML file             |
 | ~SPC m g I~ | Prompt for module name and switch to MLI file            |

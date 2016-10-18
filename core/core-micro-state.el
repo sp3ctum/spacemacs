@@ -9,7 +9,6 @@
 ;; This file is not part of GNU Emacs.
 ;;
 ;;; License: GPLv3
-(require 'corelv)
 
 (defun spacemacs/defface-micro-state-faces ()
   "Define faces for micro-states."
@@ -35,10 +34,12 @@ Characters enclosed in `[]' will have this face applied to them."
                         :foreground err
                         :bold t)))
 (spacemacs/defface-micro-state-faces)
+(add-hook 'spacemacs-post-theme-change-hook
+          'spacemacs/defface-micro-state-faces)
 
 (defun spacemacs//micro-state-set-minibuffer-height (str)
   "Set the max mini windows size given a string STR."
-  (let ((line-count (1+ (how-many-str "\n" str))))
+  (let ((line-count (1+ (spacemacs/how-many-str "\n" str))))
     (when (and (> line-count max-mini-window-height)
                (> line-count 10))
       (setq max-mini-window-height line-count))))
@@ -102,7 +103,7 @@ used."
          (disable-leader (plist-get props :disable-evil-leader))
          (msg-func (if (plist-get props :use-minibuffer)
                        'message
-                     'corelv-message))
+                     'lv-message))
          (exec-binding (plist-get props :execute-binding-on-enter))
          (on-enter (spacemacs/mplist-get props :on-enter))
          (on-exit (spacemacs/mplist-get props :on-exit))
@@ -115,13 +116,13 @@ used."
               ,(format "%S micro-state." name)
               (interactive)
               ,@on-enter
+              ,(when exec-binding
+                 (spacemacs//micro-state-auto-execute bindings))
               (let ((doc ,@doc))
                 (when doc
                   (spacemacs//micro-state-set-minibuffer-height doc)
                   (apply ',msg-func (list (spacemacs//micro-state-propertize-doc
                                            (format "%S: %s" ',name doc))))))
-              ,(when exec-binding
-                 (spacemacs//micro-state-auto-execute bindings))
               (,(if (version< emacs-version "24.4")
                     'set-temporary-overlay-map
                   'set-transient-map)
@@ -165,17 +166,20 @@ used."
          (doc-body
           `((let ((bdoc ,@binding-doc)
                   (defdoc ,@default-doc))
-              (if bdoc
-                  (apply ',msg-func
-                         (list (spacemacs//micro-state-propertize-doc
-                                (format "%S: %s" ',name bdoc))))
-                (when (and defdoc
-                           ',wrapped (not (plist-get ',binding :exit)))
-                  (spacemacs//micro-state-set-minibuffer-height defdoc)
-                  (apply ',msg-func
-                         (list (spacemacs//micro-state-propertize-doc
-                                (format "%S: %s" ',name defdoc))))
-                  defdoc)))))
+              (cond
+               (bdoc
+                (apply ',msg-func
+                       (list (spacemacs//micro-state-propertize-doc
+                              (format "%S: %s" ',name bdoc))))
+                bdoc)
+               ((and defdoc
+                     ',wrapped
+                     (not (plist-get ',binding :exit)))
+                (spacemacs//micro-state-set-minibuffer-height defdoc)
+                (apply ',msg-func
+                       (list (spacemacs//micro-state-propertize-doc
+                              (format "%S: %s" ',name defdoc))))
+                defdoc)))))
          (wrapper-func
           (if (and (boundp wrapped)
                    (eval `(keymapp ,wrapped)))
@@ -260,9 +264,9 @@ pressed)."
 
 (defun spacemacs//micro-state-close-window ()
   "Close micro-state help window."
-  (when (window-live-p corelv-wnd)
-    (let ((buf (window-buffer corelv-wnd)))
-      (delete-window corelv-wnd)
+  (when (window-live-p lv-wnd)
+    (let ((buf (window-buffer lv-wnd)))
+      (delete-window lv-wnd)
       (kill-buffer buf))))
 
 (provide 'core-micro-state)

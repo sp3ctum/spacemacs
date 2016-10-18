@@ -10,11 +10,23 @@
 ;;; License: GPLv3
 
 (setq scheme-packages
-      '(geiser))
+      '(
+        company
+        geiser
+        ggtags
+        helm-gtags
+        ))
+
+(defun scheme/post-init-company ()
+  ;; Geiser provides completion as long as company mode is loaded.
+  (spacemacs|add-company-hook scheme-mode))
 
 (defun scheme/init-geiser ()
   (use-package geiser
     :commands run-geiser
+    :init
+    (progn
+      (spacemacs/register-repl 'geiser 'geiser-mode-switch-to-repl "geiser"))
     :config
     (progn
       (spacemacs/declare-prefix-for-mode 'scheme-mode "mc" "compiling")
@@ -25,6 +37,7 @@
       (spacemacs/declare-prefix-for-mode 'scheme-mode "ms" "repl")
 
       (spacemacs/set-leader-keys-for-major-mode 'scheme-mode
+        "'"  'geiser-mode-switch-to-repl
         ","  'lisp-state-toggle-lisp-state
 
         "cc" 'geiser-compile-current-buffer
@@ -36,7 +49,6 @@
         "el" 'lisp-state-eval-sexp-end-of-line
         "er" 'geiser-eval-region
 
-        "gg" 'geiser-edit-symbol-at-point
         "gb" 'geiser-pop-symbol-stack
         "gm" 'geiser-edit-module
         "gn" 'next-error
@@ -64,7 +76,8 @@
         "sR" 'geiser-eval-region-and-go
         "ss" 'geiser-set-scheme))))
 
-(when (configuration-layer/layer-usedp 'auto-completion)
-  (defun scheme/post-init-company ()
-    ;; Geiser provides completion as long as company mode is loaded.
-    (spacemacs|add-company-hook scheme-mode)))
+(defun scheme/post-init-ggtags ()
+  (add-hook 'scheme-mode-local-vars-hook #'spacemacs/ggtags-mode-enable))
+
+(defun scheme/post-init-helm-gtags ()
+  (spacemacs/helm-gtags-define-keys-for-mode 'scheme-mode))

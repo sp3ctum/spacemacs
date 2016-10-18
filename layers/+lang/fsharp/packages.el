@@ -9,13 +9,20 @@
 ;;
 ;;; License: GPLv3
 
-(setq fsharp-packages '(fsharp-mode))
+(setq fsharp-packages
+      '(
+        fsharp-mode
+        ggtags
+        helm-gtags
+        ))
 
 (defun fsharp/init-fsharp-mode ()
   (use-package fsharp-mode
     :defer t
     :init
-    (setq fsharp-doc-idle-delay .2)
+    (progn
+      (setq fsharp-doc-idle-delay .2)
+      (spacemacs/register-repl 'fsharp-mode 'fsharp-show-subshell "F#"))
     :config
     (progn
 
@@ -49,10 +56,9 @@
 
         "fa" 'fsharp-find-alternate-file
 
-        "gg" 'fsharp-ac/gotodefn-at-point
-
         "ht" 'fsharp-ac/show-tooltip-at-point
 
+        "'"  'fsharp-show-subshell
         "sb" 'fsharp-load-buffer-file
         "sB" 'spacemacs/fsharp-load-buffer-file-focus
         "si" 'fsharp-show-subshell
@@ -63,3 +69,9 @@
         "ss" 'fsharp-show-subshell
 
         "xf" 'fsharp-run-executable-file))))
+
+(defun fsharp/post-init-ggtags ()
+  (add-hook 'fsharp-mode-local-vars-hook #'spacemacs/ggtags-mode-enable))
+
+(defun fsharp/post-init-helm-gtags ()
+  (spacemacs/helm-gtags-define-keys-for-mode 'fsharp-mode))

@@ -14,6 +14,9 @@
 (spacemacs|defvar-company-backends enh-ruby-mode)
 (spacemacs|defvar-company-backends ruby-mode)
 
+(spacemacs|define-jump-handlers enh-ruby-mode)
+(spacemacs|define-jump-handlers ruby-mode)
+
 (defvar ruby-enable-enh-ruby-mode nil
   "If non-nil, use `enh-ruby-mode' package instead of the built-in Ruby Mode.")
 
@@ -23,7 +26,3 @@ Possible values are `rbenv', `rvm' or `chruby'.)")
 
 (defvar ruby-test-runner 'ruby-test
   "Test runner to use. Possible values are `ruby-test' or `rspec'.")
-
-;; Command prefixes
-
-(spacemacs/declare-prefix-for-mode 'ruby-mode "mt" "ruby/test")

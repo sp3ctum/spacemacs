@@ -13,6 +13,7 @@
   '(
     sml-mode
     ob-sml
+    smartparens
     ))
 
 (defun sml/init-sml-mode ()
@@ -20,6 +21,7 @@
     :mode ("\\.\\(sml\\|sig\\)\\'" . sml-mode)
     :defer t
     :commands run-sml
+    :init (spacemacs/register-repl 'sml-mode 'run-sml "sml")
     :config
     (progn
       (defun spacemacs/sml-prog-proc-send-buffer-and-focus ()
@@ -42,6 +44,7 @@
 
       (spacemacs/set-leader-keys-for-major-mode 'sml-mode
         ;; REPL
+        "'"  'run-sml
         "sb" 'sml-prog-proc-send-buffer
         "sB" 'spacemacs/sml-prog-proc-send-buffer-and-focus
         "sf" 'sml-send-function
@@ -50,8 +53,15 @@
         "sr" 'sml-prog-proc-send-region
         "sR" 'spacemacs/sml-prog-proc-send-region-and-focus
         "ss" 'run-sml)
-      (define-key sml-mode-map (kbd "M-<SPC>") 'sml-electric-space)
+      (define-key sml-mode-map (kbd "RET") 'reindent-then-newline-and-indent)
+      (define-key sml-mode-map (kbd "M-SPC") 'sml-electric-space)
       (define-key sml-mode-map (kbd "|") 'sml-electric-pipe))))
+
+(defun sml/post-init-smartparens ()
+  (with-eval-after-load 'smartparens
+    ;; don't auto-close apostrophes (type 'a = foo) and backticks (`Foo)
+    (sp-local-pair 'sml-mode "'" nil :actions nil)
+    (sp-local-pair 'sml-mode "`" nil :actions nil)))
 
 (defun sml/init-ob-sml ()
   (use-package ob-sml

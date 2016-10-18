@@ -1,21 +1,21 @@
 #+TITLE: LaTeX layer
-#+HTML_HEAD_EXTRA: <link rel="stylesheet" type="text/css" href="../../../css/readtheorg.css" />
 
 [[file:img/latex.png]]
 
-* Table of Contents                                         :TOC_4_org:noexport:
- - [[Description][Description]]
-   - [[Features][Features]]
- - [[Install][Install]]
-   - [[Layer][Layer]]
-   - [[Auto-completion][Auto-completion]]
-   - [[Previewing][Previewing]]
-   - [[Build command][Build command]]
-   - [[Auto-fill][Auto-fill]]
-   - [[Folding][Folding]]
- - [[Keybindings][Keybindings]]
-   - [[Folding][Folding]]
-   - [[RefTeX][RefTeX]]
+* Table of Contents                                         :TOC_4_gh:noexport:
+ - [[#description][Description]]
+   - [[#features][Features]]
+   - [[#bibtex][BibTeX]]
+ - [[#install][Install]]
+   - [[#layer][Layer]]
+   - [[#auto-completion][Auto-completion]]
+   - [[#previewing][Previewing]]
+   - [[#build-command][Build command]]
+   - [[#auto-fill][Auto-fill]]
+   - [[#folding][Folding]]
+ - [[#keybindings][Keybindings]]
+   - [[#folding][Folding]]
+   - [[#reftex][RefTeX]]
 
 * Description
 This layer adds support for LaTeX files with [[https://savannah.gnu.org/projects/auctex/][AucTeX]].
@@ -25,6 +25,10 @@ This layer adds support for LaTeX files with [[https://savannah.gnu.org/projects
 - Auto-completion with [[https://github.com/alexeyr/company-auctex][company-auctex]]
 - Tags navigation on ~%~ with [[https://github.com/redguardtoo/evil-matchit][evil-matchit]]
 - Labels, references, citations and index entries management with [[http://www.gnu.org/software/emacs/manual/html_node/reftex/index.html][RefTeX]]
+
+** BibTeX
+For more extensive support of BibTeX files than RefTeX provides, have a look at
+the [[../bibtex][BibTeX layer]].
 
 * Install
 ** Layer
@@ -85,47 +89,54 @@ is nil.
 
 * Keybindings
 
-| Key Binding   | Description                         |
-|---------------+-------------------------------------|
-| ~SPC m -~     | recenter output buffer              |
-| ~SPC m ,~     | TeX command on master file          |
-| ~SPC m .~     | mark LaTeX environment              |
-| ~SPC m *~     | mark LaTeX section                  |
-| ~SPC m b~     | build                               |
-| ~SPC m c~     | close LaTeX environment             |
-| ~SPC m e~     | insert LaTeX environment            |
-| ~SPC m i~     | insert =\item=                      |
-| ~SPC m k~     | kill TeX job                        |
-| ~SPC m l~     | recenter output buffer              |
-| ~SPC m m~     | insert LaTeX macro                  |
-| ~SPC m s~     | insert LaTeX section                |
-| ~SPC m v~     | view output                         |
-| ~SPC m h d~   | TeX documentation, can be very slow |
-| ~SPC m p r~   | preview region                      |
-| ~SPC m p b~   | preview buffer                      |
-| ~SPC m p d~   | preview document                    |
-| ~SPC m p e~   | preview environment                 |
-| ~SPC m p s~   | preview section                     |
-| ~SPC m p p~   | preview at point                    |
-| ~SPC m p f~   | cache preamble for preview          |
-| ~SPC m p c~   | clear previews                      |
-| ~SPC m v~     | view                                |
-| ~SPC m x b~   | make font bold                      |
-| ~SPC m x B~   | make font medium weight             |
-| ~SPC m x c~   | make font monospaced (for code)     |
-| ~SPC m x e~   | make font emphasised                |
-| ~SPC m x i~   | make font italic                    |
-| ~SPC m x o~   | make font oblique                   |
-| ~SPC m x r~   | remove font properties              |
-| ~SPC m x f a~ | use calligraphic font               |
-| ~SPC m x f c~ | use small-caps font                 |
-| ~SPC m x f f~ | use sans serif font                 |
-| ~SPC m x f n~ | use normal font                     |
-| ~SPC m x f r~ | use serif font                      |
-| ~SPC m x f u~ | use upright font                    |
+| Key Binding   | Description                                |
+|---------------+--------------------------------------------|
+| ~SPC m -~     | recenter output buffer                     |
+| ~SPC m ​,​~     | TeX command on master file                 |
+| ~SPC m .~     | mark LaTeX environment                     |
+| ~SPC m *~     | mark LaTeX section                         |
+| ~SPC m %~     | comment or uncomment a paragraph           |
+| ~SPC m ;~     | comment or uncomment a region              |
+| ~SPC m a~     | run all commands (compile and open viewer) |
+| ~SPC m b~     | build                                      |
+| ~SPC m c~     | close LaTeX environment                    |
+| ~SPC m e~     | insert LaTeX environment                   |
+| ~SPC m i i~   | insert =\item=                             |
+| ~SPC m k~     | kill TeX job                               |
+| ~SPC m l~     | recenter output buffer                     |
+| ~SPC m m~     | insert LaTeX macro                         |
+| ~SPC m s~     | insert LaTeX section                       |
+| ~SPC m v~     | view output                                |
+| ~SPC m h d~   | TeX documentation, can be very slow        |
+| ~SPC m f e~   | fill LaTeX environment                     |
+| ~SPC m f p~   | fill LaTeX paragraph                       |
+| ~SPC m f r~   | fill LaTeX region                          |
+| ~SPC m f s~   | fill LaTeX section                         |
+| ~SPC m p r~   | preview region                             |
+| ~SPC m p b~   | preview buffer                             |
+| ~SPC m p d~   | preview document                           |
+| ~SPC m p e~   | preview environment                        |
+| ~SPC m p s~   | preview section                            |
+| ~SPC m p p~   | preview at point                           |
+| ~SPC m p f~   | cache preamble for preview                 |
+| ~SPC m p c~   | clear previews                             |
+| ~SPC m v~     | view                                       |
+| ~SPC m x b~   | make font bold                             |
+| ~SPC m x B~   | make font medium weight                    |
+| ~SPC m x c~   | make font monospaced (for code)            |
+| ~SPC m x e~   | make font emphasised                       |
+| ~SPC m x i~   | make font italic                           |
+| ~SPC m x o~   | make font oblique                          |
+| ~SPC m x r~   | remove font properties                     |
+| ~SPC m x f a~ | use calligraphic font                      |
+| ~SPC m x f c~ | use small-caps font                        |
+| ~SPC m x f f~ | use sans serif font                        |
+| ~SPC m x f n~ | use normal font                            |
+| ~SPC m x f r~ | use serif font                             |
+| ~SPC m x f u~ | use upright font                           |
 
 ** Folding
-Available only when =latex-enable-auto-fill= is non nil.
+Available only when =latex-enable-folding= is non nil.
 
 | Key Binding | Description          |
 |-------------+----------------------|
@@ -152,4 +163,3 @@ Available only when =latex-enable-auto-fill= is non nil.
 | ~SPC m r t~   | reftex-toc                            |
 | ~SPC m r T~   | reftex-toc-recenter                   |
 | ~SPC m r v~   | reftex-view-crossref                  |
-|               |                                       |

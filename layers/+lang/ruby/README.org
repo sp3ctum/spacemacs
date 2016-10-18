@@ -1,25 +1,28 @@
 #+TITLE: Ruby layer
-#+HTML_HEAD_EXTRA: <link rel="stylesheet" type="text/css" href="../../../css/readtheorg.css" />
 
 [[file:img/ruby.png]]
 
-* Table of Contents                                         :TOC_4_org:noexport:
- - [[Description][Description]]
- - [[Install][Install]]
-   - [[Prerequisites][Prerequisites]]
-   - [[Ruby version management][Ruby version management]]
-   - [[Test runner][Test runner]]
- - [[Key bindings][Key bindings]]
-   - [[Ruby (enh-ruby-mode, robe, inf-ruby, ruby-tools)][Ruby (enh-ruby-mode, robe, inf-ruby, ruby-tools)]]
-   - [[RuboCop][RuboCop]]
-   - [[Tests][Tests]]
-     - [[RSpec-mode][RSpec-mode]]
-     - [[Ruby-test-mode][Ruby-test-mode]]
+* Table of Contents                                         :TOC_4_gh:noexport:
+ - [[#description][Description]]
+ - [[#install][Install]]
+   - [[#prerequisites][Prerequisites]]
+   - [[#ruby-version-management][Ruby version management]]
+   - [[#test-runner][Test runner]]
+ - [[#key-bindings][Key bindings]]
+   - [[#ruby-enh-ruby-mode-robe-inf-ruby-ruby-tools][Ruby (enh-ruby-mode, robe, inf-ruby, ruby-tools)]]
+   - [[#bundler][Bundler]]
+   - [[#rubocop][RuboCop]]
+   - [[#tests][Tests]]
+     - [[#rspec-mode][RSpec-mode]]
+     - [[#ruby-test-mode][Ruby-test-mode]]
+   - [[#rake][Rake]]
 
 * Description
 This layer provides support for the Ruby language with the following feature:
 - version manager (rbenv, rvm or chruby)
+- integration with bundler
 - test runner (ruby-test and rspec)
+- rake runner
 - linter (rubocop)
 - interactive REPL and code navigation (robe)
 
@@ -98,7 +101,7 @@ directory local variables.
 
 | Key binding | Description                                          |
 |-------------+------------------------------------------------------|
-| ~SPC m '~   | toggle quotes of current string (only built-in mode) |
+| ~SPC m '​~   | toggle quotes of current string (only built-in mode) |
 | ~SPC m {~   | toggle style of current block (only built-in mode)   |
 | ~SPC m g g~ | go to definition (robe-jump)                         |
 | ~SPC m h d~ | go to Documentation                                  |
@@ -108,10 +111,21 @@ directory local variables.
 | ~SPC m s r~ | send region                                          |
 | ~SPC m s R~ | send region and switch to REPL                       |
 | ~SPC m s s~ | switch to REPL                                       |
-| ~SPC m x '~ | Change symbol or " string to '                       |
-| ~SPC m x "~ | Change symbol or ' string to "                       |
+| ~SPC m x '​~ | Change symbol or " string to '                       |
+| ~SPC m x "​~ | Change symbol or ' string to "                       |
 | ~SPC m x :~ | Change string to symbol                              |
 | ~%~         | [[https://github.com/redguardtoo/evil-matchit][evil-matchit]] jumps between blocks                    |
+
+** Bundler
+
+| Key binding | Description        |
+|-------------+--------------------|
+| ~SPC b c~   | run bundle check   |
+| ~SPC b i~   | run bundle install |
+| ~SPC b s~   | run bundle console |
+| ~SPC b u~   | run bundle update  |
+| ~SPC b x~   | run bundle exec    |
+| ~SPC b o~   | run bundle open    |
 
 ** RuboCop
 
@@ -128,17 +142,20 @@ directory local variables.
 *** RSpec-mode
 When =ruby-test-runner= equals =rspec=.
 
-| Key binding | Description                                   |
-|-------------+-----------------------------------------------|
-| ~SPC m t a~ | run all specs                                 |
-| ~SPC m t b~ | run current spec file                         |
-| ~SPC m t c~ | run the current spec file and subsequent ones |
-| ~SPC m t e~ | mark example as pending                       |
-| ~SPC m t f~ | run method                                    |
-| ~SPC m t l~ | run last failed spec                          |
-| ~SPC m t m~ | run specs related to the current buffer       |
-| ~SPC m t r~ | re-run last spec                              |
-| ~SPC m t t~ | run spec at pointer                           |
+| Key binding   | Description                                            |
+|---------------+--------------------------------------------------------|
+| ~SPC m t a~   | run all specs                                          |
+| ~SPC m t b~   | run current spec file                                  |
+| ~SPC m t c~   | run the current spec file and subsequent ones          |
+| ~SPC m t d~   | run tests in a directory                               |
+| ~SPC m t e~   | mark example as pending                                |
+| ~SPC m t f~   | run method                                             |
+| ~SPC m t l~   | run last failed spec                                   |
+| ~SPC m t m~   | run specs related to the current buffer                |
+| ~SPC m t r~   | re-run last spec                                       |
+| ~SPC m t t~   | run spec at pointer                                    |
+| ~SPC m t TAB~ | toggle between spec's and target's buffer              |
+| ~SPC m t ~~   | toggle between spec's and target's buffer find example |
 
 *** Ruby-test-mode
 When =ruby-test-runner= equals =ruby-test=.
@@ -147,3 +164,12 @@ When =ruby-test-runner= equals =ruby-test=.
 |-------------+---------------------|
 | ~SPC m t b~ | run test file       |
 | ~SPC m t t~ | run test at pointer |
+
+** Rake
+
+| Key binding | Description                     |
+|-------------+---------------------------------|
+| ~SPC m k k~ | Runs rake                       |
+| ~SPC m k r~ | Re-runs the last rake task      |
+| ~SPC m k R~ | Regenerates the rake cache      |
+| ~SPC m k f~ | Finds definition of a rake task |

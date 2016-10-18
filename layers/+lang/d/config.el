@@ -12,3 +12,5 @@
 ;; Variables
 
 (spacemacs|defvar-company-backends d-mode)
+
+(spacemacs|define-jump-handlers d-mode)

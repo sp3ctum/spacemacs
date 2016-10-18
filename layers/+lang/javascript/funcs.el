@@ -9,7 +9,21 @@
 ;;
 ;;; License: GPLv3
 
-(defun javascript//tern-detect ()
+
+;; tern
+
+(defun spacemacs//set-tern-key-bindings (mode)
+  "Set the key bindings for tern and the given MODE."
+  (add-to-list (intern (format "spacemacs-jump-handlers-%S" mode))
+            'tern-find-definition)
+  (spacemacs/set-leader-keys-for-major-mode mode
+    "rrV" 'tern-rename-variable
+    "hd" 'tern-get-docs
+    "gG" 'tern-find-definition-by-name
+    (kbd "C-g") 'tern-pop-find-definition
+    "ht" 'tern-get-type))
+
+(defun spacemacs//tern-detect ()
   "Detect tern binary and warn if not found."
   (let ((found (executable-find "tern")))
     (unless found

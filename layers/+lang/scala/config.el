@@ -9,8 +9,18 @@
 ;;
 ;;; License: GPLv3
 
+(spacemacs|define-jump-handlers scala-mode)
+
+(spacemacs|define-jump-handlers scala-mode)
+
 (defvar scala-enable-eldoc nil
   "If non nil then eldoc-mode is enabled in the scala layer.")
 
 (defvar scala-auto-insert-asterisk-in-comments nil
   "If non-nil automatically insert leading asterisk in multi-line comments.")
+
+(defvar scala-use-unicode-arrows nil
+  "If non-nil then `->`, `=>` and `<-` are replaced with unicode arrows.")
+
+(defvar scala-auto-start-ensime nil
+  "If non nil then ensime will be started when a scala file is opened.")

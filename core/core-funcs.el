@@ -11,54 +11,36 @@
 
 (defvar configuration-layer--protected-packages)
 (defvar dotspacemacs-filepath)
+(defvar spacemacs-repl-list '()
+  "List of all registered REPLs.")
 
-(defun spacemacs/load-or-install-protected-package (pkg &optional log file-to-load)
-  "Load PKG package, and protect it against being deleted as an orphan.
-See `spacemacs/load-or-install-package' for more information."
-  (push pkg configuration-layer--protected-packages)
-  (spacemacs/load-or-install-package pkg log file-to-load))
+(defun spacemacs/system-is-mac ()
+  (eq system-type 'darwin))
+(defun spacemacs/system-is-linux ()
+  (eq system-type 'gnu/linux))
+(defun spacemacs/system-is-mswindows ()
+  (eq system-type 'windows-nt))
 
-(defun spacemacs/load-or-install-package (pkg &optional log file-to-load)
-  "Load PKG package. PKG will be installed if it is not already installed.
-Whenever the initial require fails the absolute path to the package
-directory is returned.
-If LOG is non-nil a message is displayed in spacemacs-buffer-mode buffer.
-FILE-TO-LOAD is an explicit file to load after the installation."
-  (let ((warning-minimum-level :error))
-    (condition-case nil
-        (require pkg)
-      (error
-       ;; not installed, we try to initialize package.el only if required to
-       ;; precious seconds during boot time
-       (require 'cl)
-       (let ((pkg-elpa-dir (spacemacs//get-package-directory pkg)))
-         (if pkg-elpa-dir
-             (add-to-list 'load-path pkg-elpa-dir)
-           ;; install the package
-           (when log
-             (spacemacs-buffer/append
-              (format "(Bootstrap) Installing %s...\n" pkg))
-             (spacemacs//redisplay))
-           (configuration-layer/retrieve-package-archives 'quiet)
-           (package-install pkg)
-           (setq pkg-elpa-dir (spacemacs//get-package-directory pkg)))
-         (require pkg nil 'noerror)
-         (when file-to-load
-           (load-file (concat pkg-elpa-dir file-to-load)))
-         pkg-elpa-dir)))))
+(defun spacemacs/window-system-is-mac ()
+  ;; ns is returned instead of mac on Emacs 25+
+  (memq (window-system) '(mac ns)))
+
+(defun spacemacs/run-prog-mode-hooks ()
+  "Runs `prog-mode-hook'. Useful for modes that don't derive from
+`prog-mode' but should."
+  (run-hooks 'prog-mode-hook))
+
+(defun spacemacs/run-text-mode-hooks ()
+  "Runs `text-mode-hook'. Useful for modes that don't derive from
+`text-mode' but should."
+  (run-hooks 'text-mode-hook))
 
 (defun spacemacs//get-package-directory (pkg)
   "Return the directory of PKG. Return nil if not found."
-  (let ((elpa-dir (concat user-emacs-directory "elpa/")))
+  (let ((elpa-dir (file-name-as-directory package-user-dir)))
     (when (file-exists-p elpa-dir)
-      (let ((dir (cl-reduce (lambda (x y) (if x x y))
-                         (mapcar (lambda (x)
-                                   (when (string-match
-                                          (concat "/"
-                                                  (symbol-name pkg)
-                                                  "-[0-9]+") x) x))
-                                 (directory-files elpa-dir 'full))
-                         :initial-value nil)))
+      (let* ((pkg-match (concat "\\`" (symbol-name pkg) "-[0-9]+"))
+             (dir (car (directory-files elpa-dir 'full pkg-match))))
         (when dir (file-name-as-directory dir))))))
 
 (defun spacemacs/mplist-get (plist prop)
@@ -98,17 +80,12 @@ and its values are removed."
       (push (pop tail) result))
     (nreverse result)))
 
-;; From http://stackoverflow.com/questions/2321904/elisp-how-to-save-data-in-a-file
+;; Originally based on http://stackoverflow.com/questions/2321904/elisp-how-to-save-data-in-a-file
 (defun spacemacs/dump-vars-to-file (varlist filename)
   "simplistic dumping of variables in VARLIST to a file FILENAME"
-  (save-excursion
-    (let ((buf (find-file-noselect filename)))
-      (set-buffer buf)
-      (erase-buffer)
-      (spacemacs/dump varlist buf)
-      (make-directory (file-name-directory filename) t)
-      (save-buffer)
-      (kill-buffer))))
+  (with-temp-file filename
+    (spacemacs/dump varlist (current-buffer))
+    (make-directory (file-name-directory filename) t)))
 
 ;; From http://stackoverflow.com/questions/2321904/elisp-how-to-save-data-in-a-file
 (defun spacemacs/dump (varlist buffer)
@@ -147,44 +124,32 @@ Supported properties:
         (evil-leader-for-mode (spacemacs/mplist-get props :evil-leader-for-mode))
         (global-key (spacemacs/mplist-get props :global-key))
         (def-key (spacemacs/mplist-get props :define-key)))
-    `((unless (null ',evil-leader)
-        (dolist (key ',evil-leader)
-          (spacemacs/set-leader-keys key ',func)))
-      (unless (null ',evil-leader-for-mode)
-        (dolist (val ',evil-leader-for-mode)
+    (append
+     (when evil-leader
+       `((dolist (key ',evil-leader)
+            (spacemacs/set-leader-keys key ',func))))
+     (when evil-leader-for-mode
+       `((dolist (val ',evil-leader-for-mode)
           (spacemacs/set-leader-keys-for-major-mode
-            (car val) (cdr val) ',func)))
-      (unless (null ',global-key)
-        (dolist (key ',global-key)
-          (global-set-key (kbd key) ',func)))
-      (unless (null ',def-key)
-        (dolist (val ',def-key)
-          (define-key (eval (car val)) (kbd (cdr val)) ',func))))))
+            (car val) (cdr val) ',func))))
+     (when global-key
+       `((dolist (key ',global-key)
+          (global-set-key (kbd key) ',func))))
+     (when def-key
+       `((dolist (val ',def-key)
+          (define-key (eval (car val)) (kbd (cdr val)) ',func)))))))
 
-(defun spacemacs/view-org-file (file &optional anchor-text expand-scope)
-  "Open the change log for the current version."
+(defun spacemacs/prettify-org-buffer ()
+  "Apply visual enchantments to the current buffer.
+The buffer's major mode should be `org-mode'."
   (interactive)
-  (find-file file)
-  (org-indent-mode)
-  (view-mode)
-  (goto-char (point-min))
-
-  (when anchor-text
-    (re-search-forward anchor-text))
-  (beginning-of-line)
-
-  (cond
-   ((eq expand-scope 'subtree)
-    (outline-show-subtree))
-   ((eq expand-scope 'all)
-    (outline-show-all))
-   (t nil))
+  (unless (derived-mode-p 'org-mode)
+    (user-error "org-mode should be enabled in the current buffer."))
 
   ;; Make ~SPC ,~ work, reference:
   ;; http://stackoverflow.com/questions/24169333/how-can-i-emphasize-or-verbatim-quote-a-comma-in-org-mode
   (setcar (nthcdr 2 org-emphasis-regexp-components) " \t\n")
   (org-set-emph-re 'org-emphasis-regexp-components org-emphasis-regexp-components)
-
   (setq-local org-emphasis-alist '(("*" bold)
                                    ("/" italic)
                                    ("_" underline)
@@ -192,8 +157,44 @@ Supported properties:
                                    ("~" org-kbd)
                                    ("+"
                                     (:strike-through t))))
+  (when (require 'space-doc nil t)
+    (space-doc-mode)))
 
-  (setq-local org-hide-emphasis-markers t))
+(defun spacemacs/view-org-file (file &optional anchor-text expand-scope)
+  "Open org file and apply visual enchantments.
+FILE is the org file to be opened.
+If ANCHOR-TEXT  is `nil' then run `re-search-forward' with ^ (beginning-of-line).
+If ANCHOR-TEXT is a GitHub style anchor then find a corresponding header.
+If ANCHOR-TEXT isn't a GitHub style anchor then run `re-search-forward' with
+ANCHOR-TEXT.
+If EXPAND-SCOPE is `subtree' then run `outline-show-subtree' at the matched line.
+If EXPAND-SCOPE is `all' then run `outline-show-all' at the matched line."
+  (interactive)
+  (find-file file)
+  (spacemacs/prettify-org-buffer)
+  (goto-char (point-min))
+  (when anchor-text
+    ;; If `anchor-text' is GitHub style link.
+    (if (string-prefix-p "#" anchor-text)
+        ;; If the toc-org package is loaded.
+        (if (configuration-layer/package-usedp 'toc-org)
+            ;; For each heading. Search the heading that corresponds
+            ;; to `anchor-text'.
+            (while (and (re-search-forward "^[\\*]+\s\\(.*\\).*$" nil t)
+                        (not (string= (toc-org-hrefify-gh (match-string 1))
+                                      anchor-text))))
+          ;; This is not a problem because without the space-doc package
+          ;; those links will be opened in the browser.
+          (message (format (concat "Can't follow the GitHub style anchor: '%s' "
+                                   "without the org layer.") anchor-text)))
+      (re-search-forward anchor-text)))
+  (beginning-of-line)
+  (cond
+   ((eq expand-scope 'subtree)
+    (outline-show-subtree))
+   ((eq expand-scope 'all)
+    (outline-show-all))
+   (t nil)))
 
 (defun spacemacs//test-var (pred var test-desc)
   "Test PRED against VAR and print test result, incrementing
@@ -262,5 +263,123 @@ Emacs versions."
   (interactive)
   (byte-recompile-directory package-user-dir nil t))
 
-(provide 'core-funcs)
+(defun spacemacs/register-repl (feature repl-func &optional tag)
+  "Register REPL-FUNC to the global list of REPLs SPACEMACS-REPL-LIST.
+FEATURE will be loaded before running the REPL, in case it is not already
+loaded. If TAG is non-nil, it will be used as the string to show in the helm
+buffer."
+  (push `(,(or tag (symbol-name repl-func))
+          . (,feature . ,repl-func))
+        spacemacs-repl-list))
 
+;; http://stackoverflow.com/questions/11847547/emacs-regexp-count-occurrences
+(defun spacemacs/how-many-str (regexp str)
+  (loop with start = 0
+        for count from 0
+        while (string-match regexp str start)
+        do (setq start (match-end 0))
+        finally return count))
+
+;; from https://github.com/cofi/dotfiles/blob/master/emacs.d/config/cofi-util.el#L38
+(defun spacemacs/add-to-hooks (fun hooks)
+  "Add function to hooks"
+  (dolist (hook hooks)
+    (add-hook hook fun)))
+
+(defun spacemacs/add-all-to-hook (hook &rest funs)
+  "Add functions to hook."
+  (spacemacs/add-to-hook hook funs))
+
+(defun spacemacs/add-to-hook (hook funs)
+  "Add list of functions to hook."
+  (dolist (fun funs)
+    (add-hook hook fun)))
+
+(defun spacemacs/echo (msg &rest args)
+  "Display MSG in echo-area without logging it in *Messages* buffer."
+  (interactive)
+  (let ((message-log-max nil))
+    (apply 'message msg args)))
+
+(defun spacemacs/alternate-buffer (&optional window)
+  "Switch back and forth between current and last buffer in the
+current window."
+  (interactive)
+  (let ((current-buffer (window-buffer window))
+        (buffer-predicate
+         (frame-parameter (window-frame window) 'buffer-predicate)))
+    ;; switch to first buffer previously shown in this window that matches
+    ;; frame-parameter `buffer-predicate'
+    (switch-to-buffer
+     (or (cl-find-if (lambda (buffer)
+                       (and (not (eq buffer current-buffer))
+                            (or (null buffer-predicate)
+                                (funcall buffer-predicate buffer))))
+                     (mapcar #'car (window-prev-buffers window)))
+         ;; `other-buffer' honors `buffer-predicate' so no need to filter
+         (other-buffer current-buffer t)))))
+
+(defun spacemacs/comint-clear-buffer ()
+  (interactive)
+  (let ((comint-buffer-maximum-size 0))
+    (comint-truncate-buffer)))
+
+
+;; Generalized next-error system ("gne")
+
+(defun spacemacs/error-delegate ()
+  "Decide which error API to delegate to.
+
+Delegates to flycheck if it is enabled and the next-error buffer
+is not visible. Otherwise delegates to regular Emacs next-error."
+  (if (and (bound-and-true-p flycheck-mode)
+           (let ((buf (ignore-errors (next-error-find-buffer))))
+             (not (and buf (get-buffer-window buf)))))
+      'flycheck
+    'emacs))
+
+(defun spacemacs/next-error (&optional n reset)
+  "Dispatch to flycheck or standard emacs error."
+  (interactive "P")
+  (let ((sys (spacemacs/error-delegate)))
+    (cond
+     ((eq 'flycheck sys) (call-interactively 'flycheck-next-error))
+     ((eq 'emacs sys) (call-interactively 'next-error)))))
+
+(defun spacemacs/previous-error (&optional n reset)
+  "Dispatch to flycheck or standard emacs error."
+  (interactive "P")
+  (let ((sys (spacemacs/error-delegate)))
+    (cond
+     ((eq 'flycheck sys) (call-interactively 'flycheck-previous-error))
+     ((eq 'emacs sys) (call-interactively 'previous-error)))))
+
+(defvar-local spacemacs--gne-min-line nil
+  "The first line in the buffer that is a valid result.")
+(defvar-local spacemacs--gne-max-line nil
+  "The last line in the buffer that is a valid result.")
+(defvar-local spacemacs--gne-cur-line 0
+  "The current line in the buffer. (It is problematic to use
+point for this.)")
+(defvar-local spacemacs--gne-line-func nil
+  "The function to call to visit the result on a line.")
+
+(defun spacemacs/gne-next (num reset)
+  "A generalized next-error function. This function can be used
+as `next-error-function' in any buffer that conforms to the
+Spacemacs generalized next-error API.
+
+The variables `spacemacs--gne-min-line',
+`spacemacs--gne-max-line', and `spacemacs--line-func' must be
+set."
+  (when reset (setq spacemacs--gne-cur-line
+                    spacemacs--gne-min-line))
+  (setq spacemacs--gne-cur-line
+        (min spacemacs--gne-max-line
+             (max spacemacs--gne-min-line
+                  (+ num spacemacs--gne-cur-line))))
+  (goto-line spacemacs--gne-cur-line)
+  (funcall spacemacs--gne-line-func
+           (buffer-substring (point-at-bol) (point-at-eol))))
+
+(provide 'core-funcs)

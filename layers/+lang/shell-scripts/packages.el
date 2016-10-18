@@ -10,9 +10,30 @@
 ;;; License: GPLv3
 
 (setq shell-scripts-packages
-  '(fish-mode
-    (sh-script :location built-in)
-    ))
+      '(
+        company
+        (company-shell :toggle (configuration-layer/package-usedp 'company))
+        fish-mode
+        flycheck
+        ggtags
+        helm-gtags
+        (sh-script :location built-in)
+        ))
+
+(defun shell-scripts/post-init-company ()
+  (spacemacs|add-company-hook sh-mode)
+  (spacemacs|add-company-hook fish-mode))
+
+(defun shell-scripts/init-company-shell ()
+  (use-package company-shell
+    :defer t
+    :init
+    (progn
+      (push 'company-shell company-backends-sh-mode)
+      (push '(company-shell company-fish-shell) company-backends-fish-mode))))
+
+(defun shell-scripts/post-init-flycheck ()
+  (spacemacs/add-flycheck-hook 'sh-mode))
 
 (defun shell-scripts/init-fish-mode ()
   (use-package fish-mode
@@ -23,6 +44,9 @@
     :defer t
     :init
     (progn
+      (spacemacs/set-leader-keys-for-major-mode 'sh-mode
+        "\\" 'sh-backslash-region)
+
       ;; Use sh-mode when opening `.zsh' files, and when opening Prezto runcoms.
       (dolist (pattern '("\\.zsh\\'"
                          "zlogin\\'"
@@ -38,3 +62,9 @@
                    (string-match-p "\\.zsh\\'" buffer-file-name))
           (sh-set-shell "zsh")))
       (add-hook 'sh-mode-hook 'spacemacs//setup-shell))))
+
+(defun shell-scripts/post-init-ggtags ()
+  (add-hook 'sh-mode-local-vars-hook #'spacemacs/ggtags-mode-enable))
+
+(defun shell-scripts/post-init-helm-gtags ()
+  (spacemacs/helm-gtags-define-keys-for-mode 'sh-mode))

@@ -11,8 +11,9 @@
 
 ;; variables
 
-;; Company-mode LaTeX-backend
 (spacemacs|defvar-company-backends LaTeX-mode)
+
+(spacemacs|define-jump-handlers latex-mode)
 
 (defvar latex-build-command (if (executable-find "latexmk") "LatexMk" "LaTeX")
   "The default command to use with `SPC m b'")
@@ -30,12 +31,3 @@
                            "tabular"
                            "tikzpicture")
   "List of environment names in which `auto-fill-mode' will be inhibited.")
-
-;; Command prefixes
-;; no supported
-;; (setq auctex/key-binding-prefixes '())
-;; (push (cons "mp" "LaTeX Preview") auctex/key-binding-prefixes)
-;; (push (cons "mr" "RefTeX") auctex/key-binding-prefixes)
-;; (mapc (lambda (x) (spacemacs/declare-prefix (car x) (cdr x)))
-;;       auctex/key-binding-prefixes)
-
