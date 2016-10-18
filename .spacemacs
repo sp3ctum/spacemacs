@@ -20,7 +20,7 @@ values."
    '((auto-completion :variables
                       auto-completion-enable-sort-by-usage t)
      (colors :variables
-             colors-enable-rainbow-identifiers t)
+             colors-colorize-identifiers 'all)
      syntax-checking
      org
      emacs-lisp
