@@ -26,7 +26,6 @@ values."
      emacs-lisp
      git
      auto-capitalization
-     eyebrowse
      markdown
      lispy
      clojure
