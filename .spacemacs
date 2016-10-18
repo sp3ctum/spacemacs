@@ -322,7 +322,11 @@ before packages are loaded. If you are unsure, you should try in setting them in
 (defun my-ruby-config ()
   (require 'smart-dash)
   (add-hook 'ruby-mode-hook 'smart-dash-mode)
-  (add-to-list 'aggressive-indent-excluded-modes 'ruby-mode))
+  (add-to-list 'aggressive-indent-excluded-modes 'ruby-mode)
+
+  ;; without this, emacs will insert a comment at the start of all files. the
+  ;; comment says "coding: utf-8" or similar.
+  (setq ruby-insert-encoding-magic-comment nil))
 
 (defun my-git-config ()
   ;; open new window always in a side split
