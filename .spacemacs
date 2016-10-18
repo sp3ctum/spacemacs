@@ -254,7 +254,10 @@ before packages are loaded. If you are unsure, you should try in setting them in
 (defun my-custom-normal-mode-commands ()
   (evil-define-key 'normal global-map
     "gs" #'save-buffer
-    "gb" #'helm-mini)
+    "gb" #'helm-mini
+    (kbd "SPC SPC") 'avy-goto-word-or-subword-1
+    ;; I liked this, but spacemacs took it away from me
+    (kbd "SPC y") 'avy-goto-line)
   (spacemacs/set-leader-keys "." 'helm-M-x))
 
 (defun my-windows-customizations ()
