@@ -252,13 +252,14 @@ before packages are loaded. If you are unsure, you should try in setting them in
               (define-key dired-mode-map (kbd "<") 'dired-up-directory))))
 
 (defun my-custom-normal-mode-commands ()
+  ;; I liked this, but spacemacs took it away from me
   (evil-define-key 'normal global-map
     "gs" #'save-buffer
-    "gb" #'helm-mini
-    (kbd "SPC SPC") 'avy-goto-word-or-subword-1
-    ;; I liked this, but spacemacs took it away from me
-    (kbd "SPC y") 'avy-goto-line)
-  (spacemacs/set-leader-keys "." 'helm-M-x))
+    "gb" #'helm-m)
+  (spacemacs/set-leader-keys
+    "." 'helm-M-x
+    "SPC" 'avy-goto-word-or-subword-1
+    "y" 'avy-goto-line))
 
 (defun my-windows-customizations ()
   (when (eq system-type 'windows-nt)
