@@ -255,7 +255,7 @@ before packages are loaded. If you are unsure, you should try in setting them in
   ;; I liked this, but spacemacs took it away from me
   (evil-define-key 'normal global-map
     "gs" #'save-buffer
-    "gb" #'helm-m)
+    "gb" #'helm-mini)
   (spacemacs/set-leader-keys
     "." 'helm-M-x
     "SPC" 'avy-goto-word-or-subword-1
