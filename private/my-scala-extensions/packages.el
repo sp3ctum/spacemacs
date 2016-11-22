@@ -130,4 +130,9 @@ last output as it exists right now."
     (indent-region (line-beginning-position)
                    (line-beginning-position 2))))
 
+(defun my-ensime-inf-run-scalafmt ()
+  (interactive)
+  (sbt-command "scalafmt")
+  (message "running scalafmt..."))
+
 ;;; packages.el ends here
