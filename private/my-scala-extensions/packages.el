@@ -132,7 +132,8 @@ last output as it exists right now."
 
 (defun my-ensime-inf-run-scalafmt ()
   (interactive)
-  (sbt-command "scalafmt")
+  ;; custom formatting command
+  (sbt-command "fmt")
   (message "running scalafmt..."))
 
 ;;; packages.el ends here
