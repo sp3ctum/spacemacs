@@ -92,7 +92,7 @@ Each entry is either:
 
 (defun my-scala-clear-repl-buffer ()
   (with-current-buffer ensime-inf-buffer-name
-    ;; if the buffer gets too large (a few kilobytes?), perforce will suffer
+    ;; if the buffer gets too large (a few kilobytes?), performance will suffer
     (comint-clear-buffer)))
 
 (defun my-scala-show-repl-output ()
