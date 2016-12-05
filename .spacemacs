@@ -237,7 +237,21 @@ It is called immediately after `dotspacemacs/init', before layer configuration
 executes.
  This function is mostly useful for variables that need to be set
 before packages are loaded. If you are unsure, you should try in setting them in
-`dotspacemacs/user-config' first.")
+`dotspacemacs/user-config' first."
+  ;; Ensime documentation at http://ensime.github.io/editors/emacs/install/ :
+  ;;
+  ;; We do not recommend or support Spacemacs. We would rather that you used
+  ;; stock Emacs with evil-mode. However, if you still choose to use Spacemacs,
+  ;; you must add these lines to your dotspacemacs/user-init to mimic the
+  ;; configuration above.
+  ;;
+  ;; This is only one example of where Spacemacs does everything differently,
+  ;; you’re on your own for the rest. Please do not raise bug reports if you use
+  ;; Spacemacs unless you can reproduce it with stock Emacs. If you would like
+  ;; to change this, please create a full regression test suite running against
+  ;; Spacemacs and offer to maintain it.
+  (push '("melpa-stable" . "stable.melpa.org/packages/") configuration-layer--elpa-archives)
+  (push '(ensime . "melpa-stable") package-pinned-packages))
 
 (defun my-undo-bindings ()
   (evil-define-key 'normal global-map "-" 'goto-last-change)
