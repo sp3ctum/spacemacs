@@ -10,10 +10,12 @@
  - [[#install][Install]]
    - [[#layer][Layer]]
    - [[#github-support][Github support]]
+   - [[#twitter-bootstrap-support][Twitter Bootstrap support]]
    - [[#gnuplot-support][Gnuplot support]]
    - [[#revealjs-support][Reveal.js support]]
    - [[#different-bullets][Different bullets]]
    - [[#project-support][Project support]]
+   - [[#mode-line-support][Mode line support]]
  - [[#key-bindings][Key bindings]]
    - [[#org][Org]]
    - [[#org-with-evil-org-mode][Org with evil-org-mode]]
@@ -82,6 +84,17 @@ flavored markdown set the variable =org-enable-github-support= to =t=.
     (org :variables org-enable-github-support t)))
 #+END_SRC
 
+** Twitter Bootstrap support
+To install the Twitter Boostrap extension (from [[https://github.com/marsmining/ox-twbs][ox-twbs]]), which enables twitter
+bootstrap formatted html, then set the variable =org-enable-bootstrap-support=
+to =t=.
+
+#+BEGIN_SRC emacs-lisp
+  (setq-default dotspacemacs-configuration-layers '(
+    (org :variables
+         org-enable-bootstrap-support t)))
+#+END_SRC
+
 ** Gnuplot support
 Org-mode support the plotting of data within tables through [[http://www.gnuplot.info/][Gnuplot]] as
 demonstrated [[http://orgmode.org/worg/org-tutorials/org-plot.html][here]]; unfortunately, this is [[https://github.com/bruceravel/gnuplot-mode/issues/15][not terribly well supported]] on Windows
@@ -136,6 +149,16 @@ the following snippet. Note that this may have unintended consequences until
   (with-eval-after-load 'org-agenda
     (require 'org-projectile)
     (push (org-projectile:todo-files) org-agenda-files))
+#+END_SRC
+
+** Mode line support
+To temporarily enable mode line display of org clock, press ~SPC t m c~.
+
+To permanently enable mode line display of org clock, add this snippet to your
+=dotspacemacs/user-config= function:
+
+#+BEGIN_SRC elisp
+  (setq spaceline-org-clock-p t)
 #+END_SRC
 
 * Key bindings
