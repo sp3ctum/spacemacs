@@ -329,7 +329,8 @@ before packages are loaded. If you are unsure, you should try in setting them in
       "gm" 'helm-imenu
       "hT" 'my-ensime-insert-function-type-at-point
       "rs" 'my-scala-split-literal-string-at-point
-      "ff" 'my-ensime-inf-run-scalafmt)
+      "ff" 'my-ensime-inf-run-scalafmt
+      "nr" 'my-ensime-restart)
 
     ;; hide implicitConversion underlinings because they make it hard to see the
     ;; actual code

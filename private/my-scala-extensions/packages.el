@@ -136,4 +136,12 @@ last output as it exists right now."
   (sbt-command "fmt")
   (message "running scalafmt..."))
 
+(defun my-ensime-restart ()
+  "Restarts the ensime server. Sometimes the server just starts
+hanging. it's quite fast to restart, but it's a lot of headwork.
+Better to automate it with something like this."
+  (interactive)
+  (ensime-shutdown)
+  (ensime))
+
 ;;; packages.el ends here
