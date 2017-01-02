@@ -264,6 +264,14 @@ before packages are loaded. If you are unsure, you should try in setting them in
             (lambda ()
               (define-key dired-mode-map (kbd "<") 'dired-up-directory))))
 
+(defun my-work-laptop-font-size ()
+  (interactive)
+  (set-default-font "-PfEd-DejaVu Sans Mono-normal-normal-normal-*-22-*-*-*-m-0-iso10646-1"))
+
+(defun my-work-monitor-font-size ()
+  (interactive)
+  (set-default-font "-PfEd-DejaVu Sans Mono-normal-normal-normal-*-10-*-*-*-m-0-iso10646-1"))
+
 (defun my-custom-normal-mode-commands ()
   ;; I liked this, but spacemacs took it away from me
   (evil-define-key 'normal global-map
@@ -272,7 +280,9 @@ before packages are loaded. If you are unsure, you should try in setting them in
   (spacemacs/set-leader-keys
     "." 'helm-M-x
     "SPC" 'avy-goto-word-or-subword-1
-    "y" 'avy-goto-line))
+    "y" 'avy-goto-line
+    "zl" 'my-work-laptop-font-size
+    "zm" 'my-work-monitor-font-size))
 
 (defun my-windows-customizations ()
   (when (eq system-type 'windows-nt)
