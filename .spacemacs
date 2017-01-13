@@ -42,7 +42,8 @@ values."
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
    dotspacemacs-additional-packages '(flash-region
-                                      smart-dash)
+                                      smart-dash
+                                      haml-mode)
    ;; A list of packages and/or extensions that will not be install and loaded.
    dotspacemacs-excluded-packages '()
    ;; If non-nil spacemacs will delete any orphan packages, i.e. packages that
@@ -340,13 +341,19 @@ before packages are loaded. If you are unsure, you should try in setting them in
       "hT" 'my-ensime-insert-function-type-at-point
       "rs" 'my-scala-split-literal-string-at-point
       "ff" 'my-ensime-inf-run-scalafmt
-      "nr" 'my-ensime-restart)
+      "nr" 'my-ensime-restart
+      "br" 'my-ensime-recompile
+      "bl" 'my-ensime-reload)
 
     ;; hide implicitConversion underlinings because they make it hard to see the
     ;; actual code
     ;; https://github.com/syl20bnr/spacemacs/issues/4746
     (setq ensime-sem-high-faces
-          (assq-delete-all 'implicitConversion ensime-sem-high-faces))))
+          (assq-delete-all 'implicitConversion ensime-sem-high-faces)))
+
+  ;; support for .scaml template files
+  (add-to-list 'auto-mode-alist '("\\.scaml\\'" . haml-mode))
+  (setq haml-indent-offset 2))
 
 (defun my-ruby-config ()
   (require 'smart-dash)
