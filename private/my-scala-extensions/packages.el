@@ -151,6 +151,12 @@ last output as it exists right now."
   (sbt-command "run")
   (message "starting play with 'sbt run'"))
 
+(defun my-ensime-stop-play ()
+  (interactive)
+  (with-current-buffer (sbt:buffer-name)
+    (comint-send-eof))
+  (message "stopping play"))
+
 (defun my-ensime-restart ()
   "Restarts the ensime server. Sometimes the server just starts
 hanging. it's quite fast to restart, but it's a lot of headwork.
