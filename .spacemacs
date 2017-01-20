@@ -373,6 +373,29 @@ before packages are loaded. If you are unsure, you should try in setting them in
   (setq split-height-threshold nil)
   (setq split-width-threshold 0))
 
+(defun my-web-config ()
+  (setq web-mode-markup-indent-offset 2)
+  (add-hook 'web-mode-hook
+            (lambda ()
+              (smartparens-mode 1)))
+
+  (define-key evil-normal-state-map (kbd "SPC ") 'company-complete)
+  (spacemacs/set-leader-keys
+    "å" 'my-http-run-current-call))
+
+(defun my-http-run-current-call ()
+  "Requires a http-mode buffer with point positioned at the call that should be
+executed. Executes that without disrupting the frame window layout."
+  (interactive)
+  (let ((restclient-buffers (--filter (equal 'restclient-mode
+                                             (buffer-local-value 'major-mode it))
+                                      (buffer-list))))
+    (if (equal (length restclient-buffers) 1)
+        (with-current-buffer (-first-item restclient-buffers)
+          (restclient-http-send-current-stay-in-window))
+      (message "There are %s restclient buffers, but only 1 should exist. Aborting."
+               (length restclient-buffers)))))
+
 (defun dotspacemacs/user-config ()
   "Configuration function for user code.
 This function is called at the very end of Spacemacs initialization after
@@ -392,6 +415,7 @@ you should place you code here."
   (my-prodigy-config)
   (my-clojure-config)
   (my-scala-config)
+  (my-web-config)
   (my-ruby-config)
   (my-git-config)
   (my-windows-customizations))
