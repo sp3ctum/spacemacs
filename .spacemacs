@@ -356,6 +356,7 @@ before packages are loaded. If you are unsure, you should try in setting them in
 
   ;; support for .scaml template files
   (add-to-list 'auto-mode-alist '("\\.scaml\\'" . haml-mode))
+  (add-to-list 'auto-mode-alist '("\\.en\\'" . conf-unix-mode))
   (setq haml-indent-offset 2))
 
 (defun my-ruby-config ()
