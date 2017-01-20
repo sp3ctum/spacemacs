@@ -136,6 +136,21 @@ last output as it exists right now."
   (sbt-command "fmt")
   (message "running scalafmt..."))
 
+(defun my-ensime-recompile ()
+  (interactive)
+  (ensime-sbt-do-clean)
+  (ensime-sbt-do-compile)
+  (message "Recompiling..."))
+
+(defun my-ensime-reload ()
+  (interactive)
+  (sbt-command "reload"))
+
+(defun my-ensime-run-play ()
+  (interactive)
+  (sbt-command "run")
+  (message "starting play with 'sbt run'"))
+
 (defun my-ensime-restart ()
   "Restarts the ensime server. Sometimes the server just starts
 hanging. it's quite fast to restart, but it's a lot of headwork.

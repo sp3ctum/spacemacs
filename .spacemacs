@@ -344,7 +344,8 @@ before packages are loaded. If you are unsure, you should try in setting them in
       "ff" 'my-ensime-inf-run-scalafmt
       "nr" 'my-ensime-restart
       "br" 'my-ensime-recompile
-      "bl" 'my-ensime-reload)
+      "bl" 'my-ensime-reload
+      "bw" 'my-ensime-run-play)
 
     ;; hide implicitConversion underlinings because they make it hard to see the
     ;; actual code
