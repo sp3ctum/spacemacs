@@ -397,6 +397,17 @@ executed. Executes that without disrupting the frame window layout."
       (message "There are %s restclient buffers, but only 1 should exist. Aborting."
                (length restclient-buffers)))))
 
+(defun my-neotree-copy-filepath-to-yank-ring ()
+  (interactive)
+  (neotree-copy-filepath-to-yank-ring)
+  (message "copied %s" (neo-buffer--get-filename-current-line)))
+
+(defun my-neotree-customizations ()
+  (add-hook 'neotree-mode-hook
+            (lambda ()
+              (define-key neotree-mode-map
+                "y" 'my-neotree-copy-filepath-to-yank-ring))))
+
 (defun dotspacemacs/user-config ()
   "Configuration function for user code.
 This function is called at the very end of Spacemacs initialization after
@@ -419,7 +430,8 @@ you should place you code here."
   (my-web-config)
   (my-ruby-config)
   (my-git-config)
-  (my-windows-customizations))
+  (my-windows-customizations)
+  (my-neotree-customizations))
 
 
 
