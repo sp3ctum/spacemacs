@@ -165,4 +165,13 @@ Better to automate it with something like this."
   (ensime-shutdown)
   (ensime))
 
+(defun my-ensime-move-region-to-own-file (beg end)
+  (interactive "r")
+  (let* ((filename (read-file-name "Move region to file: "))
+         (text (delete-and-extract-region beg end))
+         (new-file (find-file-other-window filename)))
+    (switch-to-buffer new-file)
+    (insert text)))
+
+
 ;;; packages.el ends here
