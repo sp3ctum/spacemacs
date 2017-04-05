@@ -13,7 +13,7 @@
 |
 <b><a href="CONTRIBUTING.org">contribute</a></b>
 |
-<b><a href="http://spacemacs.org/doc/DOCUMENTATION#orgheadline187">achievements</a></b>
+<b><a href="http://spacemacs.org/doc/DOCUMENTATION#achievements">achievements</a></b>
 |
 <b><a href="http://spacemacs.org/doc/FAQ">FAQ</a></b>
 </p>
@@ -156,6 +156,13 @@ just builds GNU Emacs with support of several features by default along with
 providing Spacemacs icon.
 See [emacs-plus](https://github.com/d12frosted/homebrew-emacs-plus) for more
 information.
+
+*Note*: to have the title bar match your theme background color,
+consider using instead:
+
+``` sh
+$ brew install emacs-plus --HEAD --with-natural-title-bars
+```
 
 *Note:* after you have completed the [install process](#install) below, it is
 also recommended to add the [osx layer][] to your [dotfile][]. Install
