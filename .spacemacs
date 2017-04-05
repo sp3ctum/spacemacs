@@ -253,6 +253,10 @@ before packages are loaded. If you are unsure, you should try in setting them in
   ;; to change this, please create a full regression test suite running against
   ;; Spacemacs and offer to maintain it.
   (push '("melpa-stable" . "stable.melpa.org/packages/") configuration-layer--elpa-archives)
+
+  ;; to use the unstable development version
+  (push '("melpa" . "melpa.org/packages/") configuration-layer--elpa-archives)
+
   (push '(ensime . "melpa-stable") package-pinned-packages))
 
 (defun my-undo-bindings ()
@@ -335,6 +339,7 @@ before packages are loaded. If you are unsure, you should try in setting them in
 
   (with-eval-after-load 'ensime
     (setq ensime-startup-snapshot-notification nil)
+    (setq ensime-startup-notification nil)
     (spacemacs/set-leader-keys-for-major-mode 'scala-mode
       "ä" 'my-ensime-eval-dwim
       "Ä" 'my-scala-show-repl-output
