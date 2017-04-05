@@ -386,6 +386,10 @@ before packages are loaded. If you are unsure, you should try in setting them in
             (lambda ()
               (smartparens-mode 1)))
 
+  (add-hook 'js2-mode-hook
+            (lambda ()
+              (setq js2-basic-offset 2)))
+
   (define-key evil-normal-state-map (kbd "SPC ") 'company-complete)
   (spacemacs/set-leader-keys
     "å" 'my-http-run-current-call))
