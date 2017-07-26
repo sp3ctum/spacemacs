@@ -31,7 +31,8 @@ values."
      clojure
      prodigy
      html
-     scala
+     (scala :variables
+            scala-auto-insert-asterisk-in-comments t)
      my-scala-extensions
      yaml
      (ruby :variables
