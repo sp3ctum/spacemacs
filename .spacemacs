@@ -338,6 +338,8 @@ before packages are loaded. If you are unsure, you should try in setting them in
   (evil-define-key 'insert smartparens-mode-map (kbd ")") 'sp-up-sexp)
   (evil-define-key 'normal scala-mode-map (kbd ")") 'sp-up-sexp)
 
+  (add-to-list 'aggressive-indent-excluded-modes 'scala-mode)
+
   ;; fix indenting this weirldy: foo.map(a => {
   ;; }
   (setq scala-indent:align-parameters nil)
