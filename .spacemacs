@@ -317,8 +317,9 @@ before packages are loaded. If you are unsure, you should try in setting them in
   (evil-define-key 'normal global-map
     "gs" #'save-buffer
     "gb" #'helm-mini)
+
+  (setq dotspacemacs-command-key (kbd "."))
   (spacemacs/set-leader-keys
-    "." 'helm-M-x
     "SPC" 'avy-goto-word-or-subword-1
     "y" 'avy-goto-line
     "zl" 'my-work-laptop-font-size
