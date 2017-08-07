@@ -427,10 +427,11 @@ before packages are loaded. If you are unsure, you should try in setting them in
     view-url))
 
 (defun my-git-link-qvantel-stash (hostname dirname filename branch commit start end)
-  (format "%sbrowse/%s?at=refs%%2Fheads%%2F%s"
+  (format "%sbrowse/%s?at=refs%%2Fheads%%2F%s#%s"
           (my-git-link-get-qvantel-stash-viewurl)
           filename
-          branch))
+          branch
+          start))
 
 (defun my-git-link-commit-qvantel-stash (hostname dirname commit)
   (format "%scommits/%s"
