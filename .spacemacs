@@ -415,33 +415,7 @@ before packages are loaded. If you are unsure, you should try in setting them in
   ;; comment says "coding: utf-8" or similar.
   (setq ruby-insert-encoding-magic-comment nil))
 
-(defun my-git-link-get-qvantel-stash-viewurl ()
-  (let* ((view-url (git-link--get-config (s-join ""
-                                                 (list "remote."
-                                                       (git-link--remote)
-                                                       ".viewurl")))))
-    (when (not view-url)
-      (user-error "Missing viewurl base. set remote.foo.viewurl to e.g.
-                   https://stash.qvantel.net/users/mivilpas/repos/pcs-docker-demo/ and try
-                   again. (needs to have a trailing slash)"))
-    view-url))
-
-(defun my-git-link-qvantel-stash (hostname dirname filename branch commit start end)
-  (format "%sbrowse/%s?at=refs%%2Fheads%%2F%s#%s"
-          (my-git-link-get-qvantel-stash-viewurl)
-          filename
-          branch
-          start))
-
-(defun my-git-link-commit-qvantel-stash (hostname dirname commit)
-  (format "%scommits/%s"
-          (my-git-link-get-qvantel-stash-viewurl)
-          commit))
-
 (defun my-git-config ()
-
-  (add-to-list 'git-link-remote-alist '("qvantel" my-git-link-qvantel-stash))
-  (add-to-list 'git-link-commit-remote-alist '("qvantel" my-git-link-commit-qvantel-stash))
   ;; open new window always in a side split
   (setq split-height-threshold nil)
   (setq split-width-threshold 0))
