@@ -28,6 +28,7 @@ values."
      auto-capitalization
      markdown
      lispy
+     qvantel-gitlink
      clojure
      prodigy
      html
