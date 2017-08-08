@@ -9,5 +9,8 @@ for the common `origin` remote name:
 (notice the trailing slash, it's required at the moment)
 
 ## Usage
+- add this layer to your `dotspacemacs/layers` in your init file, using the name
+  `qvantel-gitlink`
 - Press `SPC g l l` to open the current file in the browser
-- (press `SPC g l` and wait to view different `git-link` options supported by spacemacs)
+- (press `SPC g l` and wait to view different `git-link` options supported by
+  spacemacs)
