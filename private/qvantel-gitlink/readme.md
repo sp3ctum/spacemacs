@@ -1,9 +1,9 @@
 # Git links for Qvantel repositories
 
 ## Setup
-This needs to be enabled for all git remotes you want to work with. Set one up
-by running this in your project directory - this case is for the common `origin`
-remote name:
+Some configuration needs to be done specifically in all git remotes you want to
+work with. Set one up by running this in your project directory - this case is
+for the common `origin` remote name:
 
 `git config remote.origin.viewurl https://stash.qvantel.net/projects/API/repos/bssapi-entities/`
 (notice the trailing slash, it's required at the moment)
