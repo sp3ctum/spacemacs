@@ -187,9 +187,8 @@ Better to automate it with something like this."
 
 
 (defun my-ensime-test-file-name ()
-  (-let (((start end . wat) (->> (f-this-file)
-                                 (s-split "/src/main/"))))
-    (s-concat start "/src/test/" end)))
+  (->> (f-this-file)
+       (s-replace "/src/main/" "/src/test/")))
 
 (defun my-ensime-switch-to-test-file ()
   (interactive)
