@@ -113,6 +113,14 @@ last output as it exists right now."
   (ensime-inf-eval-region start end)
   (my-scala-show-repl-output))
 
+(defun my-ensime-print-type-at-point ()
+  (interactive)
+  (ensime-type-at-point '(4) nil))
+
+(defun my-ensime-print-type-at-point-full-name ()
+  (interactive)
+  (ensime-type-at-point '(4) t))
+
 (defun my-ensime-insert-function-type-at-point ()
   "point must be on the line where the function starts"
   (interactive)

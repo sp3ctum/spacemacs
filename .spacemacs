@@ -399,7 +399,9 @@ before packages are loaded. If you are unsure, you should try in setting them in
       "bw" 'my-ensime-run-play
       "bW" 'my-ensime-stop-play
       "nf" 'my-ensime-move-region-to-own-file
-      "mt" 'my-ensime-switch-to-test-file)
+      "mt" 'my-ensime-switch-to-test-file
+      "yt" 'my-ensime-print-type-at-point
+      "yT" 'my-ensime-print-type-at-point-full-name)
 
     ;; hide implicitConversion underlinings because they make it hard to see the
     ;; actual code
