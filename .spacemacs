@@ -342,6 +342,10 @@ before packages are loaded. If you are unsure, you should try in setting them in
   (add-hook 'org-mode-hook 'auto-fill-mode))
 
 (defun my-projectile-config ()
+  ;; Don't try to look for TAGS files when g d (go to definition) doesn't find
+  ;; anything. this is annoying as I don't want to use TAGS tables.
+  (remove-hook 'xref-backend-functions 'etags--xref-backend)
+  xref-backend-functions
   (setq projectile-use-git-grep t))
 
 (defun my-prodigy-config ()
