@@ -291,7 +291,7 @@ before packages are loaded. If you are unsure, you should try in setting them in
   ;; to use the unstable development version
   (push '("melpa" . "melpa.org/packages/") configuration-layer--elpa-archives)
 
-  (push '(ensime . "melpa-stable") package-pinned-packages))
+  (push '(ensime . "melpa") package-pinned-packages))
 
 (defun my-undo-bindings ()
   (evil-define-key 'normal global-map "-" 'goto-last-change)
