@@ -165,15 +165,24 @@ Better to automate it with something like this."
   (ensime-shutdown)
   (ensime))
 
+(defun my-ensime-get-packages-and-imports ()
+  (-take-while (lambda (line)
+                 (or (s-blank? line)
+                     (s-matches? "package" line)
+                     (s-matches? "import" line)))
+               (s-lines (buffer-substring-no-properties 1 (point-max)))))
+
 (defun my-ensime-move-region-to-own-file (beg end)
   (interactive "r")
   (let* ((filename (read-file-name "Move region to file: "))
          (text (delete-and-extract-region beg end))
-         (package-name (ensime-package-at-point))
+         (packages-and-imports (my-ensime-get-packages-and-imports))
          (new-file (find-file-other-window filename)))
     (switch-to-buffer new-file)
-    (insert "package " package-name)
-    (insert "\n")
+    (--map (progn
+             (insert it)
+             (insert "\n"))
+           packages-and-imports)
     (insert text)))
 
 
