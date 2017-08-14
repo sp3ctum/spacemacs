@@ -186,4 +186,24 @@ Better to automate it with something like this."
     (insert text)))
 
 
+(defun my-ensime-test-file-name ()
+  (-let (((start end . wat) (->> (f-this-file)
+                                 (s-split "/src/main/"))))
+    (s-concat start "/src/test/" end)))
+
+(defun my-ensime-switch-to-test-file ()
+  (interactive)
+  (let* ((packages-and-imports (my-ensime-get-packages-and-imports))
+         (test-file-name (->> (my-ensime-test-file-name)
+                              (s-replace ".scala" "Spec.scala")))
+         (new-file (find-file-other-window test-file-name)))
+    (switch-to-buffer new-file)
+    (--map (insert it "\n") packages-and-imports)
+    (message "Switched to test file at %s" (f-this-file))))
+
+(defun my-ensime-switch-between-test-and-implementation ()
+  (interactive)
+  ;; TODO
+  )
+
 ;;; packages.el ends here
