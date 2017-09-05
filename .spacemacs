@@ -414,6 +414,15 @@ before packages are loaded. If you are unsure, you should try in setting them in
   (setq haml-indent-offset 2))
 
 (defun my-ruby-config ()
+  ;; fix not finding "bundle"
+  (let ((home (getenv "HOME")))
+    (if (not (getenv "TERM_PROGRAM"))
+        (setenv "PATH"
+                (s-concat (getenv "PATH")
+                          ":" home "/bin/"
+                          ":" home "/.rvm/gems/ruby-2.3.0/bin/"
+                          ":" home "/.rvm/bin/"))))
+
   (require 'smart-dash)
   (add-hook 'ruby-mode-hook 'smart-dash-mode)
   (add-to-list 'aggressive-indent-excluded-modes 'ruby-mode)
