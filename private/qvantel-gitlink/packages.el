@@ -21,7 +21,7 @@
                                                        ".viewurl")))))
     (when (not view-url)
       (user-error "Missing viewurl base. set remote.foo.viewurl to e.g.
-                   https://stash.qvantel.net/projects/API/repos/bssapi-entities/browse/ and try
+                   https://stash.qvantel.net/projects/API/repos/bssapi-entities/ and try
                    again. (needs to have a trailing slash)"))
     view-url))
 
