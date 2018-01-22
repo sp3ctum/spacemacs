@@ -224,6 +224,8 @@ package name does not match theme name + `-theme' suffix.")
         ;; explicitly reload the theme for the first GUI client
         (eval `(spacemacs|do-after-display-system-init
                 (load-theme ',theme t)))
+        (unless (display-graphic-p)
+          (load-theme theme t))
         (when install
           (spacemacs-buffer/replace-last-line
            (format (concat "--> User theme \"%s\" has been applied, you may "
