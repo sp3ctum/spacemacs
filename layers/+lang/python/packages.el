@@ -58,8 +58,10 @@
         "ga" 'anaconda-mode-find-assignments
         "gb" 'anaconda-mode-go-back
         "gu" 'anaconda-mode-find-references)
-      (evilified-state-evilify anaconda-mode-view-mode anaconda-mode-view-mode-map
+
+      (evilified-state-evilify anaconda-view-mode anaconda-view-mode-map
         (kbd "q") 'quit-window)
+
       (spacemacs|hide-lighter anaconda-mode)
 
       (defadvice anaconda-mode-goto (before python/anaconda-mode-goto activate)
@@ -85,8 +87,8 @@
     :init
     (progn
       (spacemacs/set-leader-keys-for-major-mode 'cython-mode
-        "hh" 'anaconda-mode-view-doc
-        "gu" 'anaconda-mode-usages))))
+        "hh" 'anaconda-mode-show-doc
+        "gu" 'anaconda-mode-find-references))))
 
 (defun python/post-init-eldoc ()
   (defun spacemacs//init-eldoc-python-mode ()
