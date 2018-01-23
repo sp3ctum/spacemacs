@@ -11,6 +11,20 @@ values."
    ;; `+distribution'. For now available distributions are `spacemacs-base'
    ;; or `spacemacs'. (default 'spacemacs)
    dotspacemacs-distribution 'spacemacs
+   ;; Lazy installation of layers (i.e. layers are installed only when a file
+   ;; with a supported type is opened). Possible values are `all', `unused'
+   ;; and `nil'. `unused' will lazy install only unused layers (i.e. layers
+   ;; not listed in variable `dotspacemacs-configuration-layers'), `all' will
+   ;; lazy install any layer that support lazy installation even the layers
+   ;; listed in `dotspacemacs-configuration-layers'. `nil' disable the lazy
+   ;; installation feature and you have to explicitly list a layer in the
+   ;; variable `dotspacemacs-configuration-layers' to install it.
+   ;; (default 'unused)
+   dotspacemacs-enable-lazy-installation 'unused
+   ;; If non-nil then Spacemacs will ask for confirmation before installing
+   ;; a layer lazily. (default t)
+   dotspacemacs-ask-for-lazy-installation t
+   ;; If non-nil layers with lazy install support are lazy installed.
    ;; List of additional paths where to look for configuration layers.
    ;; Paths must have a trailing slash (i.e. `~/.mycontribs/')
    dotspacemacs-configuration-layer-path '("~/.emacs.d/private/")
@@ -21,6 +35,7 @@ values."
                       auto-completion-enable-sort-by-usage t)
      (colors :variables
              colors-colorize-identifiers 'all)
+     helm
      syntax-checking
      org
      emacs-lisp
@@ -48,12 +63,16 @@ values."
    dotspacemacs-additional-packages '(flash-region
                                       smart-dash
                                       haml-mode)
-   ;; A list of packages and/or extensions that will not be install and loaded.
+   ;; A list of packages and/or extensions that will not be installed and loaded.
    dotspacemacs-excluded-packages '()
-   ;; If non-nil spacemacs will delete any orphan packages, i.e. packages that
-   ;; are declared in a layer which is not a member of
-   ;; the list `dotspacemacs-configuration-layers'. (default t)
-   dotspacemacs-delete-orphan-packages t))
+   ;; Defines the behaviour of Spacemacs when installing packages.
+   ;; Possible values are `used-only', `used-but-keep-unused' and `all'.
+   ;; `used-only' installs only explicitly used packages and uninstall any
+   ;; unused packages as well as their unused dependencies.
+   ;; `used-but-keep-unused' installs only the used packages but won't uninstall
+   ;; them if they become unused. `all' installs *all* packages supported by
+   ;; Spacemacs and never uninstall them. (default is `used-only')
+   dotspacemacs-install-packages 'used-only))
 
 (defun dotspacemacs/init ()
   "Initialization function.
@@ -74,12 +93,20 @@ values."
    ;; Maximum allowed time in seconds to contact an ELPA repository.
    dotspacemacs-elpa-timeout 5
    ;; If non nil then spacemacs will check for updates at startup
-   ;; when the current branch is not `develop'. (default t)
-   dotspacemacs-check-for-update t
-   ;; One of `vim', `emacs' or `hybrid'. Evil is always enabled but if the
-   ;; variable is `emacs' then the `holy-mode' is enabled at startup. `hybrid'
-   ;; uses emacs key bindings for vim's insert mode, but otherwise leaves evil
-   ;; unchanged. (default 'vim)
+   ;; when the current branch is not `develop'. Note that checking for
+   ;; new versions works via git commands, thus it calls GitHub services
+   ;; whenever you start Emacs. (default nil)
+   dotspacemacs-check-for-update nil
+   ;; If non-nil, a form that evaluates to a package directory. For example, to
+   ;; use different package directories for different Emacs versions, set this
+   ;; to `emacs-version'.
+   dotspacemacs-elpa-subdirectory nil
+   ;; One of `vim', `emacs' or `hybrid'.
+   ;; `hybrid' is like `vim' except that `insert state' is replaced by the
+   ;; `hybrid state' with `emacs' key bindings. The value can also be a list
+   ;; with `:variables' keyword (similar to layers). Check the editing styles
+   ;; section of the documentation for details on available variables.
+   ;; (default 'vim)
    dotspacemacs-editing-style 'vim
    ;; If non nil output loading progress in `*Messages*' buffer. (default nil)
    dotspacemacs-verbose-loading nil
@@ -119,6 +146,11 @@ values."
                                :powerline-scale 1.1)
    ;; The leader key
    dotspacemacs-leader-key "SPC"
+   ;; The key used for Emacs commands (M-x) (after pressing on the leader key).
+   ;; (default "SPC")
+   dotspacemacs-emacs-command-key "SPC"
+   ;; The key used for Vim Ex commands (default ":")
+   dotspacemacs-ex-command-key ":"
    ;; The leader key accessible in `emacs state' and `insert state'
    ;; (default "M-m")
    dotspacemacs-emacs-leader-key "M-m"
@@ -249,7 +281,7 @@ values."
    ;; `current', `all' or `nil'. Default is `all' (highlight any scope and
    ;; emphasis the current one). (default 'all)
    dotspacemacs-highlight-delimiters 'current
-   ;; If non nil advises quit functions to keep server open when quitting.
+   ;; If non nil advise quit functions to keep server open when quitting.
    ;; (default nil)
    dotspacemacs-persistent-server nil
    ;; List of search tool executable names. Spacemacs uses the first installed
@@ -504,3 +536,17 @@ you should place you code here."
 
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   (quote
+    (web-mode js2-refactor cider clojure-mode smartparens lispy swiper ace-window evil yasnippet alert projectile org-plus-contrib magit magit-popup git-commit helm helm-core async inf-ruby dash zoutline zenburn-theme yaml-mode ws-butler with-editor winum which-key web-beautify volatile-highlights vi-tilde-fringe uuidgen use-package undo-tree toc-org tagedit spaceline smeargle smart-dash slim-mode scss-mode sass-mode rvm ruby-tools ruby-test-mode rubocop rspec-mode robe restclient-helm restart-emacs rbenv rake rainbow-mode rainbow-identifiers rainbow-delimiters queue pug-mode prodigy popwin persp-mode paradox orgit org-projectile org-present org-pomodoro org-download org-bullets open-junk-file ob-restclient ob-http noflet neotree move-text mmm-mode minitest markdown-toc magit-gitflow macrostep lorem-ipsum log4e livid-mode linum-relative link-hint less-css-mode js-doc ivy info+ indent-guide hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag goto-chg google-translate golden-ratio gnuplot gntp gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link ghub gh-md fuzzy flycheck-pos-tip flx-ido flash-region fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lispy evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu ensime emmet-mode elisp-slime-nav dumb-jump dockerfile-mode docker diminish define-word company-web company-tern company-statistics company-restclient column-enforce-mode color-identifiers-mode coffee-mode clojure-snippets clj-refactor clean-aindent-mode cider-eval-sexp-fu chruby bundler auto-yasnippet auto-highlight-symbol auto-compile auto-capitalize aggressive-indent adaptive-wrap ace-link ace-jump-helm-line ac-ispell))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(default ((t (:foreground "#DCDCCC" :background "#3F3F3F")))))
