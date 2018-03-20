@@ -62,7 +62,8 @@ values."
    ;; configuration in `dotspacemacs/user-config'.
    dotspacemacs-additional-packages '(flash-region
                                       smart-dash
-                                      haml-mode)
+                                      haml-mode
+                                      dtrt-indent)
    ;; A list of packages and/or extensions that will not be installed and loaded.
    dotspacemacs-excluded-packages '()
    ;; Defines the behaviour of Spacemacs when installing packages.
@@ -457,7 +458,14 @@ before packages are loaded. If you are unsure, you should try in setting them in
 
   (require 'smart-dash)
   (add-hook 'ruby-mode-hook 'smart-dash-mode)
+  (with-eval-after-load 'haml-mode
+    (add-hook 'haml-mode-hook 'dtrt-indent-mode)
+    (add-hook 'haml-mode-hook (lambda ()
+                                (interactive)
+                                (aggressive-indent-mode nil))))
   (add-to-list 'aggressive-indent-excluded-modes 'ruby-mode)
+  (add-to-list 'aggressive-indent-excluded-modes 'haml-mode)
+  (add-to-list 'aggressive-indent-excluded-modes 'coffee-mode)
 
   ;; without this, emacs will insert a comment at the start of all files. the
   ;; comment says "coding: utf-8" or similar.
@@ -472,11 +480,16 @@ before packages are loaded. If you are unsure, you should try in setting them in
   (setq web-mode-markup-indent-offset 2)
   (add-hook 'web-mode-hook
             (lambda ()
-              (smartparens-mode 1)))
+              (smartparens-mode 1)
+              (dtrt-indent-mode)))
 
+  (setq js2-strict-missing-semi-warning nil)
+  (setq js2-mode-assume-strict t)
   (add-hook 'js2-mode-hook
             (lambda ()
-              (setq js2-basic-offset 2)))
+              (dtrt-indent-mode)
+              (rainbow-identifiers-mode nil)
+              (rainbow-turn-off)))
 
   (define-key evil-normal-state-map (kbd "SPC ") 'company-complete)
   (spacemacs/set-leader-keys
