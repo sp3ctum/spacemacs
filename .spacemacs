@@ -344,7 +344,7 @@ before packages are loaded. If you are unsure, you should try in setting them in
 
 (defun my-work-monitor-font-size ()
   (interactive)
-  (set-default-font "-PfEd-DejaVu Sans Mono-normal-normal-normal-*-10-*-*-*-m-0-iso10646-1"))
+  (set-default-font "-PfEd-DejaVu Sans Mono-normal-normal-normal-*-12-*-*-*-m-0-iso10646-1"))
 
 (defun my-custom-normal-mode-commands ()
   ;; I liked this, but spacemacs took it away from me
