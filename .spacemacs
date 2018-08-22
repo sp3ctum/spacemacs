@@ -519,6 +519,28 @@ executed. Executes that without disrupting the frame window layout."
               (define-key neotree-mode-map
                 "y" 'my-neotree-copy-filepath-to-yank-ring))))
 
+(defun my-python-config ()
+
+  (add-to-list 'exec-path "/home/mvilpas/.pyenv/plugins/pyenv-virtualenv/shims")
+  (add-to-list 'exec-path "/home/mvilpas/.pyenv/shims")
+  (add-to-list 'exec-path "/home/mvilpas/.pyenv/bin")
+
+  (setq python-shell-interpreter "python3")
+
+  ;; https://github.com/proofit404/pyenv-mode#projectile-integration
+  (require 'pyenv-mode)
+
+  (defun projectile-pyenv-mode-set ()
+    "Set pyenv version matching project name."
+    (let ((project (projectile-project-name)))
+      (if (member project (pyenv-mode-versions))
+          (pyenv-mode-set project)
+        (pyenv-mode-unset))))
+
+  (add-hook 'projectile-after-switch-project-hook 'projectile-pyenv-mode-set)
+  (with-eval-after-load 'python-mode
+    ))
+
 (defun dotspacemacs/user-config ()
   "Configuration function for user code.
 This function is called at the very end of Spacemacs initialization after
@@ -536,6 +558,7 @@ you should place you code here."
   (my-org-mode-bindings)
   (my-projectile-config)
   (my-prodigy-config)
+  (my-python-config)
   (my-clojure-config)
   (my-scala-config)
   (my-web-config)
