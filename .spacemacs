@@ -380,13 +380,6 @@ before packages are loaded. If you are unsure, you should try in setting them in
   (remove-hook 'xref-backend-functions 'etags--xref-backend)
   (setq projectile-use-git-grep t))
 
-(defun my-prodigy-config ()
-  (prodigy-define-service
-    :name "Evil-lispy tests"
-    :command "sh"
-    :args '("run-tests.sh")
-    :cwd "~/git/evil-lispy/"))
-
 (defun my-clojure-config ()
   (setq clojure-enable-fancify-symbols t)
   (setq cider-cljs-lein-repl
@@ -557,7 +550,6 @@ you should place you code here."
   (my-auto-complete-bindings)
   (my-org-mode-bindings)
   (my-projectile-config)
-  (my-prodigy-config)
   (my-python-config)
   (my-clojure-config)
   (my-scala-config)
