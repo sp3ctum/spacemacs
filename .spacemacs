@@ -31,7 +31,10 @@ values."
    ;; List of configuration layers to load. If it is the symbol `all' instead
    ;; of a list then all discovered layers will be installed.
    dotspacemacs-configuration-layers
-   '((auto-completion :variables
+   '(
+     python
+     csv
+     (auto-completion :variables
                       auto-completion-enable-sort-by-usage t)
      (colors :variables
              colors-colorize-identifiers 'all)
@@ -63,7 +66,8 @@ values."
    dotspacemacs-additional-packages '(flash-region
                                       smart-dash
                                       haml-mode
-                                      dtrt-indent)
+                                      dtrt-indent
+                                      groovy-mode)
    ;; A list of packages and/or extensions that will not be installed and loaded.
    dotspacemacs-excluded-packages '()
    ;; Defines the behaviour of Spacemacs when installing packages.
@@ -381,11 +385,7 @@ before packages are loaded. If you are unsure, you should try in setting them in
   (setq projectile-use-git-grep t))
 
 (defun my-clojure-config ()
-  (setq clojure-enable-fancify-symbols t)
-  (setq cider-cljs-lein-repl
-        "(do (require 'figwheel-sidecar.repl-api)
-             (figwheel-sidecar.repl-api/start-figwheel!)
-             (figwheel-sidecar.repl-api/cljs-repl))"))
+  (setq clojure-enable-fancify-symbols t))
 
 (defmacro comment (&rest _))
 
@@ -411,6 +411,7 @@ before packages are loaded. If you are unsure, you should try in setting them in
     (setq ensime-startup-snapshot-notification nil)
     (setq ensime-startup-notification nil)
     (spacemacs/set-leader-keys-for-major-mode 'scala-mode
+      "a" 'ensime-sbt-do-compile
       "ä" 'my-ensime-eval-dwim
       "Ä" 'my-scala-show-repl-output
       ;; mnemonic: go to member in file
@@ -481,8 +482,8 @@ before packages are loaded. If you are unsure, you should try in setting them in
   (add-hook 'js2-mode-hook
             (lambda ()
               (dtrt-indent-mode)
-              (rainbow-identifiers-mode nil)
-              (rainbow-turn-off)))
+              (rainbow-turn-off)
+              (rainbow-identifiers-mode nil)))
 
   (define-key evil-normal-state-map (kbd "SPC ") 'company-complete)
   (spacemacs/set-leader-keys
@@ -521,7 +522,7 @@ executed. Executes that without disrupting the frame window layout."
   (setq python-shell-interpreter "python3")
 
   ;; https://github.com/proofit404/pyenv-mode#projectile-integration
-  (require 'pyenv-mode)
+  ;; (require 'pyenv-mode)
 
   (defun projectile-pyenv-mode-set ()
     "Set pyenv version matching project name."
@@ -531,8 +532,7 @@ executed. Executes that without disrupting the frame window layout."
         (pyenv-mode-unset))))
 
   (add-hook 'projectile-after-switch-project-hook 'projectile-pyenv-mode-set)
-  (with-eval-after-load 'python-mode
-    ))
+  (with-eval-after-load 'python-mode))
 
 (defun dotspacemacs/user-config ()
   "Configuration function for user code.
@@ -571,7 +571,7 @@ you should place you code here."
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (origami groovy-mode yapfify pyvenv pytest pyenv-mode py-isort pip-requirements live-py-mode hy-mode helm-pydoc cython-mode company-anaconda anaconda-mode pythonic dtrt-indent flycheck company web-mode js2-refactor cider clojure-mode smartparens lispy swiper ace-window evil yasnippet alert projectile org-plus-contrib magit magit-popup git-commit helm helm-core async inf-ruby dash zoutline zenburn-theme yaml-mode ws-butler with-editor winum which-key web-beautify volatile-highlights vi-tilde-fringe uuidgen use-package undo-tree toc-org tagedit spaceline smeargle smart-dash slim-mode scss-mode sass-mode rvm ruby-tools ruby-test-mode rubocop rspec-mode robe restclient-helm restart-emacs rbenv rake rainbow-mode rainbow-identifiers rainbow-delimiters queue pug-mode prodigy popwin persp-mode paradox orgit org-projectile org-present org-pomodoro org-download org-bullets open-junk-file ob-restclient ob-http noflet neotree move-text mmm-mode minitest markdown-toc magit-gitflow macrostep lorem-ipsum log4e livid-mode linum-relative link-hint less-css-mode js-doc ivy info+ indent-guide hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag goto-chg google-translate golden-ratio gnuplot gntp gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link ghub gh-md fuzzy flycheck-pos-tip flx-ido flash-region fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lispy evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu ensime emmet-mode elisp-slime-nav dumb-jump dockerfile-mode docker diminish define-word company-web company-tern company-statistics company-restclient column-enforce-mode color-identifiers-mode coffee-mode clojure-snippets clj-refactor clean-aindent-mode cider-eval-sexp-fu chruby bundler auto-yasnippet auto-highlight-symbol auto-compile auto-capitalize aggressive-indent adaptive-wrap ace-link ace-jump-helm-line ac-ispell))))
+    (csv-mode treepy graphql powerline pcre2el org-category-capture org-mime markdown-mode skewer-mode simple-httpd js2-mode parent-mode request haml-mode gitignore-mode pos-tip flx anzu sbt-mode scala-mode json-mode tablist docker-tramp json-snatcher json-reformat web-completion-data dash-functional tern restclient know-your-http-well inflections edn multiple-cursors paredit peg eval-sexp-fu highlight sesman pkg-info epl bind-map bind-key packed auto-complete popup hydra iedit avy f s origami groovy-mode yapfify pyvenv pytest pyenv-mode py-isort pip-requirements live-py-mode hy-mode helm-pydoc cython-mode company-anaconda anaconda-mode pythonic dtrt-indent flycheck company web-mode js2-refactor cider clojure-mode smartparens lispy swiper ace-window evil yasnippet alert projectile org-plus-contrib magit magit-popup git-commit helm helm-core async inf-ruby dash zoutline zenburn-theme yaml-mode ws-butler with-editor winum which-key web-beautify volatile-highlights vi-tilde-fringe uuidgen use-package undo-tree toc-org tagedit spaceline smeargle smart-dash slim-mode scss-mode sass-mode rvm ruby-tools ruby-test-mode rubocop rspec-mode robe restclient-helm restart-emacs rbenv rake rainbow-mode rainbow-identifiers rainbow-delimiters queue pug-mode prodigy popwin persp-mode paradox orgit org-projectile org-present org-pomodoro org-download org-bullets open-junk-file ob-restclient ob-http noflet neotree move-text mmm-mode minitest markdown-toc magit-gitflow macrostep lorem-ipsum log4e livid-mode linum-relative link-hint less-css-mode js-doc ivy info+ indent-guide hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag goto-chg google-translate golden-ratio gnuplot gntp gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link ghub gh-md fuzzy flycheck-pos-tip flx-ido flash-region fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lispy evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu ensime emmet-mode elisp-slime-nav dumb-jump dockerfile-mode docker diminish define-word company-web company-tern company-statistics company-restclient column-enforce-mode color-identifiers-mode coffee-mode clojure-snippets clj-refactor clean-aindent-mode cider-eval-sexp-fu chruby bundler auto-yasnippet auto-highlight-symbol auto-compile auto-capitalize aggressive-indent adaptive-wrap ace-link ace-jump-helm-line ac-ispell))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
