@@ -1,0 +1,38 @@
+* Windows
+** dependencies
+- Ubuntu Fonts http://font.ubuntu.com/
+- emacs-version ~25.0.92.1~
+- Python27 and Cask
+
+** Installation instructions
+- clone repo as =~/.emacs.d=
+- symlink =~/.emacs.d/.spacemacs= as =~/.spacemacs=
+- todo how to set up magit with ssh?
+
+** Environment variables
+| name | value         |
+|------+---------------|
+| HOME | %userprofile% |
+
+Things on ~PATH~: (~C-c~ to eval so you can copy the result)
+
+#+NAME: path-table
+| name           | value                                               |
+|----------------+-----------------------------------------------------|
+| git tools      | C:\Program Files\Git\usr\bin                        |
+| python         | C:\Python27\                                        |
+| cask           | %userprofile%\.cask\bin                             |
+| own binaries   | %home%\bin                                          |
+| emacs binaries | %home%\emacs-bin\emacs-bin-w64-25.0.92-O2\emacs\bin |
+| leiningen      | %home%\.lein\bin                                    |
+|                |                                                     |
+
+#+begin_src emacs-lisp :exports code :var data=path-table
+(->> data
+     (-map 'cadr)
+     (s-join ";")
+     (s-prepend ";"))
+#+end_src
+
+#+RESULTS:
+: ;C:\Program Files\Git\usr\bin;C:\Python27\;%userprofile%\.cask\bin;%home%\bin;%home%\emacs-bin\emacs-bin-w64-25.0.92-O2\emacs\bin;%home%\.lein\bin;
