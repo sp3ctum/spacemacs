@@ -43,7 +43,7 @@ values."
      org
      emacs-lisp
      git
-     auto-capitalization
+     auto-capitalization2
      markdown
      lispy
      qvantel-gitlink
