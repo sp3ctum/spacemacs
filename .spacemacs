@@ -61,22 +61,22 @@ This function should only modify configuration layer settings."
      (ruby :variables
            ruby-test-runner 'rspec)
      docker
+     groovy
      javascript
      restclient)
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
+   ;;
+   ;; To use a local version of a package, use the `:location' property:
+   ;; '(your-package :location "~/path/to/your-package/")
+   ;; Also include the dependencies as they will not be resolved automatically.
    dotspacemacs-additional-packages '(flash-region
                                       smart-dash
                                       haml-mode
                                       dtrt-indent
-                                      groovy-mode)
-
-   ;; To use a local version of a package, use the `:location' property:
-   ;; '(your-package :location "~/path/to/your-package/")
-   ;; Also include the dependencies as they will not be resolved automatically.
-   dotspacemacs-additional-packages '()
+                                      coffee-mode)
 
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
@@ -503,6 +503,14 @@ before packages are loaded. If you are unsure, you should try in setting them in
   (add-hook 'org-mode-hook 'auto-fill-mode))
 
 (defun my-projectile-config ()
+  ;; Working with compilation buffers is annoying because any newly generated
+  ;; window will steal point. Fix that. After this, all new compilation windows
+  ;; will not get the focus.
+  (defun my-saving-current-window (old-function &rest arguments)
+    (save-selected-window
+      (apply old-function arguments)))
+
+  (advice-add #'compilation-start :around #'my-saving-current-window)
   ;; Don't try to look for TAGS files when g d (go to definition) doesn't find
   ;; anything. this is annoying as I don't want to use TAGS tables.
   (remove-hook 'xref-backend-functions 'etags--xref-backend)
@@ -594,6 +602,7 @@ before packages are loaded. If you are unsure, you should try in setting them in
 
 (defun my-web-config ()
   (setq web-mode-markup-indent-offset 2)
+  (setq javascript-backend 'lsp)
   (add-hook 'web-mode-hook
             (lambda ()
               (smartparens-mode 1)
@@ -602,10 +611,10 @@ before packages are loaded. If you are unsure, you should try in setting them in
   (setq js2-strict-missing-semi-warning nil)
   (setq js2-mode-assume-strict t)
   (add-hook 'js2-mode-hook
-            (lambda ()
+            (defun my-js2-mode-hook ()
+              (interactive)
               (dtrt-indent-mode)
-              (rainbow-turn-off)
-              (rainbow-identifiers-mode nil)))
+              (spacemacs/toggle-rainbow-identifier-off)))
 
   (define-key evil-normal-state-map (kbd "SPC ") 'company-complete)
   (spacemacs/set-leader-keys
@@ -630,6 +639,7 @@ executed. Executes that without disrupting the frame window layout."
   (message "copied %s" (neo-buffer--get-filename-current-line)))
 
 (defun my-neotree-customizations ()
+  (setq treemacs-width 50)
   (add-hook 'neotree-mode-hook
             (lambda ()
               (define-key neotree-mode-map
@@ -657,7 +667,7 @@ executed. Executes that without disrupting the frame window layout."
 
   (add-hook 'projectile-after-switch-project-hook 'projectile-pyenv-mode-set)
   (add-hook 'python-mode-hook (lambda ()
-                                (call-interactively 'pyenv-mode-set "3.6.5/envs/plover-finnish")
+                                (pyenv-mode-set "3.6.5/envs/plover-finnish")
                                 (lsp)
                                 (lsp-ui-mode t)))
   (with-eval-after-load 'python-mode))
@@ -700,24 +710,8 @@ variables declared in `~/.spacemacs.env' or `~/.spacemacs.d/.spacemacs.env'.
 See the header of this file for more information."
   (spacemacs/load-spacemacs-env))
 
-
-
-;; Do not write anything past this comment. This is where Emacs will
-;; auto-generate custom variable definitions.
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   (quote
-    (csv-mode treepy graphql powerline pcre2el org-category-capture org-mime markdown-mode skewer-mode simple-httpd js2-mode parent-mode request haml-mode gitignore-mode pos-tip flx anzu sbt-mode scala-mode json-mode tablist docker-tramp json-snatcher json-reformat web-completion-data dash-functional tern restclient know-your-http-well inflections edn multiple-cursors paredit peg eval-sexp-fu highlight sesman pkg-info epl bind-map bind-key packed auto-complete popup hydra iedit avy f s origami groovy-mode yapfify pyvenv pytest pyenv-mode py-isort pip-requirements live-py-mode hy-mode helm-pydoc cython-mode company-anaconda anaconda-mode pythonic dtrt-indent flycheck company web-mode js2-refactor cider clojure-mode smartparens lispy swiper ace-window evil yasnippet alert projectile org-plus-contrib magit magit-popup git-commit helm helm-core async inf-ruby dash zoutline zenburn-theme yaml-mode ws-butler with-editor winum which-key web-beautify volatile-highlights vi-tilde-fringe uuidgen use-package undo-tree toc-org tagedit spaceline smeargle slim-mode scss-mode sass-mode rvm ruby-tools ruby-test-mode rubocop rspec-mode robe restclient-helm restart-emacs rbenv rake rainbow-mode rainbow-identifiers rainbow-delimiters queue pug-mode prodigy popwin persp-mode paradox orgit org-projectile org-present org-pomodoro org-download org-bullets open-junk-file ob-restclient ob-http noflet neotree move-text mmm-mode minitest markdown-toc magit-gitflow macrostep lorem-ipsum log4e livid-mode linum-relative link-hint less-css-mode js-doc ivy info+ indent-guide hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag goto-chg google-translate golden-ratio gnuplot gntp gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link ghub gh-md fuzzy flycheck-pos-tip flx-ido flash-region fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lispy evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu ensime emmet-mode elisp-slime-nav dumb-jump dockerfile-mode docker diminish define-word company-web company-tern company-statistics company-restclient column-enforce-mode color-identifiers-mode coffee-mode clojure-snippets clj-refactor clean-aindent-mode cider-eval-sexp-fu chruby bundler auto-yasnippet auto-highlight-symbol auto-compile auto-capitalize aggressive-indent adaptive-wrap ace-link ace-jump-helm-line ac-ispell))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(default ((t (:foreground "#DCDCCC" :background "#3F3F3F")))))
+;; ;; Do not write anything past this comment. This is where Emacs will
+;; ;; auto-generate custom variable definitions.
 (defun dotspacemacs/emacs-custom-settings ()
   "Emacs custom settings.
 This is an auto-generated function, do not modify its content directly, use
@@ -728,37 +722,11 @@ This function is called at the very end of Spacemacs initialization."
    ;; If you edit it by hand, you could mess it up, so be careful.
    ;; Your init file should contain only one such instance.
    ;; If there is more than one, they won't work right.
-   '(evil-want-Y-yank-to-eol nil)
-   '(hl-todo-keyword-faces
-     (quote
-      (("TODO" . "#dc752f")
-       ("NEXT" . "#dc752f")
-       ("THEM" . "#2d9574")
-       ("PROG" . "#4f97d7")
-       ("OKAY" . "#4f97d7")
-       ("DONT" . "#f2241f")
-       ("FAIL" . "#f2241f")
-       ("DONE" . "#86dc2f")
-       ("NOTE" . "#b1951d")
-       ("KLUDGE" . "#b1951d")
-       ("HACK" . "#b1951d")
-       ("TEMP" . "#b1951d")
-       ("FIXME" . "#dc752f")
-       ("XXX" . "#dc752f")
-       ("XXXX" . "#dc752f")
-       ("???" . "#dc752f"))))
-   '(package-selected-packages
-     (quote
-      (lsp-ui lsp-java company-lsp lsp-mode csv-mode treepy graphql powerline pcre2el org-category-capture org-mime markdown-mode skewer-mode simple-httpd js2-mode parent-mode request haml-mode gitignore-mode pos-tip flx anzu sbt-mode scala-mode json-mode tablist docker-tramp json-snatcher json-reformat web-completion-data dash-functional tern restclient know-your-http-well inflections edn multiple-cursors paredit peg eval-sexp-fu highlight sesman pkg-info epl bind-map bind-key packed auto-complete popup hydra iedit avy f s origami groovy-mode yapfify pyvenv pytest pyenv-mode py-isort pip-requirements live-py-mode hy-mode helm-pydoc cython-mode company-anaconda anaconda-mode pythonic dtrt-indent flycheck company web-mode js2-refactor cider clojure-mode smartparens lispy swiper ace-window evil yasnippet alert projectile org-plus-contrib magit magit-popup git-commit helm helm-core async inf-ruby dash zoutline zenburn-theme yaml-mode ws-butler with-editor winum which-key web-beautify volatile-highlights vi-tilde-fringe uuidgen use-package undo-tree toc-org tagedit spaceline smeargle smart-dash slim-mode scss-mode sass-mode rvm ruby-tools ruby-test-mode rubocop rspec-mode robe restclient-helm restart-emacs rbenv rake rainbow-mode rainbow-identifiers rainbow-delimiters queue pug-mode prodigy popwin persp-mode paradox orgit org-projectile org-present org-pomodoro org-download org-bullets open-junk-file ob-restclient ob-http noflet neotree move-text mmm-mode minitest markdown-toc magit-gitflow macrostep lorem-ipsum log4e livid-mode linum-relative link-hint less-css-mode js-doc ivy info+ indent-guide hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag goto-chg google-translate golden-ratio gnuplot gntp gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link ghub gh-md fuzzy flycheck-pos-tip flx-ido flash-region fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lispy evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu ensime emmet-mode elisp-slime-nav dumb-jump dockerfile-mode docker diminish define-word company-web company-tern company-statistics company-restclient column-enforce-mode color-identifiers-mode coffee-mode clojure-snippets clj-refactor clean-aindent-mode cider-eval-sexp-fu chruby bundler auto-yasnippet auto-highlight-symbol auto-compile auto-capitalize aggressive-indent adaptive-wrap ace-link ace-jump-helm-line ac-ispell)))
-   '(safe-local-variable-values
-     (quote
-      ((python-backend . lsp)
-       (javascript-backend . tern)
-       (javascript-backend . lsp)))))
+   '(safe-local-variable-values (quote ((python-backend . lsp) (javascript-backend . lsp)))))
   (custom-set-faces
    ;; custom-set-faces was added by Custom.
    ;; If you edit it by hand, you could mess it up, so be careful.
    ;; Your init file should contain only one such instance.
    ;; If there is more than one, they won't work right.
-   '(default ((t (:foreground "#DCDCCC" :background "#3F3F3F")))))
+   '(lsp-ui-sideline-global ((t (:box (:line-width 2 :color "gray11" :style pressed-button) :height 0.8)))))
   )
