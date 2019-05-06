@@ -1,5 +1,7 @@
 #+TITLE: Spell Checking layer
 
+#+TAGS: checker|layer
+
 * Table of Contents                     :TOC_4_gh:noexport:
 - [[#description][Description]]
   - [[#features][Features:]]
@@ -91,7 +93,7 @@ currently supported language:
 
 ** Enabling multi-dictionary support with hunspell
 If your language is not supported by auto-dictionary feature or you author
-multi-lingual documents you might be compeled to use hunspell’s multi-dictionary
+multi-lingual documents you might be compelled to use hunspell’s multi-dictionary
 mode. For example to enable it for pl_PL and en_GB dictionaries you could put
 following code in your dotspacemacs/user-config section in your configuration
 file:

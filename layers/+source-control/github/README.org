@@ -1,5 +1,7 @@
 #+TITLE: GitHub layer
 
+#+TAGS: layer|versioning
+
 [[file:img/github.png]]
 
 * Table of Contents                     :TOC_4_gh:noexport:
@@ -102,6 +104,20 @@ In a =magit-status= buffer (~SPC g s~):
 | ~F I~       | list issues                                               |
 | ~p y~       | pull pull-requests and issues for the current repository  |
 | ~p Y~       | pull all notifications for the current repository’s forge |
+
+In a =forge-topic= buffer:
+
+| Key binding | Description     |
+|-------------+-----------------|
+| ~SPC m c~   | create new post |
+| ~SPC m e~   | edit post       |
+
+In a =forge-post= buffer (assuming the major mode leader key is ~,~)
+
+| Key binding            | Description |
+|------------------------+-------------|
+| ~SPC m c~ or ~SPC m ,~ | submit post |
+| ~SPC m k~ or ~SPC m k~ | cancel post |
 
 ** gist.el
 

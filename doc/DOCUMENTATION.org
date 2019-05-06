@@ -542,10 +542,6 @@ tests are also run automatically when you synchronize with ~SPC f e R~.
 *** Configuration functions
 Five special functions in the =~/.spacemacs= file can be used to perform
 configuration at the beginning and end of Spacemacs loading process:
-- =dotspacemacs/layers= is called at the very startup of Spacemacs initialization,
-  this is where you set the Spacemacs distribution and declare layers to be used
-  in your configuration. You can also add or exclude packages of your choice
-  and tweak some behaviors of Spacemacs loading.
 - =dotspacemacs/init= is called at the very startup of Spacemacs initialization
   before layers configuration. *You should not put any user code* in there
   besides modifying the Spacemacs variable values prefixed with =dotspacemacs-=.
@@ -554,6 +550,10 @@ configuration at the beginning and end of Spacemacs loading process:
   that need to be set before packages are loaded.
 - =dotspacemacs/user-env= is called before the layers and packages configuration
   and it is responsible to setup environment variables.
+- =dotspacemacs/layers= is called at the startup of Spacemacs initialization,
+  this is where you set the Spacemacs distribution and declare layers to be used
+  in your configuration. You can also add or exclude packages of your choice
+  and tweak some behaviors of Spacemacs loading.
 - =dotspacemacs/user-config= is called at the very end of Spacemacs
   initialization after layers configuration. This is the place where most of
   your configurations should be done. Unless it is explicitly specified that a
@@ -1036,6 +1036,10 @@ If you don’t create such function then Spacemacs assumes you are using the
 default behavior described above.
 
 * Binding keys
+To be compatible with all Spacemacs bindings, please refer to [[https://github.com/syl20bnr/spacemacs/blob/master/doc/CONVENTIONS.org#key-bindings-conventions][Conventions]].
+In brief, ~SPC o~ is reserved for user custom bindings in =global-map=,
+and ~SPC m o~ in major modes.
+
 Key sequences are bound to commands in Emacs in various keymaps. The most basic
 map is the =global-map=. Setting a key binding in the =global-map= is achieved
 with the function =global-set-key=. Example to bind a key to the command
@@ -1077,14 +1081,23 @@ for that matter. For example, ~SPC a~ points to key bindings for “applications
 like ~SPC a c~ for =calc-dispatch=. Nesting bindings is easy.
 
 #+BEGIN_SRC emacs-lisp
-  (spacemacs/declare-prefix "]" "bracket-prefix")
-  (spacemacs/set-leader-keys "]]" 'double-bracket-command)
+  (spacemacs/declare-prefix "o" "custom")
+  (spacemacs/set-leader-keys "oc" 'my-custom-command)
 #+END_SRC
 
-The first line declares ~SPC ]~ to be a prefix and the second binds the key
-sequence ~SPC ]]~ to the corresponding command. The first line is actually
+The first line declares ~SPC o~ to be a prefix and the second binds the key
+sequence ~SPC oc~ to the corresponding command. The first line is actually
 unnecessary to create the prefix, but it will give your new prefix a name that
 key-discovery tools can use (e.g., which-key).
+
+Example to create binding in major mode:
+
+#+BEGIN_SRC emacs-lisp
+  (spacemacs/declare-prefix-for-mode 'org-mode "o" "custom")
+  (spacemacs/set-leader-keys-for-major-mode 'org-mode "oi" 'org-id-get-create)
+#+END_SRC
+
+This would add binding as ~, oi~ and ~SPC moi~.
 
 There is much more to say about bindings keys, but these are the basics. Keys
 can be bound in your =~/.spacemacs= file or in individual layers.
@@ -1483,7 +1496,7 @@ fonts from the package repository, see [[https://github.com/domtronn/all-the-ico
 You can create your own Spaceline theme by setting the variable
 =dotspacemacs-mode-line-theme= to =custom= and define a function called
 =spaceline-custom-theme= in your =dotspacemacs/user-init= function of your
-dotfile. This functions must accept a variadic number of arguments which are
+dotfile. This function must accept a variadic number of arguments which are
 additional segments added by Spacemacs (like a segment to notify about available
 updates etc...).
 
@@ -1831,6 +1844,7 @@ Additional text objects are defined in Spacemacs:
 |---------+----------------------------|
 | ~a~     | an argument                |
 | ~g~     | the entire buffer          |
+| ~l~     | a line                     |
 | ~$~     | text between =$=           |
 | ~*~     | text between =*=           |
 | ~8~     | text between =/*= and =*/= |
@@ -2193,6 +2207,10 @@ Windows manipulation commands (start with ~w~):
 | ~SPC w w~              | cycle and focus between windows                                             |
 | ~SPC w W~              | select window using [[https://github.com/abo-abo/ace-window][ace-window]]                                              |
 | ~SPC w x~              | delete a window and its current buffer (does not delete the file)           |
+| ~SPC w [~              | shrink window horizontally (enter transient state)                          |
+| ~SPC w ]~              | enlarge window horizontally (enter transient state)                         |
+| ~SPC w {~              | shrink window vertically (enter transient state)                            |
+| ~SPC w }~              | enlarge window vertically (enter transient state)                           |
 
 Split the current window into multiple ones, deleting all others using the
 following commands:
@@ -2259,6 +2277,8 @@ window resizing.
 | ~9~         | go to window number 9                                         |
 | ~/~         | vertical split                                                |
 | ~-~         | horizontal split                                              |
+| ~\vert~     | maximize window vertically                                    |
+| ~_~         | maximize window horizontally                                  |
 | ~[~         | shrink window horizontally                                    |
 | ~]~         | enlarge window horizontally                                   |
 | ~{~         | shrink window vertically                                      |
@@ -2274,6 +2294,7 @@ window resizing.
 | ~J~         | move window to the bottom                                     |
 | ~K~         | move bottom to the top                                        |
 | ~L~         | move window to the right                                      |
+| ~m~         | toggle maximization of current window                         |
 | ~o~         | focus other frame                                             |
 | ~r~         | rotate windows forward                                        |
 | ~R~         | rotate windows backward                                       |
@@ -2709,10 +2730,9 @@ directly search into it like with ~SPC s p~.
 
 **** Searching the web
 
-| Key binding | Description                                                          |
-|-------------+----------------------------------------------------------------------|
-| ~SPC s w g~ | Get Google suggestions in emacs. Opens Google results in Browser.    |
-| ~SPC s w w~ | Get Wikipedia suggestions in emacs. Opens Wikipedia page in Browser. |
+| Key binding | Description                                                       |
+|-------------+-------------------------------------------------------------------|
+| ~SPC s w g~ | Get Google suggestions in emacs. Opens Google results in Browser. |
 
 *** Persistent highlighting
 Spacemacs uses =evil-search-highlight-persist= to keep the searched expression

@@ -63,11 +63,12 @@
     :defer (spacemacs/defer)
     :init
     (progn
-      ;; (spacemacs|add-transient-hook minibuffer-setup-hook
-      ;;   (lambda ()
-      ;;     (require 'helm-mode)
-      ;;     (spacemacs|hide-lighter helm-mode))
-      ;;   lazy-load-helm)
+      (spacemacs|add-transient-hook read-file-name
+        (lambda (&rest _args) (require 'helm))
+        lazy-load-helm-for-read-file-name)
+      (spacemacs|add-transient-hook completing-read
+        (lambda (&rest _args) (require 'helm))
+        lazy-load-helm-for-completing-read)
       (add-hook 'helm-cleanup-hook #'spacemacs//helm-cleanup)
       ;; key bindings
       ;; Use helm to provide :ls, unless ibuffer is used
@@ -110,7 +111,6 @@
       ;; various key bindings
       (spacemacs||set-helm-key "fel" helm-locate-library)
       (spacemacs||set-helm-key "hdm" describe-mode)
-      (spacemacs||set-helm-key "sww" helm-wikipedia-suggest)
       (spacemacs||set-helm-key "swg" helm-google-suggest)
       (with-eval-after-load 'helm-files
         (define-key helm-find-files-map

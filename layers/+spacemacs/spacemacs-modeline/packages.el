@@ -35,7 +35,7 @@
   (use-package doom-modeline
     :defer t
     :if (eq (spacemacs/get-mode-line-theme-name) 'doom)
-    :init (add-hook 'after-init-hook 'doom-modeline-init)))
+    :init (doom-modeline-init)))
 
 (defun spacemacs-modeline/init-fancy-battery ()
   (use-package fancy-battery
@@ -190,6 +190,7 @@
             symon-refresh-rate 2)
       (spacemacs|add-toggle minibuffer-system-monitor
         :mode symon-mode
+        :documentation "Tiny graphical system monitor."
         :evil-leader "tms"))))
 
 (defun spacemacs-modeline/init-vim-powerline ()

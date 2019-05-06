@@ -1967,7 +1967,7 @@ RNAME is the name symbol of another existing layer."
     (if (file-directory-p location)
         (file-name-as-directory location)
       (configuration-layer//warning
-       "Location path for package %S does not exists (value: %s)."
+       "Location path for package %S does not exist (value: %s)."
        pkg-name location)
       nil))
    ((eq 'local location)
@@ -2421,10 +2421,7 @@ depends on it."
   (let ((layer-name
          (intern (completing-read
                   "Choose a used layer"
-                  (sort configuration-layer--used-layers
-                        (lambda (x y)
-                          (string< (oref (cdr x) :name)
-                                   (oref (cdr y) :name))))))))
+                  (sort (copy-list configuration-layer--used-layers) #'string<)))))
     (let ((mode-exts (configuration-layer//lazy-install-extensions-for-layer
                       layer-name)))
       (dolist (x mode-exts)

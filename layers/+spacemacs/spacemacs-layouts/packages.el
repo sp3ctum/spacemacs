@@ -103,7 +103,6 @@
 
 
 (defun spacemacs-layouts/post-init-helm ()
-  (spacemacs||set-helm-key "l" spacemacs/layouts-transient-state/body)
   (spacemacs/set-leader-keys
     "bB" 'spacemacs-layouts/non-restricted-buffer-list-helm
     "pl" 'spacemacs/helm-persp-switch-project))
@@ -220,6 +219,8 @@
       (defadvice persp-activate (before spacemacs//save-toggle-layout activate)
         (setq spacemacs--last-selected-layout persp-last-persp-name))
       (add-hook 'persp-mode-hook 'spacemacs//layout-autosave)
+      (add-hook 'persp-created-functions
+                #'spacemacs//add-project-buffers-to-persp)
       (advice-add 'persp-load-state-from-file :before 'spacemacs//layout-wait-for-modeline)
       ;; Override SPC TAB to only change buffers in perspective
       (spacemacs/set-leader-keys

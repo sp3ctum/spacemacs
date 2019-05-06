@@ -47,6 +47,7 @@
 (defun java/init-eclim ()
   (use-package eclim
     :defer t
+    :if (eq java-backend 'eclim)
     ;; :init (setq eclim-auto-save nil)
     :config
     (progn
@@ -73,7 +74,7 @@
                         ("mr" . "refactor")
                         ("mt" . "test")))
         (spacemacs/declare-prefix-for-mode
-         'java-mode (car prefix) (cdr prefix)))
+          'java-mode (car prefix) (cdr prefix)))
       (spacemacs/set-leader-keys-for-major-mode 'java-mode
         ;; ant
         "aa" 'eclim-ant-run
@@ -160,6 +161,7 @@
 (defun java/init-ensime ()
   (use-package ensime
     :defer t
+    :if (eq java-backend 'ensime)
     :commands ensime-mode
     :init
     (progn
@@ -317,12 +319,12 @@
       (when (configuration-layer/package-used-p 'groovy-mode)
         (add-hook 'groovy-mode-hook 'gradle-mode)
         (spacemacs/declare-prefix-for-mode 'groovy-mode "ml" "gradle")
-        (spacemacs/declare-prefix-for-mode 'groovy-mode "mc" "compile")
+        (spacemacs/declare-prefix-for-mode 'groovy-mode "mlc" "compile")
         (spacemacs/declare-prefix-for-mode 'groovy-mode "mlt" "tests"))
       (when (configuration-layer/package-used-p 'java-mode)
         (add-hook 'java-mode-hook 'gradle-mode)
         (spacemacs/declare-prefix-for-mode 'java-mode "ml" "gradle")
-        (spacemacs/declare-prefix-for-mode 'groovy-mode "mc" "compile")
+        (spacemacs/declare-prefix-for-mode 'java-mode "mlc" "compile")
         (spacemacs/declare-prefix-for-mode 'java-mode "mlt" "tests")))
     :config
     (progn
@@ -379,6 +381,7 @@
 (defun java/init-meghanada ()
   (use-package meghanada
     :defer t
+    :if (eq java-backend 'meghanada)
     :init
     (progn
       (setq meghanada-server-install-dir (concat spacemacs-cache-directory
@@ -397,7 +400,7 @@
                         ("mt" . "test")
                         ("mx" . "execute")))
         (spacemacs/declare-prefix-for-mode
-         'java-mode (car prefix) (cdr prefix)))
+          'java-mode (car prefix) (cdr prefix)))
       (spacemacs/set-leader-keys-for-major-mode 'java-mode
         "cb" 'meghanada-compile-file
         "cc" 'meghanada-compile-project
@@ -432,40 +435,48 @@
 (defun java/init-lsp-java ()
   (use-package lsp-java
     :defer t
+    :if (eq java-backend 'lsp)
     :config
     (progn
       ;; key bindings
       (dolist (prefix '(("mc" . "compile")
                         ("mg" . "goto")
                         ("mr" . "refactor")
-                        ("mq" . "lsp")))
-        (spacemacs/set-leader-keys-for-major-mode 'java-mode
-          "pu"  'lsp-java-update-user-settings
-          "roi" 'lsp-java-organize-imports
-          "rai" 'lsp-java-add-import
-          "ram" 'lsp-java-add-unimplemented-methods
-          "rcp" 'lsp-java-create-parameter
-          "rcf" 'lsp-java-create-field
-          "rec" 'lsp-java-extract-to-constant
-          "rel" 'lsp-java-extract-to-local-variable
-          "rem" 'lsp-java-extract-method
-          "cc"  'lsp-java-build-project
-          "an"  'lsp-java-actionable-notifications
+                        ("mra" . "add")
+                        ("mrc" . "create")
+                        ("mre" . "extract")
+                        ("mq" . "lsp")
+                        ("mt" . "test")
+                        ("mx" . "execute")))
+        (spacemacs/declare-prefix-for-mode
+          'java-mode (car prefix) (cdr prefix)))
+      (spacemacs/set-leader-keys-for-major-mode 'java-mode
+        "pu"  'lsp-java-update-user-settings
+        "ro" 'lsp-java-organize-imports
+        "rai" 'lsp-java-add-import
+        "ram" 'lsp-java-add-unimplemented-methods
+        "rcp" 'lsp-java-create-parameter
+        "rcf" 'lsp-java-create-field
+        "rec" 'lsp-java-extract-to-constant
+        "rel" 'lsp-java-extract-to-local-variable
+        "rem" 'lsp-java-extract-method
+        "cc"  'lsp-java-build-project
+        "an"  'lsp-java-actionable-notifications
 
-          ;; dap-mode
+        ;; dap-mode
 
-          ;; debug
-          "ddj" 'dap-java-debug
-          "dtt" 'dap-java-debug-test-method
-          "dtc" 'dap-java-debug-test-class
-          ;; run
-          "tt" 'dap-java-run-test-method
-          "tc" 'dap-java-run-test-class)
+        ;; debug
+        "ddj" 'dap-java-debug
+        "dtt" 'dap-java-debug-test-method
+        "dtc" 'dap-java-debug-test-class
+        ;; run
+        "tt" 'dap-java-run-test-method
+        "tc" 'dap-java-run-test-class)
 
-        (setq lsp-highlight-symbol-at-point nil
-              lsp-ui-sideline-update-mode 'point
-              lsp-eldoc-render-all nil
-              lsp-java-completion-guess-arguments t)))))
+      (setq lsp-highlight-symbol-at-point nil
+            lsp-ui-sideline-update-mode 'point
+            lsp-eldoc-render-all nil
+            lsp-java-completion-guess-arguments t))))
 
 (defun java/init-mvn ()
   (use-package mvn

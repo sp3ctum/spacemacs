@@ -151,6 +151,10 @@ in =user-init=, and any variable that Spacemacs explicitly sets but you wish to
 
 Anything that isn’t just setting a variable should 99% be in =user-config=.
 
+Note that at time of writing files supplied as command line arguments to emacs
+will be read before =user-config= is executed. (Hence to yield consistent
+behaviour, mode hooks should be set in =user-init=.)
+
 ** Why do some of my =org=-related settings cause problems?
 Since version 0.104, spacemacs uses the =org= version from the org ELPA
 repository instead of the one shipped with emacs. Then, any =org= related code
@@ -455,7 +459,7 @@ management), you can use this:
 
 ** Restore the sentence delimiter to two spaces?
 To restore the sentence delimiter to two spaces, add the following code to the
-=dotspacemacs/user-init= function of your =.spacemacs=:
+=dotspacemacs/user-config= function of your =.spacemacs=:
 
 #+BEGIN_SRC emacs-lisp
   (setq sentence-end-double-space t)

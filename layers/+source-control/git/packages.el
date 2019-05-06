@@ -21,6 +21,7 @@
         git-link
         git-messenger
         git-timemachine
+        golden-ratio
         (helm-git-grep :requires helm)
         (helm-gitignore :requires helm)
         magit
@@ -30,6 +31,11 @@
         smeargle
         transient
         ))
+
+(defun git/pre-init-golden-ratio ()
+  (spacemacs|use-package-add-hook golden-ratio
+    :post-config
+    (add-to-list 'golden-ratio-exclude-buffer-names " *transient*")))
 
 (defun git/pre-init-evil-magit ()
   (spacemacs|use-package-add-hook magit
@@ -204,14 +210,20 @@ Press [_b_] again to blame further in the history, [_q_] to go up or quit."
               (concat mm-key mm-key) 'with-editor-finish
               (concat mm-key "a")    'with-editor-cancel
               (concat mm-key "c")    'with-editor-finish
-              (concat mm-key "k")    'with-editor-cancel))))
+              (concat mm-key "k")    'with-editor-cancel)
+            (evil-define-key state magit-log-select-mode-map
+              (concat mm-key mm-key) 'magit-log-select-pick
+              (concat mm-key "a")    'magit-log-select-quit
+              (concat mm-key "c")    'magit-log-select-pick
+              (concat mm-key "k")    'magit-log-select-quit))))
       ;; whitespace
       (define-key magit-status-mode-map (kbd "C-S-w")
         'spacemacs/magit-toggle-whitespace)
       ;; full screen magit-status
       (when git-magit-status-fullscreen
-        (setq magit-display-buffer-function 'magit-display-buffer-fullframe-status-v1))
-      (add-to-list 'magit-log-arguments "--color"))))
+        (setq magit-display-buffer-function
+              'magit-display-buffer-fullframe-status-v1))
+      (spacemacs|hide-lighter with-editor-mode))))
 
 (defun git/init-magit-gitflow ()
   (use-package magit-gitflow
@@ -249,7 +261,8 @@ Press [_b_] again to blame further in the history, [_q_] to go up or quit."
                  ("smeargle-clear" . "clear"))))
           (dolist (nd descr)
             ;; ensure the target matches the whole string
-            (push (cons (cons nil (concat "\\`" (car nd) "\\'")) (cons nil (cdr nd)))
+            (push (cons (cons nil (concat "\\`" (car nd) "\\'"))
+                        (cons nil (cdr nd)))
                   which-key-replacement-alist))))
       (spacemacs/set-leader-keys
         "gHc" 'smeargle-clear

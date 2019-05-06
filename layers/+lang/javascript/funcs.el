@@ -33,7 +33,13 @@
       (progn
         (lsp))
     (message (concat "`lsp' layer is not installed, "
-                     "please add `lsp' layer to your dotfile."))))
+                     "please add `lsp' layer to your dotfile.")))
+  (if (configuration-layer/layer-used-p 'dap)
+      (progn
+        (require 'dap-firefox)
+        (require 'dap-chrome)
+        (spacemacs/dap-bind-keys-for-mode 'js2-mode))
+    (message "`dap' layer is not installed, please add `dap' layer to your dotfile.")))
 
 (defun spacemacs//javascript-setup-lsp-company ()
   "Setup lsp auto-completion."
@@ -124,3 +130,21 @@
   (spacemacs/skewer-eval-region beg end)
   (skewer-repl)
   (evil-insert-state))
+
+
+;; Others
+
+(defun spacemacs/javascript-format ()
+  "Call formatting tool specified in `javascript-fmt-tool'."
+  (interactive)
+  (cond
+   ((eq javascript-fmt-tool 'prettier)
+    (call-interactively 'prettier-js))
+   ((eq javascript-fmt-tool 'web-beautify)
+    (call-interactively 'web-beautify-js))
+   (t (error (concat "%s isn't valid javascript-fmt-tool value."
+                     " It should be 'web-beutify or 'prettier.")
+                     (symbol-name javascript-fmt-tool)))))
+
+(defun spacemacs/javascript-fmt-before-save-hook ()
+  (add-hook 'before-save-hook 'spacemacs/javascript-format t t))

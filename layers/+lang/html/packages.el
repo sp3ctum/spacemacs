@@ -78,6 +78,10 @@
       (when (version< emacs-version "25")
         (add-hook 'css-mode-hook 'spacemacs/run-prog-mode-hooks))
 
+      (spacemacs/declare-prefix-for-mode 'css-mode "m=" "format")
+      (spacemacs/declare-prefix-for-mode 'css-mode "mg" "goto")
+      (spacemacs/declare-prefix-for-mode 'css-mode "mz" "foldz")
+
       (spacemacs/set-leader-keys-for-major-mode 'css-mode
         "zc" 'spacemacs/css-contract-statement
         "zo" 'spacemacs/css-expand-statement))))
@@ -136,7 +140,7 @@
     :init
     (progn
       (dolist (mode '(web-mode css-mode))
-        (spacemacs/set-leader-keys-for-major-mode 'web-mode "i" 'spacemacs/impatient-mode)))))
+        (spacemacs/set-leader-keys-for-major-mode 'web-mode "I" 'spacemacs/impatient-mode)))))
 
 (defun html/init-less-css-mode ()
   (use-package less-css-mode
@@ -190,6 +194,7 @@
     :defer t
     :config
     (progn
+      (spacemacs/declare-prefix-for-mode 'web-mode "m=" "format")
       (spacemacs/declare-prefix-for-mode 'web-mode "mE" "errors")
       (spacemacs/declare-prefix-for-mode 'web-mode "mg" "goto")
       (spacemacs/declare-prefix-for-mode 'web-mode "mh" "dom")

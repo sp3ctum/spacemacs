@@ -1,5 +1,7 @@
 #+TITLE: SQL layer
 
+#+TAGS: layer|uncategorized
+
 [[file:img/sql.png]]
 
 * Table of Contents                     :TOC_4_gh:noexport:
@@ -37,6 +39,7 @@ This layer adds support for a wide range of SQL dialects to Spacemacs.
   - Sybase
   - Vertica
 - Syntax-checking via [[https://github.com/purcell/sqlint][sqlint]] for ANSI SQL.
+- Format code with =sqlfmt=
 - Snippet insertion for the more general SQL constructs.
 - REPL support via =SQLi= buffer.
 - Automatic capitalization of keywords.
