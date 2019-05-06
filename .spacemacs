@@ -54,16 +54,16 @@ This function should only modify configuration layer settings."
      clojure
      prodigy
      html
-     (scala :variables
-            scala-auto-insert-asterisk-in-comments t)
-     my-scala-extensions
      yaml
      (ruby :variables
            ruby-test-runner 'rspec)
+     (scala :variables
+            scala-backend ':metals)
      docker
      groovy
      javascript
-     restclient)
+     restclient
+     copy-as-format)
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
@@ -472,7 +472,7 @@ before packages are loaded. If you are unsure, you should try in setting them in
 
 (defun my-work-monitor-font-size ()
   (interactive)
-  (set-default-font "-PfEd-DejaVu Sans Mono-normal-normal-normal-*-12-*-*-*-m-0-iso10646-1"))
+  (set-face-attribute 'default nil :font "DejaVu Sans Mono-9"))
 
 (defun my-custom-normal-mode-commands ()
   ;; I liked this, but spacemacs took it away from me
@@ -527,12 +527,6 @@ before packages are loaded. If you are unsure, you should try in setting them in
   (with-eval-after-load 'scala-mode
     (require 'ensime))
 
-  (add-hook 'scala-mode-hook 'smartparens-mode)
-
-  ;; jump out of a pair of delimiters with )
-  (evil-define-key 'insert smartparens-mode-map (kbd ")") 'sp-up-sexp)
-  (evil-define-key 'normal scala-mode-map (kbd ")") 'sp-up-sexp)
-
   (add-to-list 'aggressive-indent-excluded-modes 'scala-mode)
 
   ;; fix indenting this weirldy: foo.map(a => {
@@ -573,14 +567,6 @@ before packages are loaded. If you are unsure, you should try in setting them in
   (setq haml-indent-offset 2))
 
 (defun my-ruby-config ()
-  ;; fix not finding "bundle"
-  (let ((home (getenv "HOME")))
-    (if (not (getenv "TERM_PROGRAM"))
-        (setenv "PATH"
-                (s-concat (getenv "PATH")
-                          ":" home "/bin/"
-                          ":" home "/.rvm/gems/ruby-2.3.0/bin/"
-                          ":" home "/.rvm/bin/"))))
 
   (with-eval-after-load 'haml-mode
     (add-hook 'haml-mode-hook 'dtrt-indent-mode)
@@ -593,7 +579,12 @@ before packages are loaded. If you are unsure, you should try in setting them in
 
   ;; without this, emacs will insert a comment at the start of all files. the
   ;; comment says "coding: utf-8" or similar.
-  (setq ruby-insert-encoding-magic-comment nil))
+  (setq ruby-insert-encoding-magic-comment nil)
+
+  (add-hook 'ruby-mode-hook
+            (lambda ()
+              (lsp)
+              (lsp-ui-mode))))
 
 (defun my-git-config ()
   ;; open new window always in a side split
@@ -722,6 +713,9 @@ This function is called at the very end of Spacemacs initialization."
    ;; If you edit it by hand, you could mess it up, so be careful.
    ;; Your init file should contain only one such instance.
    ;; If there is more than one, they won't work right.
+   '(package-selected-packages
+     (quote
+      (copy-as-format lsp-mode zenburn-theme yasnippet-snippets yapfify yaml-mode ws-butler writeroom-mode winum which-key web-mode web-beautify volatile-highlights vi-tilde-fringe uuidgen use-package treemacs-projectile treemacs-evil toc-org tagedit symon string-inflection spaceline-all-the-icons smeargle smart-dash slim-mode seeing-is-believing scss-mode sass-mode rvm ruby-tools ruby-test-mode ruby-refactor ruby-hash-syntax rubocop rspec-mode robe restclient-helm restart-emacs rbenv rake rainbow-mode rainbow-identifiers rainbow-delimiters pytest pyenv-mode py-isort pug-mode prodigy prettier-js popwin pippel pipenv pip-requirements persp-mode password-generator paradox overseer orgit org-projectile org-present org-pomodoro org-mime org-download org-bullets org-brain open-junk-file ob-restclient ob-http noflet nameless mvn move-text mmm-mode minitest meghanada maven-test-mode markdown-toc magit-svn magit-gitflow macrostep lsp-ui lsp-java lorem-ipsum livid-mode live-py-mode link-hint json-navigator js2-refactor js-doc indent-guide importmagic impatient-mode hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-pydoc helm-purpose helm-projectile helm-org-rifle helm-mode-manager helm-make helm-gitignore helm-git-grep helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag groovy-mode groovy-imports gradle-mode google-translate golden-ratio gnuplot gitignore-templates gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md fuzzy font-lock+ flycheck-pos-tip flx-ido flash-region fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-org evil-numbers evil-nerd-commenter evil-matchit evil-magit evil-lispy evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu ensime emmet-mode elisp-slime-nav editorconfig dumb-jump dtrt-indent dotenv-mode doom-modeline dockerfile-mode docker diminish define-word cython-mode csv-mode counsel-projectile company-web company-tern company-statistics company-restclient company-lsp company-emacs-eclim company-anaconda column-enforce-mode color-identifiers-mode coffee-mode clojure-snippets clean-aindent-mode cider-eval-sexp-fu cider chruby centered-cursor-mode bundler auto-yasnippet auto-highlight-symbol auto-compile auto-capitalize aggressive-indent ace-link ace-jump-helm-line ac-ispell)))
    '(safe-local-variable-values (quote ((python-backend . lsp) (javascript-backend . lsp)))))
   (custom-set-faces
    ;; custom-set-faces was added by Custom.
