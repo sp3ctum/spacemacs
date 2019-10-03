@@ -14,13 +14,16 @@
 ;; move point to the end of buffer on new output
 (setq comint-move-point-for-output t)
 
+;; allow moving around the buffer in emacs >= 26.1 in evil's normal mode
+(setq term-char-mode-point-at-process-mark nil)
+
 ;; Variables
 
-(defvar shell-default-shell (if (eq window-system 'w32)
+(defvar shell-default-shell (if (spacemacs/system-is-mswindows)
                                 'eshell
                               'ansi-term)
-  "Default shell to use in Spacemacs. Possible values are `eshell', `shell',
-`term', `ansi-term' and `multi-term'.")
+  "Default shell to use in Spacemacs. Possible values are `eshell' (default),
+`shell', `term', `ansi-term', `multi-term' and `vterm'.")
 
 (defvar shell-default-position 'bottom
   "Position of the shell. Possible values are `top', `bottom', `full',
@@ -46,3 +49,7 @@ prompts and the prompt is made read-only")
 
 (defvar shell-default-full-span t
   "If non-nil, the `shell' buffer spans full width of a frame.")
+
+(defvar close-window-with-terminal nil
+  "If non-nil, the window is closed when the terminal is stopped.
+This is only applied to `term' and `ansi-term' modes.")

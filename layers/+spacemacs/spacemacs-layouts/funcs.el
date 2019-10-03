@@ -1,4 +1,4 @@
-;;; funcs.el --- Spacemacs Layouts Layer functions File
+;;; funcs.el --- Spacemacs Layouts Layer functions File -*- lexical-binding: t; -*-
 ;;
 ;; Copyright (c) 2012-2018 Sylvain Benner & Contributors
 ;;
@@ -79,6 +79,10 @@ Cancels autosave on exiting perspectives mode."
   (interactive)
   (let ((ivy-ignore-buffers (remove #'spacemacs//layout-not-contains-buffer-p ivy-ignore-buffers)))
     (ivy-switch-buffer)))
+
+(defun spacemacs-layouts//advice-with-persp-buffer-list (orig-fun &rest args)
+  "Advice to provide perp buffer list."
+  (with-persp-buffer-list () (apply orig-fun args)))
 
 
 ;; Persp transient-state
@@ -164,13 +168,10 @@ ask the user if a new layout should be created."
       (let ((persp-reset-windows-on-nil-window-conf t)
             (generated-name (and dotspacemacs-auto-generate-layout-names
                                  (spacemacs//generate-layout-name pos))))
-        (cond
-         (generated-name
-          (persp-switch generated-name))
-         ((y-or-n-p (concat "Layout in this position doesn't exist. "
-                            "Do you want to create one? "))
-          (persp-switch nil)
-          (spacemacs/home-delete-other-windows)))))))
+        (if generated-name
+            (persp-switch generated-name) ; select an existing layout
+          (persp-switch nil)              ; create a new layout
+          (spacemacs/home-delete-other-windows))))))
 
 ;; Define all `spacemacs/persp-switch-to-X' functions
 (dolist (i (number-sequence 9 0 -1))
@@ -292,7 +293,7 @@ Available PROPS:
                                        ,binding ,already-defined? ,name)
              (setq spacemacs--custom-layout-alist
                    (delete (assoc ,binding spacemacs--custom-layout-alist)
-                     spacemacs--custom-layout-alist))
+                           spacemacs--custom-layout-alist))
              (push '(,binding . ,name) spacemacs--custom-layout-alist))
          (push '(,binding . ,name) spacemacs--custom-layout-alist)))))
 
@@ -326,6 +327,76 @@ format so they are supported by the
              :doc (concat (spacemacs//custom-layouts-ms-documentation))
              :bindings
              ,@bindings))))
+
+
+;; Persp and Projectile integration
+
+(defmacro spacemacs||switch-layout (name &rest props)
+  "Switch to the perspective called NAME.
+
+Available PROPS:
+
+`:init EXPRESSIONS'
+    One or more forms, which will be evaluated after switching to perspective
+    NAME if the perspective did not already exist."
+  (declare (indent 1))
+  (let ((init (spacemacs/mplist-get-values props :init)))
+    `(let ((persp-reset-windows-on-nil-window-conf t)
+           (persp-already-exists (persp-with-name-exists-p ,name)))
+       (persp-switch ,name)
+       (unless persp-already-exists
+         ,@init))))
+
+(defun spacemacs//create-persp-with-current-project-buffers (name)
+  "Create new perspective with project buffers.
+
+If perspective NAME does not already exist, create it and add any
+buffers that belong to the current buffer's project."
+  (if (persp-with-name-exists-p name)
+      (message "There is already a perspective named %s" name)
+    (if-let ((project (projectile-project-p)))
+        (spacemacs||switch-layout name
+          :init
+          (persp-add-buffer (projectile-project-buffers project)
+                            (persp-get-by-name name) nil nil))
+      (message "Current buffer does not belong to a project"))))
+
+(defmacro spacemacs||switch-project-persp (name &rest body)
+  "Switch to persp and execute BODY with hook to add project buffers.
+
+Switch to perspective NAME, and then evaluate the forms in BODY.
+If the perspective did not already exist, then BODY will be
+evaluated with `projectile-after-switch-project-hook' bound to
+add a hook that adds the current project's buffers to the
+perspective.  If the user quits during the evaluation of BODY,
+the new perspective will be killed."
+  (declare (indent 1))
+  `(let ((projectile-after-switch-project-hook
+          projectile-after-switch-project-hook))
+     (spacemacs||switch-layout ,name
+       :init
+       (add-hook 'projectile-after-switch-project-hook
+                 (lambda ()
+                   (let ((persp (persp-get-by-name ,name)))
+                     (when (persp-p persp)
+                       (persp-add-buffer (projectile-project-buffers
+                                          (expand-file-name ,name))
+                                         persp nil nil)))))
+       (condition-case nil
+           (progn
+             ,@body)
+         (quit (persp-kill-without-buffers ,name))))))
+
+
+;; Helm and Ivy common functions
+
+(defun spacemacs//create-persp-with-home-buffer (name)
+  "Switch to perspective and display the Spacemacs home buffer.
+
+If perspective NAME does not already exist, create it and display
+the Spacemacs home buffer.  If the perspective already exists,
+just switch to it."
+  (spacemacs||switch-layout name :init (spacemacs/home)))
 
 
 ;; Helm integration
@@ -371,11 +442,11 @@ perspectives does."
         :requires-pattern t
         :action
         '(("Create new perspective" .
-           (lambda (name)
-             (let ((persp-reset-windows-on-nil-window-conf t))
-               (persp-switch name)
-               (unless (member name (persp-names-current-frame-fast-ordered))
-                 (spacemacs/home))))))))))
+           spacemacs//create-persp-with-home-buffer)
+          ("Create new perspective with buffers from current project" .
+           spacemacs//create-persp-with-current-project-buffers)
+          ("Create new perspective with buffers from current perspective" .
+           persp-copy))))))
 
 ;; ability to use helm find files but also adds to current perspective
 (defun spacemacs/helm-persp-close ()
@@ -410,7 +481,29 @@ perspectives does."
                    (mapcar 'persp-kill
                            (helm-marked-candidates))))))))
 
+(defun spacemacs//helm-persp-switch-project-action (project)
+  "Default action for `spacemacs/helm-persp-switch-project'."
+  (spacemacs||switch-project-persp project
+    (let ((projectile-completion-system 'helm)
+          (helm-quit-hook (append helm-quit-hook
+                                  (lambda ()
+                                    (persp-kill-without-buffers project)))))
+      (projectile-switch-project-by-name project))))
+
+(defun spacemacs//helm-persp-switch-project-action-maker (project-action)
+  "Make persistent actions for `spacemacs/helm-persp-switch-project'.
+Run PROJECT-ACTION on project."
+  (lambda (project)
+    (spacemacs||switch-project-persp project
+      (let ((projectile-completion-system 'helm)
+            (projectile-switch-project-action project-action)
+            (helm-quit-hook (append helm-quit-hook
+                                    (lambda ()
+                                      (persp-kill-without-buffers project)))))
+        (projectile-switch-project-by-name project)))))
+
 (defun spacemacs/helm-persp-switch-project (arg)
+  "Select a project layout using Helm."
   (interactive "P")
   (helm
    :sources
@@ -422,34 +515,34 @@ perspectives does."
                projectile-known-projects))
      :fuzzy-match helm-projectile-fuzzy-match
      :mode-line helm-read-file-name-mode-line-string
-     :action '(("Switch to Project Perspective" .
-                (lambda (project)
-                  (let ((persp-reset-windows-on-nil-window-conf t))
-                    (persp-switch project)
-                    (let ((projectile-completion-system 'helm))
-                      (projectile-switch-project-by-name project)))))))
+     :action `(("Switch to Project Perspective" .
+                spacemacs//helm-persp-switch-project-action)
+               ("Switch to Project Perspective and Show Recent Files" .
+                ,(spacemacs//helm-persp-switch-project-action-maker
+                  'helm-projectile-recentf))
+               ("Switch to Project Perspective and Search" .
+                ,(spacemacs//helm-persp-switch-project-action-maker
+                  'spacemacs/helm-project-smart-do-search))))
    :buffer "*Helm Projectile Layouts*"))
 
 
 ;; Ivy integration
-(defun spacemacs/ivy-persp-switch-project-advice (project)
-  (let ((persp-reset-windows-on-nil-window-conf t))
-    (persp-switch project)))
+(defun spacemacs//ivy-persp-switch-project-action (project)
+  "Default action for `spacemacs/ivy-persp-switch-project'."
+  (spacemacs||switch-project-persp project
+    (counsel-projectile-switch-project-action project)))
 
 (defun spacemacs/ivy-persp-switch-project (arg)
+  "Select a project layout using Ivy."
   (interactive "P")
   (require 'counsel-projectile)
-  (advice-add 'counsel-projectile-switch-project-action
-              :before #'spacemacs/ivy-persp-switch-project-advice)
   (ivy-read "Switch to Project Perspective: "
             (if (projectile-project-p)
                 (cons (abbreviate-file-name (projectile-project-root))
                       (projectile-relevant-known-projects))
               projectile-known-projects)
-            :action #'counsel-projectile-switch-project-action
-            :caller 'spacemacs/ivy-persp-switch-project)
-  (advice-remove 'counsel-projectile-switch-project-action
-                 'spacemacs/ivy-persp-switch-project-advice))
+            :action #'spacemacs//ivy-persp-switch-project-action
+            :caller 'spacemacs/ivy-persp-switch-project))
 
 
 ;; Eyebrowse
@@ -552,6 +645,12 @@ STATE is a window-state object as returned by `window-state-get'."
 
 
 ;; Eyebrowse transient state
+
+(defun spacemacs/single-win-workspace ()
+  "Create a new single window workspace, and show the Spacemacs home buffer."
+  (interactive)
+  (let ((eyebrowse-new-workspace 'spacemacs/home))
+    (eyebrowse-create-window-config)))
 
 (defun spacemacs//workspaces-ts-toggle-hint ()
   "Toggle the full hint docstring for the workspaces transient-state."
@@ -689,11 +788,3 @@ containing the buffer."
                (append (persp-parameter 'gui-eyebrowse-window-configs persp)
                        (persp-parameter 'term-eyebrowse-window-configs persp)))
         (eyebrowse--rename-window-config-buffers window-config old new)))))
-
-
-;; Persp and Projectile integration
-
-(defun spacemacs//add-project-buffers-to-persp (persp _persp-hash)
-  (if-let ((buffers (and (projectile-project-p)
-                         (projectile-project-buffers))))
-      (persp-add-buffer buffers persp nil nil)))

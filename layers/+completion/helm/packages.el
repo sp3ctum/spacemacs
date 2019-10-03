@@ -63,12 +63,15 @@
     :defer (spacemacs/defer)
     :init
     (progn
-      (spacemacs|add-transient-hook read-file-name
-        (lambda (&rest _args) (require 'helm))
-        lazy-load-helm-for-read-file-name)
       (spacemacs|add-transient-hook completing-read
         (lambda (&rest _args) (require 'helm))
         lazy-load-helm-for-completing-read)
+      (spacemacs|add-transient-hook completion-at-point
+        (lambda (&rest _args) (require 'helm))
+        lazy-load-helm-for-completion-at-point)
+      (spacemacs|add-transient-hook read-file-name
+        (lambda (&rest _args) (require 'helm))
+        lazy-load-helm-for-read-file-name)
       (add-hook 'helm-cleanup-hook #'spacemacs//helm-cleanup)
       ;; key bindings
       ;; Use helm to provide :ls, unless ibuffer is used
@@ -83,6 +86,7 @@
       (spacemacs||set-helm-key "<f1>" helm-apropos)
       (spacemacs||set-helm-key "a'"   helm-available-repls)
       (spacemacs||set-helm-key "bb"   helm-mini)
+      (spacemacs||set-helm-key "bU"   spacemacs/helm-buffers-list-unfiltered)
       (spacemacs||set-helm-key "Cl"   helm-colors)
       (spacemacs||set-helm-key "ff"   spacemacs/helm-find-files)
       (spacemacs||set-helm-key "fF"   helm-find-files)
@@ -149,6 +153,12 @@
       ;; helm-locate uses es (from everything on windows which doesnt like fuzzy)
       (helm-locate-set-command)
       (setq helm-locate-fuzzy-match (string-match "locate" helm-locate-command))
+      (setq helm-boring-buffer-regexp-list
+            (append helm-boring-buffer-regexp-list
+                    spacemacs-useless-buffers-regexp))
+      (setq helm-white-buffer-regexp-list
+            (append helm-white-buffer-regexp-list
+                    spacemacs-useful-buffers-regexp))
       ;; alter helm-bookmark key bindings to be simpler
       (defun simpler-helm-bookmark-keybindings ()
         (define-key helm-bookmark-map (kbd "C-d") 'helm-bookmark-run-delete)
@@ -370,7 +380,14 @@
                      (if thing thing ""))))))
           (call-interactively 'helm-swoop)))
 
+      (defun spacemacs/helm-swoop-clear-cache ()
+        "Call `helm-swoop--clear-cache' to clear the cache"
+        (interactive)
+        (helm-swoop--clear-cache)
+        (message "helm-swoop cache cleaned."))
+
       (spacemacs/set-leader-keys
+        "sC"    'spacemacs/helm-swoop-clear-cache
         "ss"    'helm-swoop
         "sS"    'spacemacs/helm-swoop-region-or-symbol
         "s C-s" 'helm-multi-swoop-all)
@@ -386,7 +403,7 @@
 
 (defun helm/init-helm-xref ()
   (use-package helm-xref
-    :commands (helm-xref-show-xrefs)
+    :commands (helm-xref-show-xrefs-27 helm-xref-show-xrefs)
     :init
     (progn
       ;; This is required to make `xref-find-references' not give a prompt.
@@ -400,7 +417,9 @@
                                              xref-find-references
                                              spacemacs/jump-to-definition))
       ;; Use helm-xref to display `xref.el' results.
-      (setq xref-show-xrefs-function #'helm-xref-show-xrefs))))
+      (setq xref-show-xrefs-function (if (< emacs-major-version 27)
+                                         #'helm-xref-show-xrefs
+                                       #'helm-xref-show-xrefs-27)))))
 
 
 (defun helm/post-init-imenu ()

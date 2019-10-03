@@ -37,7 +37,8 @@
                             (when (string-match "\\(finished\\|exited\\)"
                                                 change)
                               (kill-buffer (process-buffer proc))
-                              (when (> (count-windows) 1)
+                              (when (and close-window-with-terminal
+                                         (> (count-windows) 1))
                                 (delete-window)))))))
 
 (defun spacemacs/default-pop-shell ()
@@ -56,28 +57,28 @@
                                        100)
                                     (window-width)))))
 
-(defmacro make-shell-pop-command (func &optional shell)
+(defmacro make-shell-pop-command (name func &optional shell)
   "Create a function to open a shell via the function FUNC.
 SHELL is the SHELL function to use (i.e. when FUNC represents a terminal)."
-  (let* ((name (symbol-name func)))
-    `(defun ,(intern (concat "spacemacs/shell-pop-" name)) (index)
-       ,(format (concat "Toggle a popup window with `%S'.\n"
-                        "Multiple shells can be opened with a numerical prefix "
-                        "argument. Using the universal prefix argument will "
-                        "open the shell in the current buffer instead of a "
-                        "popup buffer.") func)
-       (interactive "P")
-       (require 'shell-pop)
-       (if (equal '(4) index)
-           ;; no popup
-           (,func ,shell)
-         (shell-pop--set-shell-type
-          'shell-pop-shell-type
-          (backquote (,name
-                      ,(concat "*" name "*")
-                      (lambda nil (,func ,shell)))))
-         (shell-pop index)
-         (spacemacs/resize-shell-to-desired-width)))))
+  `(defun ,(intern (concat "spacemacs/shell-pop-" name)) (index)
+     ,(format (concat "Toggle a popup window with `%S'.\n"
+                      "Multiple shells can be opened with a numerical prefix "
+                      "argument. Using the universal prefix argument will "
+                      "open the shell in the current buffer instead of a "
+                      "popup buffer.")
+              func)
+     (interactive "P")
+     (require 'shell-pop)
+     (if (equal '(4) index)
+         ;; no popup
+         (,func ,shell)
+       (shell-pop--set-shell-type
+        'shell-pop-shell-type
+        (backquote (,name
+                    ,(concat "*" name "*")
+                    (lambda nil (,func ,shell)))))
+       (shell-pop index)
+       (spacemacs/resize-shell-to-desired-width))))
 
 (defun projectile-multi-term-in-root ()
   "Invoke `multi-term' in the project's root."
@@ -168,12 +169,28 @@ is achieved by adding the relevant text properties."
 
 (defun spacemacs/init-helm-eshell ()
   "Initialize helm-eshell."
-  ;; this is buggy for now
-  ;; (define-key eshell-mode-map (kbd "<tab>") 'helm-esh-pcomplete)
+  (define-key eshell-mode-map (kbd "<tab>") 'helm-esh-pcomplete)
   (spacemacs/set-leader-keys-for-major-mode 'eshell-mode
     "H" 'spacemacs/helm-eshell-history)
   (define-key eshell-mode-map
     (kbd "M-l") 'spacemacs/helm-eshell-history))
+
+(defun spacemacs/ivy-eshell-history ()
+  (interactive)
+  (counsel-esh-history)
+  (evil-insert-state))
+
+(defun spacemacs/pcomplete-std-complete ()
+  (interactive)
+  (pcomplete-std-complete)
+  (evil-insert-state))
+
+(defun spacemacs/init-ivy-eshell ()
+  "Initialize ivy-eshell."
+  (spacemacs/set-leader-keys-for-major-mode 'eshell-mode
+    "H" #'spacemacs/ivy-eshell-history)
+  (define-key eshell-mode-map (kbd "M-l") #'spacemacs/ivy-eshell-history)
+  (define-key eshell-mode-map (kbd "<tab>") #'spacemacs/pcomplete-std-complete))
 
 (defun term-send-tab ()
   "Send tab in term mode."
@@ -191,3 +208,12 @@ is achieved by adding the relevant text properties."
   (interactive)
   (switch-to-buffer "*shell*")
   (shell "*shell*"))
+
+;; https://stackoverflow.com/questions/6837511/automatically-disable-a-global-minor-mode-for-a-specific-major-mode
+(defun spacemacs//inhibit-global-centered-cursor-mode ()
+  "Counter-act `global-centered-cursor-mode'."
+  (add-hook 'after-change-major-mode-hook
+            (lambda ()
+              (centered-cursor-mode 0))
+            :append
+            :local))

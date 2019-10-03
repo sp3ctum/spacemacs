@@ -15,6 +15,7 @@
         company
         counsel-gtags
         cython-mode
+        dap-mode
         eldoc
         evil-matchit
         flycheck
@@ -43,6 +44,8 @@
         ;; packages for anaconda backend
         anaconda-mode
         (company-anaconda :requires company)
+        ;; packages for Microsoft LSP backend
+        (lsp-python-ms :requires lsp-mode)
         ))
 
 (defun python/init-anaconda-mode ()
@@ -117,6 +120,10 @@
         (spacemacs/set-leader-keys-for-major-mode 'cython-mode
           "hh" 'anaconda-mode-show-doc
           "gu" 'anaconda-mode-find-references)))))
+
+(defun python/pre-init-dap-mode ()
+  (add-to-list 'spacemacs--dap-supported-modes 'python-mode)
+  (add-hook 'python-mode-local-vars-hook #'spacemacs//python-setup-dap))
 
 (defun python/post-init-eldoc ()
   (add-hook 'python-mode-local-vars-hook #'spacemacs//python-setup-eldoc))
@@ -307,8 +314,7 @@
     (progn
       (spacemacs/register-repl 'python
                                'spacemacs/python-start-or-switch-repl "python")
-      (add-hook 'inferior-python-mode-hook
-                'spacemacs//inferior-python-setup-hook)
+      (spacemacs//bind-python-repl-keys)
       (spacemacs/add-to-hook 'python-mode-hook
                              '(spacemacs//python-setup-backend
                                spacemacs//python-default))
@@ -420,3 +426,21 @@ fix this issue."
                  (eq 'yapf python-formatter))
         (add-hook 'python-mode-hook 'yapf-mode)))
     :config (spacemacs|hide-lighter yapf-mode)))
+
+(defun python/init-lsp-python-ms ()
+  (use-package lsp-python-ms
+    :if (eq python-lsp-server 'mspyls)
+    :ensure nil
+    :defer t
+    :config
+    (when python-lsp-git-root
+      ;; Use dev version of language server checked out from github
+      (setq lsp-python-ms-dir
+            (expand-file-name (concat python-lsp-git-root
+                                      "/output/bin/Release/")))
+      (message "lsp-python-ms: Using version at `%s'" lsp-python-ms-dir)
+      ;; Use a precompiled exe
+      (setq lsp-python-ms-executable (concat lsp-python-ms-dir
+                                             "Microsoft.Python.LanguageServer"
+                                             (and (eq system-type 'windows-nt)
+                                                  ".exe"))))))

@@ -4,7 +4,7 @@
 
 [[file:img/gnus.gif]]
 
-* Table of Contents                     :TOC_4_gh:noexport:
+* Table of Contents                     :TOC_5_gh:noexport:
 - [[#description][Description]]
   - [[#features][Features:]]
 - [[#install][Install]]
@@ -18,9 +18,9 @@
 This layer integrates a general purpose email/newsgroup client into Spacemacs.
 
 ** Features:
-- Support for reading RSS feeds, newsgroups and mails directly within emacs via [[http://www.gnus.org/][Gnus]].
+- Support for reading RSS feeds, newsgroups and mails directly within Emacs via [[http://www.gnus.org/][Gnus]].
 - Support for beautiful HTML mails generated from any =org= buffer.
-- Support for credential managment via [[https://gnupg.org/][GnuPG]].
+- Support for credential management via [[https://gnupg.org/][GnuPG]].
 
 * Install
 To use this configuration layer, add it to your =~/.spacemacs=. You will need to
@@ -111,15 +111,16 @@ Please see the [[http://www.gnus.org/manual.html][manual]] for a complete list.
 
 Basic and Spacemacs specific key bindings can be found in the following table.
 
-| Key binding | Gnus mode - Description                             |
-|-------------+-----------------------------------------------------|
-| ~SPC a g~   | Starts Gnus                                         |
-| ~m~         | New Message                                         |
-| ~G R~       | Group Buffer - Add RSS feed                         |
-| ~^~         | Open Server Buffer. Browse Newsgroups.              |
-| ~T n~       | Group Buffer - new Topic                            |
-| ~T m~       | Group Buffer - Move Group to Topic                  |
-| ~K~         | Article Buffer - Previous article                   |
-| ~J~         | Article Buffer - Next article                       |
-| ~RET~       | Summary Buffer(RSS) - Open article Link in browser  |
-| ~TAB~       | Summary Buffer(RSS) - Open article and switch to it |
+| Key binding          | Gnus mode - Description                             |
+|----------------------+-----------------------------------------------------|
+| ~SPC a g~            | Starts Gnus                                         |
+| ~m~                  | New Message                                         |
+| ~O R~, ~G R~ (emacs) | Group Buffer - Add RSS feed                         |
+| ~g r~                | Group Buffer - Check for new mail                   |
+| ~^~                  | Open Server Buffer. Browse Newsgroups.              |
+| ~T n~                | Group Buffer - new Topic                            |
+| ~T m~                | Group Buffer - Move Group to Topic                  |
+| ~K~                  | Article Buffer - Previous article                   |
+| ~J~                  | Article Buffer - Next article                       |
+| ~RET~                | Summary Buffer(RSS) - Open article Link in browser  |
+| ~TAB~                | Summary Buffer(RSS) - Open article and switch to it |

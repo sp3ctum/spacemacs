@@ -20,12 +20,15 @@
 (defconst c-c++-mode-hooks '(c-mode-hook c++-mode-hook)
   "Primary hooks of the `c-c++' layer.")
 
-(defconst c-c++-lsp-backends '(lsp-cquery lsp-ccls)
-  "Language Server Protocol (LSP) backends supported by the `c-c++' layer.")
-
 (defvar c-c++-backend nil
   "If `lsp-cquery' or `lsp-ccls' then selects language server protocol backend (cquery or ccls).
   If `rtags' then enables rtags support")
+
+(defconst c-c++-lsp-backends '(lsp-cquery lsp-ccls)
+  "Language Server Protocol (LSP) backends supported by the `c-c++' layer.")
+
+(defvar c++-enable-organize-includes-on-save nil
+  "If non-nil then automatically organize the includes on save C++ buffer.")
 
 (defvar c-c++-enable-auto-newline nil
   "If non nil then enables the `Auto-newline' minor mode.")
@@ -48,8 +51,8 @@
   "If non-nil, automatically format code with ClangFormat on
   save. Clang support has to be enabled for this to work.")
 
-(defvar c-c++-default-mode-for-headers 'c-mode
-  "Default mode to open header files. Can be `c-mode' or `c++-mode'.")
+(defvar c-c++-default-mode-for-headers (when (not (functionp 'c-or-c++-mode)) 'c-mode)
+  "Default mode to open header files. Can be `c-mode' or `c++-mode', or `c-or-c++-mode' for Emacs > 26+.")
 
 (defvar c-c++-adopt-subprojects nil
   "When non-nil, projectile will remember project root when visiting files in subprojects")
