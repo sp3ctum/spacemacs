@@ -22,7 +22,7 @@
         maven-test-mode
         (meghanada :toggle (not (version< emacs-version "25.1")))
         mvn
-        (lsp-java :requires lsp-mode lsp-ui company-lsp dap-mode)
+        (lsp-java :requires lsp-mode)
         org
         ))
 
@@ -162,7 +162,7 @@
 (defun java/init-lsp-java ()
   (use-package lsp-java
     :defer t
-    :if (eq java-backend 'lsp)
+    :if (eq (spacemacs//java-backend) 'lsp)
     :config
     (progn
       ;; key bindings
