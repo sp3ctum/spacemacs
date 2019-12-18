@@ -684,6 +684,33 @@ executed. Executes that without disrupting the frame window layout."
     "-" 'lsp-format-buffer
     "m" 'lsp-ui-imenu))
 
+(defun my-dockerfile-indent-line-function ()
+  "Like `dockerfile-indent-line-function' but works with
+`rainbow-delimiters-mode'. Without this, everything that starts at column 0 is
+indented."
+  (let* ((ignore-indent-faces '(font-lock-comment-delimiter-face
+                                font-lock-keyword-face))
+         (face-or-faces (get-text-property (point-at-bol)
+                                           'face))
+         (ignore-this-line? (if (listp face-or-faces)
+                                (--any? (-contains? face-or-faces it)
+                                        ignore-indent-faces)
+                              (member ignore-indent-faces face-or-faces))))
+    (unless ignore-this-line?
+      (save-excursion
+        (beginning-of-line)
+        (skip-chars-forward "[ \t]" (point-at-eol))
+        (unless (equal (point) (point-at-eol)) ; Ignore empty lines.
+          ;; Delete existing whitespace.
+          (delete-char (- (point-at-bol) (point)))
+          (indent-to tab-width))))))
+
+(defun my-docker-customizations ()
+  (add-hook 'dockerfile-mode-hook
+            (lambda ()
+              (setq-local indent-line-function
+                          #'my-dockerfile-indent-line-function))))
+
 (defun dotspacemacs/user-config ()
   "Configuration function for user code.
 This function is called at the very end of Spacemacs initialization after
@@ -709,7 +736,8 @@ you should place you code here."
   (my-git-config)
   (my-windows-customizations)
   (my-neotree-customizations)
-  (fix-expand-region))
+  (fix-expand-region)
+  (my-docker-customizations))
 
 (defun dotspacemacs/user-env ()
   "Environment variables setup.
