@@ -721,7 +721,7 @@ indented."
          (ignore-this-line? (if (listp face-or-faces)
                                 (--any? (-contains? face-or-faces it)
                                         ignore-indent-faces)
-                              (member ignore-indent-faces face-or-faces))))
+                              (member face-or-faces ignore-indent-faces))))
     (unless ignore-this-line?
       (save-excursion
         (beginning-of-line)
