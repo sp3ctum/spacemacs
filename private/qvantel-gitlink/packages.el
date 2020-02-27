@@ -14,11 +14,17 @@
   '(git-link)
   "The list of Lisp packages required by the qvantel-gitlink layer.")
 
+
+(defun my-git-link--push-remote (branch)
+  (git-link--get-config (format "branch.%s.pushRemote" branch)))
+
 (defun my-git-link-get-qvantel-stash-viewurl ()
-  (let* ((view-url (git-link--get-config (s-join ""
-                                                 (list "remote."
-                                                       (git-link--remote)
-                                                       ".viewurl")))))
+  (let* ((view-url (git-link--get-config
+                    (s-join ""
+                            (list "remote."
+                                  (or (my-git-link--push-remote (git-link--branch))
+                                      (git-link--remote))
+                                  ".viewurl")))))
     (when (not view-url)
       (user-error "Missing viewurl base. set remote.foo.viewurl to e.g.
                    https://stash.qvantel.net/projects/API/repos/bssapi-entities/ and try
