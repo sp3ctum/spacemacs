@@ -193,7 +193,13 @@
       - [[#lisp-key-bindings][Lisp Key bindings]]
         - [[#lisp-state-key-bindings][Lisp state key bindings]]
         - [[#emacs-lisp-specific-key-bindings][Emacs lisp specific key bindings]]
+    - [[#keyboard-macros][Keyboard macros]]
+      - [[#vim-keyboard-macros][Vim keyboard macros]]
+      - [[#emacs-keyboard-macros][Emacs keyboard macros]]
+        - [[#macro-counter][Macro counter]]
+        - [[#key-bindings-1][Key bindings]]
     - [[#mouse-usage][Mouse usage]]
+  - [[#comparing-diff][Comparing (diff)]]
   - [[#managing-projects][Managing projects]]
   - [[#registers][Registers]]
   - [[#errors-handling][Errors handling]]
@@ -1043,7 +1049,7 @@ will go to the function =dotspacemacs/user-env= instead of opening the file
 =dotspacemacs/user-env= so you can update your variables in place.
 
 ** Note about the function dotspacemacs/user-env
-Its possible that you don't have this function defined if you have an older
+It's possible that you don't have this function defined if you have an older
 dotfile. It is recommended to update your dotfile by adding this function,
 see the file =~/.emacs.d/core/template/.spacemacs.template= to copy it.
 If you don't create such function then Spacemacs assumes you are using the
@@ -2072,7 +2078,7 @@ page instead.
 
 Spacemacs uses [[https://github.com/Bruce-Connor/paradox][Paradox]] instead of =package-list-packages= to list available
 ELPA packages. Paradox enhances the package list buffer with better feedbacks,
-new filters and Github information like the number of stars. Optionally you can
+new filters and GitHub information like the number of stars. Optionally you can
 also star packages directly in the buffer.
 
 *Important Note 1*: Installing a new package from =Paradox= won't make it
@@ -2102,7 +2108,7 @@ Spacemacs.
 | ~r~         | refresh                                               |
 | ~S P~       | sort by package name                                  |
 | ~S S~       | sort by status (installed, available, etc...)         |
-| ~S *~       | sort by Github stars                                  |
+| ~S *~       | sort by GitHub stars                                  |
 | ~v~         | =visual state=                                        |
 | ~V~         | =visual-line state=                                   |
 | ~x~         | execute (action flags)                                |
@@ -2957,6 +2963,7 @@ Text related commands (start with ~x~):
 | ~SPC x a m~   | align region at arithmetic operators (+-*/)                   |
 | ~SPC x a ¦~   | align region at ¦                                             |
 | ~SPC x c~     | count the number of chars/words/lines in the selection region |
+| ~SPC x d l~   | delete blank lines but one or the single blank line           |
 | ~SPC x d w~   | delete trailing whitespaces                                   |
 | ~SPC x d SPC~ | Delete all spaces and tabs around point, leaving one space    |
 | ~SPC x g l~   | set languages used by translate commands                      |
@@ -2978,6 +2985,7 @@ Text related commands (start with ~x~):
 | ~SPC x J~     | move down a line of text (enter transient state)              |
 | ~SPC x K~     | move up a line of text (enter transient state)                |
 | ~SPC x l d~   | duplicate line or region                                      |
+| ~SPC x l r~   | randomize lines in region                                     |
 | ~SPC x l s~   | sort lines                                                    |
 | ~SPC x l u~   | uniquify lines                                                |
 | ~SPC x o~     | use avy to select a link in the frame and open it             |
@@ -2992,6 +3000,7 @@ Text related commands (start with ~x~):
 | ~SPC x U~     | set the selected text to upper case                           |
 | ~SPC x w c~   | count the number of occurrences per word in the select region |
 | ~SPC x w d~   | show dictionary entry of word from wordnik.com                |
+| ~SPC x w r~   | randomize words in region                                     |
 | ~SPC x y~     | use avy to copy a link in the frame                           |
 
 *** Text insertion commands
@@ -3013,7 +3022,7 @@ Text insertion commands (start with ~i~):
 | ~SPC i U U~ | insert UUIDv4 (use universal argument to insert with CID format)      |
 
 *Hint:* You can change the length of the inserted password with a numerical
-prefix argument, for instance ~SPC U 24 SPC i p p~ will insert a password
+prefix argument, for instance ~24 SPC i p p~ will insert a password
 with 24 characters.
 
 *** Smartparens Strict mode
@@ -3270,7 +3279,7 @@ The key bindings start with ~SPC x r~ and have the following mnemonic structure:
 - ~SPC x r <source> <target>~ convert from source to target
 - ~SPC x r~ do what I mean
 
-| Key binding   | Function                                                                               |
+| Key binding   | Description                                                                            |
 |---------------+----------------------------------------------------------------------------------------|
 | ~SPC x r /~   | Explain the regexp around point with =rx=                                              |
 | ~SPC x r '​~   | Generate strings given by a regexp given this list is finite                           |
@@ -3318,7 +3327,7 @@ Examples:
 ***** Lisp state key bindings
 These commands automatically switch to =lisp state=.
 
-| Key binding | Function                                                            |
+| Key binding | Description                                                         |
 |-------------+---------------------------------------------------------------------|
 | ~SPC k %~   | evil jump item                                                      |
 | ~SPC k :~   | ex command                                                          |
@@ -3369,29 +3378,138 @@ These commands automatically switch to =lisp state=.
 
 ***** Emacs lisp specific key bindings
 
-| Key binding | Function                                   |
-|-------------+--------------------------------------------|
-| ~SPC m e $~ | go to end of line and evaluate last sexp   |
-| ~SPC m e b~ | evaluate buffer                            |
-| ~SPC m e c~ | evaluate current form (a =def= or a =set=) |
-| ~SPC m e e~ | evaluate last sexp                         |
-| ~SPC m e f~ | evaluate current defun                     |
-| ~SPC m e l~ | go to end of line and evaluate last sexp   |
-| ~SPC m e r~ | evaluate region                            |
-
-| Key binding | Function                                           |
+| Key binding | Description                                        |
 |-------------+----------------------------------------------------|
+| ~SPC m e $~ | go to end of line and evaluate last sexp           |
+| ~SPC m e b~ | evaluate buffer                                    |
+| ~SPC m e c~ | evaluate current form (a =def= or a =set=)         |
+| ~SPC m e e~ | evaluate last sexp                                 |
+| ~SPC m e f~ | evaluate current defun                             |
+| ~SPC m e l~ | go to end of line and evaluate last sexp           |
+| ~SPC m e r~ | evaluate region                                    |
 | ~SPC m g g~ | go to definition                                   |
 | ~SPC m g G~ | go to definition in another window                 |
 | ~SPC m h h~ | describe elisp thing at point (show documentation) |
 | ~SPC m t b~ | execute buffer tests                               |
 | ~SPC m t q~ | ask for test function to execute                   |
 
+*** Keyboard macros
+Keyboard macros are a powerful feature of Emacs. A keyboard macro is a record of
+keystrokes that can be replayed at any time.
+
+*Important note:* When creating a macro, do not use the =evil-escape= key
+sequence (by default press ~fd~ quickly), instead press the ~ESC~ key
+explicitly. Currently =evil-escape= does not support being replayed in macros.
+
+**** Vim keyboard macros
+Spacemacs supports the VIM interface for creating macros in normal state using
+~q~ to start a macro and ~@~ to play a macro.
+
+To record a keyboard macro:
+- Press ~q~ (there's no visual indicator, but it's waiting for a letter key to
+  be pressed).
+- Press a letter key to start recording to that letter register.
+  (the minibuffer shows: Defining kbd macro...)
+- Perform the actions that will be recorded.
+- Press ~q~ to stop recording the macro.
+  (the minibuffer shows: Keyboard macro defined).
+
+To execute a recorded macro:
+(A macro can be played back multiple times, by typing a number before starting
+the macro)
+- Press ~@~ (the minibuffer shows: ~@-~, and it waits for a letter register key
+  to be pressed).
+- Press a letter key for a register where a previous macro has been recorded.
+- The macro can be repeated by pressing the repeat last editing command key:
+  ~.~ (period).
+
+**** Emacs keyboard macros
+The Emacs way to define macros is available behind the prefix: ~SPC K~
+
+To start recording a keyboard macro:
+- Press ~SPC K k~ (uppercase then lowercase) to start recording a macro.
+- Perform the actions that should be recorded.
+- Press ~SPC K K~ (uppercase twice) to stop recording the macro.
+
+To execute the last recorded macro press: ~SPC K K~
+The macro can be executed again by pressing ~K~ one or more times.
+The single character replay works until another key than ~K~ is pressed.
+
+***** Macro counter
+Emacs has an interesting concept: The macro counter.
+
+When starting to record a macro, the counter starts at 0 (you can also set it to
+a specific value), then each time the counter is inserted, it is incremented
+by 1 afterwards.
+
+When recording a macro it's possible to insert the current value by pressing:
+~SPC K k~
+
+***** Key bindings
+
+| Key binding | Description                                                               |
+|-------------+---------------------------------------------------------------------------|
+| ~SPC K c a~ | increment macro counter                                                   |
+| ~SPC K c c~ | insert the current value of the macro counter                             |
+| ~SPC K c C~ | set the macro counter                                                     |
+| ~SPC K c f~ | set the display format for the macro counter                              |
+| ~SPC K e b~ | assign a key binding to the last macro                                    |
+| ~SPC K e e~ | edit last macro in a buffer                                               |
+| ~SPC K e l~ | edit a macro from lossage information (last 300 executed commands)        |
+| ~SPC K e n~ | give a name to the last macro                                             |
+| ~SPC K e r~ | write the last macro to a register (use ~SPC r r~ to call it)             |
+| ~SPC K e s~ | step by step edit of the last macro                                       |
+| ~SPC K k~   | start recording macro, if already recording then insert the macro counter |
+| ~SPC K K~   | stop recording macro, if no macro is recording then run last macro        |
+| ~SPC K r L~ | view head macro in ring                                                   |
+| ~SPC K r d~ | delete head macro in ring                                                 |
+| ~SPC K r l~ | run second macro in ring                                                  |
+| ~SPC K r n~ | cycle to next macro in ring                                               |
+| ~SPC K r p~ | cycle to previous macro in ring                                           |
+| ~SPC K r s~ | swap the first two macros in ring                                         |
+| ~SPC K v~   | view last macro string in minibuffer                                      |
+
 *** Mouse usage
 There are some added mouse features set for the line number margin (if shown):
 - single click in line number margin visually selects the entire line
 - drag across line number margin visually selects the region
 - double click in line number margin visually select the current code block
+
+** Comparing (diff)
+To compare buffers, files, directories or even windows use the prefix ~SPC D~.
+Spacemacs uses the powerful embedded =ediff= to do comparisons, help for =ediff=
+can be opened using ~SPC D h~.
+
+All =ediff= commands starts with D:
+
+| Key binding   | Description                                                                                                                       |
+|---------------+-----------------------------------------------------------------------------------------------------------------------------------|
+| ~SPC D b 3~   | ask for 3 opened buffers and start an ediff session with them                                                                     |
+| ~SPC D b b~   | ask for 2 opened buffers and start an ediff session with them                                                                     |
+| ~SPC D b p~   | ask for a buffer or file that contains a patch to apply to a buffer and start an ediff session with the result                    |
+| ~SPC D B~     | ask for a file and run ediff with its backup file                                                                                 |
+| ~SPC D d 3~   | ask for 3 directories and run ediff on them comparing files that have the same name in all of them                                |
+| ~SPC D d d~   | ask for 2 directories and run ediff on them comparing files that have the same name in both                                       |
+| ~SPC D d r~   | run ediff on a directory comparing its files with their revisions if under version control                                        |
+| ~SPC D f .~   | start an ediff session between your =.spacemacs= and its default template in Spacemacs =core=                                     |
+| ~SPC D f 3~   | ask for 3 files and start an ediff session with them                                                                              |
+| ~SPC D f f~   | ask for 2 files and start an ediff session with them                                                                              |
+| ~SPC D f p~   | ask for a buffer or file that contains a patch to apply to a file and start an ediff session with the result                      |
+| ~SPC D f v~   | start ediff between versions of a file                                                                                            |
+| ~SPC D h~     | open ediff documentation within Emacs                                                                                             |
+| ~SPC D m b 3~ | start an ediff merge session between 2 buffers and their ancestor                                                                 |
+| ~SPC D m b b~ | start an ediff merge session between 2 buffers                                                                                    |
+| ~SPC D m d 3~ | start an ediff merge session between files with the same name in 2 directories and with a 3rd directory containing their ancestor |
+| ~SPC D m d d~ | start an ediff merge session between files with the same name in 2 directories                                                    |
+| ~SPC D m f 3~ | start an ediff merge session between 2 files and their ancestor                                                                   |
+| ~SPC D m f f~ | start an ediff merge session between 2 files                                                                                      |
+| ~SPC D m r 3~ | start an ediff merge session between two revisions of a file with a common ancestor                                               |
+| ~SPC D m r r~ | start an ediff merge session between two revisions of a file                                                                      |
+| ~SPC D r l~   | start an ediff session between two regions to perform a linewise diff (use this for large regions)                                |
+| ~SPC D r w~   | start an ediff session between two regions to perform a wordwise diff (use this for small regions)                                |
+| ~SPC D s~     | display ediff registries                                                                                                          |
+| ~SPC D w l~   | compare linewise the portions of visible text of 2 windows which are selected by clicking                                         |
+| ~SPC D w w~   | compare wordwise the portions of visible text of 2 windows which are selected by clicking                                         |
 
 ** Managing projects
 Projects in Spacemacs are managed with [[https://github.com/bbatsov/projectile][projectile]]. In =projectile= projects
@@ -3583,7 +3701,7 @@ You can disable the built-in server by setting the variable
 If any errors happen during the loading the mode-line will turn red and the
 errors should appear inline in the startup buffer. Spacemacs should still be
 usable; if it is not then restart Emacs with =emacs --debug-init= and open a
-[[https://github.com/syl20bnr/spacemacs/issues][Github issue]] with the backtrace.
+[[https://github.com/syl20bnr/spacemacs/issues][GitHub issue]] with the backtrace.
 
 ** Upgrading/Downgrading Emacs version
 To ensure that packages are correctly compiled for the new Emacs version you
@@ -3593,7 +3711,7 @@ with ~SPC u SPC SPC spacemacs/recompile-elpa~.
 ** General layer errors
 It happens from time to time that some of the layers go stale and stop
 working properly for some commands. If this happens stay calm and try
-to produce a minimal bug report on the [[https://github.com/syl20bnr/spacemacs/issues][Github issue page]].
+to produce a minimal bug report on the [[https://github.com/syl20bnr/spacemacs/issues][GitHub issue page]].
 
 *** Step by step instructions for minimal layer bug reports
 - Load the standard dotfile. You can get it with ~SPC f e D~.
@@ -3720,6 +3838,7 @@ retested.
 | 9000th star!!!!!!!!!       | [[https://github.com/deb0ch][deb0ch]]          |
 | 10000th star :star:        | [[https://github.com/colt365][colt365]]         |
 | 15000th star :star: :star: | [[https://github.com/missingfaktor][missingfaktor]]   |
+| 20000th star! :scream_cat: | [[https://github.com/davehorner][davehorner]]      |
 
 ** Gitter chat
 

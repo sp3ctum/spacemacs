@@ -1,20 +1,28 @@
+;;; packages.el --- NixOS Layer packages File for Spacemacs
+;;
+;; Copyright (c) 2015-2020 Sylvain Benner & Contributors
+;;
+;; Author: Sylvain Benner <sylvain.benner@gmail.com>
+;; URL: https://github.com/syl20bnr/spacemacs
+;;
+;; This file is not part of GNU Emacs.
+;;
+;;; License: GPLv3
+
 (defconst nixos-packages
-      '(
-        company
-        flycheck
-        (company-nixos-options :requires company)
-        (helm-nixos-options :requires helm)
-        nix-mode
-        nixos-options
-        ))
+  '((company-nixos-options :requires company)
+     flycheck
+     (helm-nixos-options :requires helm)
+     nix-mode
+     nixos-options))
 
 (defun nixos/post-init-company ()
   (let ((backends '(company-capf)))
     (when (configuration-layer/package-used-p 'company-nixos-options)
       (add-to-list 'backends 'company-nixos-options t))
     (eval `(spacemacs|add-company-backends
-             :backends ,backends
-             :modes nix-mode))))
+              :backends ,backends
+              :modes nix-mode))))
 
 (defun nixos/init-company-nixos-options ()
   (use-package company-nixos-options

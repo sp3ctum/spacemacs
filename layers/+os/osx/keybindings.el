@@ -1,4 +1,4 @@
-;;; config.el --- OSX Layer keybindings File for Spacemacs
+;;; keybindings.el --- OSX Layer keybindings File for Spacemacs
 ;;
 ;; Copyright (c) 2012-2018 Sylvain Benner & Contributors
 ;;
@@ -34,7 +34,7 @@
   (setq allowed-values '(super meta hyper control alt none left))
 
   ;; Backwards compatibility
-  (case osx-use-option-as-meta
+  (cl-case osx-use-option-as-meta
     ('nil (setf osx-option-as 'none))
     (deprecated nil)
     (t (setf osx-option-as 'meta)))

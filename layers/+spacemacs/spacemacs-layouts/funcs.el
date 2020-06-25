@@ -71,8 +71,9 @@ Cancels autosave on exiting perspectives mode."
     (persp-switch spacemacs--last-selected-layout)))
 
 (defun spacemacs-layouts/non-restricted-buffer-list-helm ()
+  "Show all buffers accross all layouts."
   (interactive)
-  (let ((ido-make-buffer-list-hook (remove #'persp-restrict-ido-buffers ido-make-buffer-list-hook)))
+  (let ((helm-buffer-list-reorder-fn #'helm-buffers-reorder-buffer-list))
     (helm-mini)))
 
 (defun spacemacs-layouts/non-restricted-buffer-list-ivy ()
@@ -128,7 +129,7 @@ Cancels autosave on exiting perspectives mode."
           (concat " "
                   (mapconcat (lambda (persp)
                                (spacemacs//layout-format-name
-                                persp (position persp persp-list)))
+                                persp (cl-position persp persp-list)))
                              persp-list " | "))))
     (concat
      formatted-persp-list
@@ -180,6 +181,14 @@ ask the user if a new layout should be created."
                     i "See `spacemacs/layout-switch-by-pos' for details.")
            (interactive)
            (spacemacs/layout-switch-by-pos ,(if (eq 0 i) 9 (1- i))))))
+
+(defun spacemacs/layout-switch-to (pos)
+  "Switch to perspective but ask for POS.
+If POS has no layout, and `dotspacemacs-auto-generate-layout-names'
+is non-nil, create layout with auto-generated name. Otherwise,
+ask the user if a new layout should be created."
+  (interactive "NLayout to switch to/create: ")
+  (spacemacs/layout-switch-by-pos (1- pos)))
 
 (defun spacemacs/layout-goto-default ()
   "Go to `dotspacemacs-default-layout-name` layout"
@@ -442,7 +451,6 @@ perspectives does."
    :sources
    `(,(spacemacs//helm-perspectives-source)
      ,(helm-build-dummy-source "Create new perspective"
-        :requires-pattern t
         :action
         '(("Create new perspective" .
            spacemacs//create-persp-with-home-buffer)
@@ -518,9 +526,17 @@ Run PROJECT-ACTION on project."
                projectile-known-projects))
      :fuzzy-match helm-projectile-fuzzy-match
      :mode-line helm-read-file-name-mode-line-string
+     :keymap (let ((map (make-sparse-keymap)))
+               (define-key map
+                 (kbd "C-d") #'(lambda () (interactive)
+                                 (helm-exit-and-execute-action
+                                  (lambda (project)
+                                    (spacemacs||switch-project-persp project
+                                      (dired project))))))
+               map)
      :action `(("Switch to Project Perspective" .
                 spacemacs//helm-persp-switch-project-action)
-               ("Switch to Project Perspective and Open Dired" .
+               ("Switch to Project Perspective and Open Dired `C-d'" .
                 ,(spacemacs//helm-persp-switch-project-action-maker
                   (lambda () (dired "."))))
                ("Switch to Project Perspective and Show Recent Files" .
@@ -531,6 +547,21 @@ Run PROJECT-ACTION on project."
                   'spacemacs/helm-project-smart-do-search))))
    :buffer "*Helm Projectile Layouts*"))
 
+(defun spacemacs//make-helm-list-reorder-fn (fn)
+  "Take a function `helm-buffer-list-reorder-fn' and return a
+`helm-buffer-list-reorder-fn' function.
+This the return function will filter out buffers not in layout and then
+pass results to FN."
+  (lambda (visibles others)
+    (funcall fn
+             (seq-remove #'spacemacs//layout-not-contains-buffer-p visibles)
+             (seq-remove #'spacemacs//layout-not-contains-buffer-p others))))
+
+(defun spacemacs//persp-helm-setup ()
+  "Set new `helm-buffer-list-reorder-fn'.
+Compose it with a new one that will filter out a buffers on in current layout."
+  (let ((my-wrapper (spacemacs//make-helm-list-reorder-fn helm-buffer-list-reorder-fn)))
+    (setq helm-buffer-list-reorder-fn my-wrapper)))
 
 ;; Ivy integration
 (defun spacemacs//ivy-persp-switch-project-action (project)
@@ -549,6 +580,11 @@ Run PROJECT-ACTION on project."
               projectile-known-projects)
             :action #'spacemacs//ivy-persp-switch-project-action
             :caller 'spacemacs/ivy-persp-switch-project))
+
+(defun spacemacs/ivy-switch-project-open-dired (project)
+  (interactive)
+  (spacemacs||switch-project-persp project
+    (dired project)))
 
 
 ;; Eyebrowse
@@ -596,6 +632,7 @@ WINDOW is the representation of a window in a window-state object."
   "Execute FN once for each window in STATE and make a list of the results.
 FN is a function to execute.
 STATE is a window-state object."
+  (defvar result) ;; use dynamic binding
   (let (result)
     (spacemacs/window-state-walk-windows-1 (cdr state) fn)
     result))
@@ -794,3 +831,32 @@ containing the buffer."
                (append (persp-parameter 'gui-eyebrowse-window-configs persp)
                        (persp-parameter 'term-eyebrowse-window-configs persp)))
         (eyebrowse--rename-window-config-buffers window-config old new)))))
+
+
+;; layout local variables
+
+(defun spacemacs/make-variable-layout-local (&rest vars)
+  "Make variables become layout-local whenever they are set.
+Accepts a list of VARIABLE, DEFAULT-VALUE pairs.
+
+(spacemacs/make-variable-layout-local 'foo 1 'bar 2)"
+  (cl-loop for (symbol default-value) on vars by 'cddr
+           do (add-to-list 'spacemacs--layout-local-variables (cons symbol default-value))))
+
+(defun spacemacs//load-layout-local-vars (persp-name &rest _)
+  "Load the layout-local values of variables for PERSP-NAME."
+  (let ((layout-local-vars (-filter 'boundp
+                                    (-map 'car
+                                          spacemacs--layout-local-variables))))
+    ;; save the current layout
+    (ht-set! spacemacs--layout-local-map
+             (spacemacs//current-layout-name)
+             (--map (cons it (symbol-value it))
+                    layout-local-vars))
+    ;; load the default values into the new layout
+    (--each layout-local-vars
+      (set it (alist-get it spacemacs--layout-local-variables)))
+    ;; override with the previously bound values for the new layout
+    (--when-let (ht-get spacemacs--layout-local-map persp-name)
+      (-each it
+        (-lambda ((var . val)) (set var val))))))

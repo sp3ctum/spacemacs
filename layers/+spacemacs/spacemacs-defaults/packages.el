@@ -143,7 +143,14 @@
       ;; enable eldoc in IELM
       (add-hook 'ielm-mode-hook #'eldoc-mode)
       ;; don't display eldoc on modeline
-      (spacemacs|hide-lighter eldoc-mode))))
+      (spacemacs|hide-lighter eldoc-mode)
+
+      ;; eldoc-message-commands
+      (eldoc-add-command #'evil-insert)
+      (eldoc-add-command #'evil-insert-line)
+      (eldoc-add-command #'evil-append)
+      (eldoc-add-command #'evil-append-line)
+      (eldoc-add-command #'evil-force-normal-state))))
 
 (defun spacemacs-defaults/init-help-fns+ ()
   (use-package help-fns+
@@ -247,7 +254,7 @@
       (when dotspacemacs-line-numbers
         ;; delay the initialization of number lines when opening Spacemacs
         ;; normally. If opened via the command line with a file to visit then
-        ;; load it immediatly
+        ;; load it immediately
         (add-hook 'emacs-startup-hook
                   (lambda ()
                     (if (string-equal "*scratch*" (buffer-name))

@@ -9,11 +9,9 @@
 ;;
 ;;; License: GPLv3
 
-(defun spacemacs//setup-lsp-jump-handler (&rest modes)
+(defun spacemacs//setup-lsp-jump-handler ()
   "Set jump handler for LSP with the given MODE."
-  (dolist (m modes)
-    (add-to-list (intern (format "spacemacs-jump-handlers-%S" m))
-                 '(lsp-ui-peek-find-definitions :async t))))
+    (add-to-list 'spacemacs-jump-handlers '(lsp-ui-peek-find-definitions :async t)))
 
 
 ;; Key bindings
@@ -29,7 +27,7 @@
 
 (defun spacemacs/lsp-bind-keys ()
   "Define key bindings for the lsp minor mode."
-  (ecase lsp-navigation
+  (cl-ecase lsp-navigation
     ('simple (spacemacs//lsp-bind-simple-navigation-functions "g"))
     ('peek (spacemacs//lsp-bind-peek-navigation-functions "g"))
     ('both
@@ -84,12 +82,17 @@
     (concat prefix-char "r") #'xref-find-references
     (concat prefix-char "e") #'lsp-treemacs-errors-list
     (concat prefix-char "b") #'xref-pop-marker-stack)
-  (if (configuration-layer/package-usedp 'helm)
-      (spacemacs/set-leader-keys-for-minor-mode 'lsp-mode
-        (concat prefix-char "s") #'helm-lsp-workspace-symbol
-        (concat prefix-char "S") #'helm-lsp-global-workspace-symbol)
+  (cond
+   ((configuration-layer/package-usedp 'helm)
     (spacemacs/set-leader-keys-for-minor-mode 'lsp-mode
-      (concat prefix-char "s") #'lsp-ui-find-workspace-symbol)))
+      (concat prefix-char "s") #'helm-lsp-workspace-symbol
+      (concat prefix-char "S") #'helm-lsp-global-workspace-symbol))
+   ((configuration-layer/package-usedp 'ivy)
+    (spacemacs/set-leader-keys-for-minor-mode 'lsp-mode
+      (concat prefix-char "s") #'lsp-ivy-workspace-symbol
+      (concat prefix-char "S") #'lsp-ivy-global-workspace-symbol))
+   (t (spacemacs/set-leader-keys-for-minor-mode 'lsp-mode
+        (concat prefix-char "s") #'lsp-ui-find-workspace-symbol))))
 
 (defun spacemacs//lsp-bind-peek-navigation-functions (prefix-char)
   (spacemacs/set-leader-keys-for-minor-mode 'lsp-mode
@@ -133,7 +136,7 @@ BACKEND-NAME is a string, the name of the backend that's set for the layer
 KEY is a string corresponding to a key sequence
 KIND is a quoted symbol corresponding to an extension defined using
 `lsp-define-extensions'."
-  (ecase lsp-navigation
+  (cl-ecase lsp-navigation
     ('simple (spacemacs/set-leader-keys-for-major-mode mode
                (concat "g" key)
                (spacemacs//lsp-extension-name

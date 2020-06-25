@@ -53,7 +53,8 @@
   (use-package markdown-mode
     :mode
     (("\\.m[k]d" . markdown-mode)
-     ("\\.mdk" . markdown-mode))
+     ("\\.mdk" . markdown-mode)
+     ("\\.mdx" . markdown-mode))
     :defer t
     :config
     (progn
@@ -137,6 +138,7 @@
           "xc"  'markdown-insert-code
           "xC"  'markdown-insert-gfm-code-block
           "xi"  'markdown-insert-italic
+          "xk"  'markdown-insert-kbd
           "xp"  'markdown-insert-pre
           "xq"  'markdown-insert-blockquote
           "xs"  'markdown-insert-strike-through
@@ -159,7 +161,7 @@
         "gl" 'outline-next-visible-heading)
       ;; Promotion, Demotion
       (add-hook 'spacemacs-editing-style-hook
-                'spacemacs//markdown-hjkl-promotion-demotion)
+         'spacemacs//markdown-hjkl-promotion-demotion)
       (spacemacs//markdown-hjkl-promotion-demotion dotspacemacs-editing-style)
       (define-key markdown-mode-map (kbd "M-<down>") 'markdown-move-down)
       (define-key markdown-mode-map (kbd "M-<left>") 'markdown-promote)

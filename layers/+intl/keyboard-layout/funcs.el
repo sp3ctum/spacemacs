@@ -46,18 +46,20 @@ the given MAPS."
   "Define keys to the associated definitions of other ones. All
 remapping are done atomically, i.e. if `a' -> `b' and `c' -> `a',
 then `c' will be defined to the old `a' function, not to `b'."
-  (declare (indent 1))
-  (let ((map-original (copy-tree map)))
-    (dolist (binding bindings)
-      (let ((key1 (kbd (car binding)))
-            (key2 (kbd (cdr binding))))
-        (define-key map key1 (lookup-key map-original key2))))))
+  (if (keymapp map)
+      (progn
+        (declare (indent 1))
+        (let ((map-original (copy-tree map)))
+          (dolist (binding bindings)
+            (let ((key1 (kbd (car binding)))
+                  (key2 (kbd (cdr binding))))
+              (define-key map key1 (lookup-key map-original key2))))))))
 
 (defun kl//replace-in-list-rec (lst elem repl)
   "Replace recursively all occurrences of `elem' by `repl' in the
 list `lst'."
   (declare (indent 0))
-  (if (typep lst 'list)
+  (if (cl-typep lst 'list)
       (let* ((body-position (cl-position elem lst)))
         (if body-position
             ;; The element is in the list, replace it
@@ -134,7 +136,7 @@ evil states, except insert."
 (defun kl/correct-keys (map &rest keys)
   (declare (indent 1))
   (let ((bindings (mapcan #'kl//guess-rebindings keys)))
-    (kl//remap-key-as map (remove-if #'null bindings))))
+    (kl//remap-key-as map (cl-remove-if #'null bindings))))
 
 (defun kl/evil-correct-keys (state map &rest keys)
   (declare (indent 2))

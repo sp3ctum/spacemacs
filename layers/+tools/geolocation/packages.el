@@ -57,9 +57,10 @@ to not have to set these variables manually when enabling this layer."
     :commands (sunshine-forecast sunshine-quick-forecast)
     :init
     (progn
+      (spacemacs/declare-prefix "atg" "geolocation")
       (spacemacs/set-leader-keys
-        "aw" 'sunshine-forecast
-        "aW" 'sunshine-quick-forecast))
+        "atgw" 'sunshine-forecast
+        "atgW" 'sunshine-quick-forecast))
     :config
     (progn
       (evilified-state-evilify-map sunshine-mode-map

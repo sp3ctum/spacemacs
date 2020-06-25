@@ -123,6 +123,12 @@ community will help you out.
 If you prefer IRC, connect to the [Gitter Chat IRC server][] and join the
 `#syl20bnr/spacemacs` channel.
 
+Last but not least there are a lot of high class tutorials available on YouTube:
+* Jack of Some's Spacemacs related channel [here](https://www.youtube.com/watch?v=r-BHx7VNX5s&list=PLd_Oyt6lAQ8Rxb0HUnGbRrn6R4Cdt2yoI)
+* GDQuest's Game Design oriented tutorials to Spacemacs [here](https://www.youtube.com/watch?v=hCNOB5jjtmc&list=PLhqJJNjsQ7KFkMVBunWWzFD8SlH714qm4)
+* Practicalli's Clojure tutorials based on Spacemacs [here](https://www.youtube.com/watch?v=ZKuQDrQLAnc&list=PLpr9V-R8ZxiCHMl2_dn1Fovcd34Oz45su)
+* Eivind Fonn's classic Spacemacs ABC [here](https://www.youtube.com/watch?v=ZFV5EqpZ6_s&list=PLrJ2YN5y27KLhd3yNs2dR8_inqtEiEweE)
+
 # Prerequisites
 Spacemacs is an extension of a popular text editor called Emacs. Thus you need
 to first install base Emacs and then download the Spacemacs extension files with
@@ -155,7 +161,12 @@ This might also be true for other linux distributions.
 
 ```
 brew tap d12frosted/emacs-plus
+# to install Emacs 26
 brew install emacs-plus
+# or to install Emacs 27
+brew install emacs-plus@27 --with-spacemacs-icon
+# or to install Emacs 28
+brew install emacs-plus@28 --with-spacemacs-icon
 brew link emacs-plus
 ```
 
@@ -219,8 +230,7 @@ $ brew install grep --with-default-names
 ```
 
 ### Windows
-You can download good quality builds from the [emacs-w64 project][emacs-for-windows].
-It is recommended to install the most recent [stable build][emacs-for-windows-stable].
+Download the official 64-bit (x86_64) stable builds from the [GNU FTP][emacs-for-windows].
 
 You'll also need `gzip` and put it in your path, to download it go to the
 [GNUWin32 project page][gzip-for-windows]
@@ -229,13 +239,13 @@ Be sure to declare an environment variable named `HOME` that's pointing to your
 user directory `C:\Users\<username>`. Then you can clone Spacemacs into that
 directory.
 
-Sometimes you'll get the following error when you first start Emacs:
+If the following error occurs after starting Emacs:
 
 ```
 The directory ~/.emacs.d/server is unsafe
 ```
 
-To fix it change the owner of the directory `~/.emacs.d/server`:
+Fix it by changing the owner of the directory `~/.emacs.d/server`:
   - from Properties select the Tab “Security”,
   - select the button “Advanced”,
   - select the Tab “Owner”
@@ -297,7 +307,7 @@ be transferred using http, use at your own risk.
    git clone https://github.com/syl20bnr/spacemacs /path/to/your/.emacs.d
    ```
 
-3. Install the default fonts
+3. (Optional) Install the default fonts
 
    It's recommended to install [Source Code Pro][] by Adobe, as the default
    font. It ensures that, for example the symbols on the modeline (bottom bar)
@@ -316,7 +326,19 @@ be transferred using http, use at your own risk.
    If you're running in a terminal then you'll also need to change the terminals
    font settings.
 
-4. Launch Emacs, and answer the questions in the Dotfile wizard installer. If
+4. Launch Emacs. Spacemacs will automatically install the packages it requires.
+   There is a well-known issue with some GPG keys having expired end of 2019.
+   This can be fixed by upgrading to Emacs 26.3 or above or by manually adding
+   the new keys using something like:
+   ```sh
+   gpg --homedir ~/.emacs.d/elpa/gnupg --receive-keys 066DAFCB81E42C40
+   ```
+   If you have a restrictive firewall it may help to manually specify the keyserver:
+   ```sh
+   gpg --keyserver keyserver.ubuntu.com --homedir ~/.emacs.d/elpa/gnupg/ --receive-keys 066DAFCB81E42C40
+   ```
+
+5. Launch Emacs, and answer the questions in the Dotfile wizard installer. If
    you are new to Emacs and Spacemacs, then it's fine to just accept the default
    choices. It's easy to try the other choices later, without having to
    reinstall Spacemacs. They can be changed in the dotfile `~/.spacemacs`.
@@ -326,16 +348,16 @@ be transferred using http, use at your own risk.
    Restart Emacs to complete the installation.
 
 **Notes:**
-If you get an error regarding package downloads, then you can try to
-disable the HTTPS protocol by starting Emacs with the `--insecure` argument:
-
+If you are behind a firewall or similar and you get an error regarding package
+downloads then you may try to disable the HTTPS protocol by starting Emacs with
 ```sh
 emacs --insecure
 ```
+but this should be a last resort because of the security implications.
 
-Or you can set the `dotspacemacs-elpa-https` variable to `nil` in your
-dotfile `~/.spacemacs`. That will remove the need to start Emacs with the
-`--insecure` argument. You may also want to clear out your `.emacs.d/elpa`
+You can set the `dotspacemacs-elpa-https` variable to `nil` in your
+dotfile `~/.spacemacs` but this has the same security implications as the
+insecure flag. You may also want to clear out your `.emacs.d/elpa`
 directory before doing this, so that any corrupted packages you may have
 downloaded will be re-installed.
 
@@ -457,7 +479,7 @@ Before contributing be sure to consult the
 # Spacemacs Everywhere
 
 Once you've learned the Spacemacs key bindings, you can use them in other IDEs/tools, thanks to the following projects:
-- [IntelliSpace](https://github.com/MarcoIeni/intelli-space) - Spacemacs' like key bindings for IntelliJ platform
+- [Intellimacs](https://github.com/MarcoIeni/intellimacs) - Spacemacs' like key bindings for IntelliJ platform
 - [Spaceclipse](https://github.com/MarcoIeni/spaceclipse) - Spacemacs’ like key bindings for Eclipse
 - [SpaceVim](https://github.com/SpaceVim/SpaceVim) - A community-driven modular vim distribution
 - [VSpaceCode](https://github.com/VSpaceCode/VSpaceCode) - Spacemacs’ like key bindings for Visual Studio Code
@@ -521,8 +543,7 @@ Thank you!
 [Homebrew]: http://brew.sh
 [emacs-plus]: https://github.com/d12frosted/homebrew-emacs-plus
 [powerline documentation]: http://spacemacs.org/doc/DOCUMENTATION.html#powerline-separators
-[emacs-for-windows]: http://emacsbinw64.sourceforge.net/
-[emacs-for-windows-stable]: https://sourceforge.net/projects/emacsbinw64/files/release/
+[emacs-for-windows]: https://ftp.gnu.org/gnu/emacs/windows/
 [gzip-for-windows]: http://gnuwin32.sourceforge.net/packages/gzip.htm
 [the platinum searcher]: https://github.com/monochromegane/the_platinum_searcher
 [so-server-unsafe]: http://stackoverflow.com/questions/885793/emacs-error-when-calling-server-start

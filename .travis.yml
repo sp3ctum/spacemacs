@@ -17,19 +17,7 @@ env:
 before_script:
   - docker pull jare/spacetools:latest
 script:
-  - |
-    cd /
-    rm -rf "${TRAVIS_BUILD_DIR}"
-    git clone "https://github.com/${SPACEMACS_REPO_SLUG}" \
-        -b "${TRAVIS_BRANCH}" \
-        "${TRAVIS_BUILD_DIR}"
-    cd "${TRAVIS_BUILD_DIR}"
-before_deploy:
-  - >
-    if ! [ "$BEFORE_DEPLOY_RUN" ]; then
-      export BEFORE_DEPLOY_RUN=1;
-      .travisci/pub_prep.sh
-    fi
+  - git checkout "${TRAVIS_BRANCH}" && .travisci/pub_prep.sh
 deploy:
   - provider: script
     skip_cleanup: true

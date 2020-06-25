@@ -613,8 +613,6 @@ refreshed during the current session."
 CHANGEDP non-nil means that layers list has changed since last dump
 To prevent package from being installed or uninstalled set the variable
 `spacemacs-sync-packages' to nil."
-  (when (spacemacs-buffer//choose-banner)
-    (spacemacs-buffer//inject-version))
   ;; declare used layers then packages as soon as possible to resolve
   ;; usage and ownership
   (configuration-layer/discover-layers 'refresh-index)
@@ -1498,7 +1496,7 @@ whether the declared layer is an used one or not."
   (setq configuration-layer--used-layers nil)
   (let ((configuration-layer--declared-layers-usedp t))
     (unless configuration-layer-exclude-all-layers
-      (dolist (layer-specs layers-specs)
+      (dolist (layer-specs (remove nil layers-specs))
         (let* ((layer-name (if (listp layer-specs)
                                (car layer-specs)
                              layer-specs))
@@ -1829,26 +1827,34 @@ RNAME is the name symbol of another existing layer."
                "to add a recipe for it in alist %S.")
        pkg-name recipes-var))))
 
-(defun configuration-layer//filter-packages-with-deps
+(defun configuration-layer//filter-packages-with-deps-recur
     (pkg-names filter &optional use-archive)
   "Return a filtered PKG-NAMES list where each elements satisfies FILTER."
   (when pkg-names
     (let (result)
       (dolist (pkg-name pkg-names)
-        ;; recursively check dependencies
-        (let* ((deps
-                (if use-archive
-                    (configuration-layer//get-package-deps-from-archive
-                     pkg-name)
-                  (configuration-layer//get-package-deps-from-alist pkg-name)))
-               (install-deps
-                (when deps (configuration-layer//filter-packages-with-deps
-                            (mapcar 'car deps) filter))))
-          (when install-deps
-            (setq result (append install-deps result))))
-        (when (funcall filter pkg-name)
-          (add-to-list 'result pkg-name t)))
+        (when (not (memq pkg-name checked-packages))
+          (push pkg-name checked-packages)
+          ;; recursively check dependencies
+          (let* ((deps
+                  (if use-archive
+                      (configuration-layer//get-package-deps-from-archive
+                       pkg-name)
+                    (configuration-layer//get-package-deps-from-alist pkg-name)))
+                 (install-deps
+                  (when deps (configuration-layer//filter-packages-with-deps-recur
+                              (mapcar 'car deps) filter))))
+            (when install-deps
+              (setq result (append install-deps result))))
+          (when (funcall filter pkg-name)
+            (add-to-list 'result pkg-name t))))
       (delete-dups result))))
+
+(defun configuration-layer//filter-packages-with-deps
+    (pkg-names filter &optional use-archive)
+  "Return a filtered PKG-NAMES list where each elements satisfies FILTER."
+  (let ((checked-packages))
+    (configuration-layer//filter-packages-with-deps-recur pkg-names filter use-archive)))
 
 (defun configuration-layer//get-uninstalled-packages (pkg-names)
   "Return a filtered list of PKG-NAMES to install."

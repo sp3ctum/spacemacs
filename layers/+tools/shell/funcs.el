@@ -44,7 +44,7 @@
 (defun spacemacs/default-pop-shell ()
   "Open the default shell in a popup."
   (interactive)
-  (let ((shell (case shell-default-shell
+  (let ((shell (cl-case shell-default-shell
                  ('multi-term 'multiterm)
                  ('shell 'inferior-shell)
                  (t shell-default-shell))))
@@ -72,11 +72,17 @@ SHELL is the SHELL function to use (i.e. when FUNC represents a terminal)."
      (if (equal '(4) index)
          ;; no popup
          (,func ,shell)
-       (shell-pop--set-shell-type
+        (shell-pop--set-shell-type
         'shell-pop-shell-type
-        (backquote (,name
-                    ,(concat "*" name "*")
-                    (lambda nil (,func ,shell)))))
+        (list ,name
+            ,(if (bound-and-true-p layouts-enable-local-variables)
+                    `(concat "*" (spacemacs//current-layout-name) "-"
+                            (if (file-remote-p default-directory)
+                                "remote-"
+                            "")
+                            ,name "*")
+                (concat "*" name "*"))
+            (lambda nil (,func ,shell))))
        (shell-pop index)
        (spacemacs/resize-shell-to-desired-width))))
 
@@ -103,7 +109,12 @@ the user activate the completion manually."
   "Move point to end of current prompt when switching to insert state."
   (when (and (eq major-mode 'eshell-mode)
              ;; Not on last line, we might want to edit within it.
-             (not (eq (line-end-position) (point-max))))
+             (not (>= (point) eshell-last-output-end))
+             ;; Not on the last sent command if we use smart-eshell so we can
+             ;; edit it.
+             (not (and shell-enable-smart-eshell
+                       (>= (point) eshell-last-input-start)
+                       (< (point) eshell-last-input-end))))
     (end-of-buffer)))
 
 (defun spacemacs//protect-eshell-prompt ()
@@ -125,14 +136,11 @@ is achieved by adding the relevant text properties."
   "Stuff to do when enabling eshell."
   (setq pcomplete-cycle-completions nil)
   (if (bound-and-true-p linum-mode) (linum-mode -1))
-  (unless shell-enable-smart-eshell
-    ;; we don't want auto-jump to prompt when smart eshell is enabled.
-    ;; Idea: maybe we could make auto-jump smarter and jump only if
-    ;; point is not on a prompt line
-    (add-hook 'evil-insert-state-entry-hook
-              'spacemacs//eshell-auto-end nil t)
-    (add-hook 'evil-hybrid-state-entry-hook
-              'spacemacs//eshell-auto-end nil t))
+  ;; autojump to prompt line if not on one already
+  (add-hook 'evil-insert-state-entry-hook
+            'spacemacs//eshell-auto-end nil t)
+  (add-hook 'evil-hybrid-state-entry-hook
+            'spacemacs//eshell-auto-end nil t)
   (when (configuration-layer/package-used-p 'semantic)
     (semantic-mode -1))
   ;; This is an eshell alias
@@ -217,3 +225,11 @@ is achieved by adding the relevant text properties."
               (centered-cursor-mode 0))
             :append
             :local))
+
+(defun spacemacs//shell-pop-restore-window ()
+  "Fixes an issue during `shell-pop-out' where it
+tries to restore a dead buffer or window."
+  (unless (buffer-live-p shell-pop-last-buffer)
+    (setq shell-pop-last-buffer (window-buffer (get-mru-window nil t t))))
+  (unless (window-live-p shell-pop-last-window)
+    (setq shell-pop-last-window (get-buffer-window shell-pop-last-buffer))))

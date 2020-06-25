@@ -1,6 +1,6 @@
 ;;; packages.el --- C/C++ Layer packages File for Spacemacs
 ;;
-;; Copyright (c) 2012-2018 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2020 Sylvain Benner & Contributors
 ;;
 ;; Author: Sylvain Benner <sylvain.benner@gmail.com>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -9,44 +9,44 @@
 ;;
 ;;; License: GPLv3
 
-(setq c-c++-packages
-      '(
-        cc-mode
-        clang-format
-        (company-c-headers :requires company)
-        (cpp-auto-include
-         :location (recipe :fetcher github
-                           :repo "syohex/emacs-cpp-auto-include"))
-        disaster
-        eldoc
-        flycheck
-        gdb-mi
-        google-c-style
-        helm-cscope
-        org
-        projectile
-        realgud
-        semantic
-        srefactor
-        stickyfunc-enhance
-        xcscope
-        ;; lsp
-        (ccls :requires lsp-mode)
-        (cquery :requires lsp-mode)
-        dap-mode
-        ;; rtags
-        (company-rtags :requires (company rtags))
-        counsel-gtags
-        (flycheck-rtags :requires (flycheck rtags))
-        ggtags
-        helm-gtags
-        (helm-rtags :requires (helm rtags))
-        (ivy-rtags :requires (ivy rtags))
-        rtags
-        ;; ycmd
-        (company-ycmd :requires company)
-        (flycheck-ycmd :requires flycheck)
-        ycmd))
+(defconst c-c++-packages
+  '(
+    cc-mode
+    clang-format
+    company
+    (company-c-headers :requires company)
+    (cpp-auto-include
+     :location (recipe :fetcher github
+                       :repo "syohex/emacs-cpp-auto-include"))
+    disaster
+    eldoc
+    flycheck
+    gdb-mi
+    google-c-style
+    helm-cscope
+    org
+    projectile
+    realgud
+    semantic
+    srefactor
+    stickyfunc-enhance
+    xcscope
+    ;; lsp
+    (ccls :requires lsp-mode)
+    dap-mode
+    ;; rtags
+    (company-rtags :requires (company rtags))
+    counsel-gtags
+    (flycheck-rtags :requires (flycheck rtags))
+    ggtags
+    helm-gtags
+    (helm-rtags :requires (helm rtags))
+    (ivy-rtags :requires (ivy rtags))
+    rtags
+    ;; ycmd
+    (company-ycmd :requires company)
+    (flycheck-ycmd :requires flycheck)
+    ycmd))
 
 (defun c-c++/init-cc-mode ()
   (use-package cc-mode
@@ -78,8 +78,7 @@
 
 (defun c-c++/init-clang-format ()
   (use-package clang-format
-    :init (spacemacs/add-to-hooks #'spacemacs//c-c++-setup-format
-                                  c-c++-mode-hooks)))
+    :init (spacemacs//c-c++-setup-clang-format)))
 
 (defun c-c++/post-init-company ()
   (add-hook 'c-mode-local-vars-hook #'spacemacs//c-c++-setup-company)
@@ -118,13 +117,12 @@
       (spacemacs/set-leader-keys-for-major-mode 'c++-mode
         "ri" #'spacemacs/c++-organize-includes))))
 
-(defun c-c++/init-cquery ()
-  (use-package cquery
-    :defer t))
-
 (defun c-c++/pre-init-dap-mode ()
-  (add-to-list 'spacemacs--dap-supported-modes 'c-mode)
-  (add-to-list 'spacemacs--dap-supported-modes 'c++-mode)
+  (pcase (spacemacs//c-c++-backend)
+    (`lsp-clangd (add-to-list 'spacemacs--dap-supported-modes 'c-mode)
+                 (add-to-list 'spacemacs--dap-supported-modes 'c++-mode))
+    (`lsp-ccls (add-to-list 'spacemacs--dap-supported-modes 'c-mode)
+               (add-to-list 'spacemacs--dap-supported-modes 'c++-mode)))
   (add-hook 'c-mode-local-vars-hook #'spacemacs//c-c++-setup-dap)
   (add-hook 'c++-mode-local-vars-hook #'spacemacs//c-c++-setup-dap))
 
@@ -206,15 +204,9 @@
   (spacemacs|use-package-add-hook projectile
     :post-config
     (progn
-      (when c-c++-lsp-cquery-cache-directory
-        ;; Ignore lsp cache dir, in case user has opted for cache within project
-        ;; source tree
-        (add-to-list 'projectile-globally-ignored-directories
-                     c-c++-lsp-cquery-cache-directory))
       (when c-c++-adopt-subprojects
         (setq projectile-project-root-files-top-down-recurring
               (append '("compile_commands.json"
-                        ".cquery"
                         ".ccls")
                       projectile-project-root-files-top-down-recurring))))))
 

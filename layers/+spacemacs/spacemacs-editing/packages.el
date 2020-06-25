@@ -13,7 +13,7 @@
       '(aggressive-indent
         avy
         (bracketed-paste :toggle (version<= emacs-version "25.0.92"))
-        clean-aindent-mode
+        (clean-aindent-mode :toggle dotspacemacs-use-clean-aindent-mode)
         editorconfig
         eval-sexp-fu
         expand-region
@@ -90,7 +90,10 @@
 
 (defun spacemacs-editing/init-clean-aindent-mode ()
   (use-package clean-aindent-mode
-    :config (clean-aindent-mode)))
+    :config
+    (progn
+      (clean-aindent-mode)
+      (add-hook 'prog-mode-hook 'spacemacs//put-clean-aindent-last t))))
 
 (defun spacemacs-editing/init-editorconfig ()
   (use-package editorconfig
@@ -103,9 +106,9 @@
   (use-package eval-sexp-fu
     :commands eval-sexp-fu-flash-mode))
 
-  ;; ;; ignore obsolete function warning generated on startup
-  ;; (let ((byte-compile-not-obsolete-funcs (append byte-compile-not-obsolete-funcs '(preceding-sexp))))
-  ;;   (require 'eval-sexp-fu)))
+;; ;; ignore obsolete function warning generated on startup
+;; (let ((byte-compile-not-obsolete-funcs (append byte-compile-not-obsolete-funcs '(preceding-sexp))))
+;;   (require 'eval-sexp-fu)))
 
 (defun spacemacs-editing/init-expand-region ()
   (use-package expand-region
@@ -218,21 +221,25 @@
   (use-package origami
     :defer t
     :init
-    (progn
+    (let
+        ((rebind-normal-to-motion-state-map
+         (lambda (key def)
+           (define-key evil-normal-state-map key nil)
+           (define-key evil-motion-state-map key def))))
       (global-origami-mode)
-      (define-key evil-normal-state-map "za" 'origami-forward-toggle-node)
-      (define-key evil-normal-state-map "zc" 'origami-close-node)
-      (define-key evil-normal-state-map "zC" 'origami-close-node-recursively)
-      (define-key evil-normal-state-map "zO" 'origami-open-node-recursively)
-      (define-key evil-normal-state-map "zo" 'origami-open-node)
-      (define-key evil-normal-state-map "zr" 'origami-open-all-nodes)
-      (define-key evil-normal-state-map "zm" 'origami-close-all-nodes)
-      (define-key evil-normal-state-map "zs" 'origami-show-only-node)
-      (define-key evil-normal-state-map "zn" 'origami-next-fold)
-      (define-key evil-normal-state-map "zp" 'origami-previous-fold)
-      (define-key evil-normal-state-map "zR" 'origami-reset)
-      (define-key evil-normal-state-map (kbd "z <tab>") 'origami-recursively-toggle-node)
-      (define-key evil-normal-state-map (kbd "z TAB") 'origami-recursively-toggle-node)
+      (funcall rebind-normal-to-motion-state-map "za" 'origami-forward-toggle-node)
+      (funcall rebind-normal-to-motion-state-map "zc" 'origami-close-node)
+      (funcall rebind-normal-to-motion-state-map "zC" 'origami-close-node-recursively)
+      (funcall rebind-normal-to-motion-state-map "zO" 'origami-open-node-recursively)
+      (funcall rebind-normal-to-motion-state-map "zo" 'origami-open-node)
+      (funcall rebind-normal-to-motion-state-map "zr" 'origami-open-all-nodes)
+      (funcall rebind-normal-to-motion-state-map "zm" 'origami-close-all-nodes)
+      (funcall rebind-normal-to-motion-state-map "zs" 'origami-show-only-node)
+      (funcall rebind-normal-to-motion-state-map "zn" 'origami-next-fold)
+      (funcall rebind-normal-to-motion-state-map "zp" 'origami-previous-fold)
+      (funcall rebind-normal-to-motion-state-map "zR" 'origami-reset)
+      (funcall rebind-normal-to-motion-state-map (kbd "z <tab>") 'origami-recursively-toggle-node)
+      (funcall rebind-normal-to-motion-state-map (kbd "z TAB") 'origami-recursively-toggle-node)
 
       (spacemacs|define-transient-state fold
         :title "Code Fold Transient State"
@@ -261,10 +268,10 @@
         ("<tab>" origami-recursively-toggle-node)
         ("q" nil :exit t)
         ("C-g" nil :exit t)
-        ("<SPC>" nil :exit t))
-      ;; Note: The key binding for the fold transient state is defined in
-      ;; evil config
-      )))
+        ("<SPC>" nil :exit t)))))
+;; Note: The key binding for the fold transient state is defined in
+;; evil config
+
 
 (defun spacemacs-editing/init-password-generator ()
   (use-package password-generator

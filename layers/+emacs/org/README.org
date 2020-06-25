@@ -11,7 +11,7 @@
 - [[#important-note][Important Note]]
 - [[#install][Install]]
   - [[#layer][Layer]]
-  - [[#github-support][Github support]]
+  - [[#github-support][GitHub support]]
   - [[#twitter-bootstrap-support][Twitter Bootstrap support]]
   - [[#gnuplot-support][Gnuplot support]]
   - [[#revealjs-support][Reveal.js support]]
@@ -25,6 +25,7 @@
   - [[#sticky-header-support][Sticky header support]]
   - [[#epub-support][Epub support]]
   - [[#jira-support][Jira support]]
+  - [[#verb-support][Verb support]]
 - [[#key-bindings][Key bindings]]
   - [[#starting-org-mode][Starting org-mode]]
   - [[#toggles][Toggles]]
@@ -52,13 +53,17 @@
     - [[#org-mode-bindings][org-mode bindings]]
     - [[#visualization-bindings][Visualization bindings]]
   - [[#org-jira][Org-jira]]
+  - [[#verb][Verb]]
+    - [[#verb-mode-bindings][Verb-mode bindings]]
+    - [[#verb-response-body-mode-bindings][Verb-response-body-mode bindings]]
+    - [[#verb-response-headers-mode-bindings][Verb-response-headers-mode bindings]]
 
 * Description
 This layer enables [[http://orgmode.org/][org mode]] for Spacemacs.
 
 ** Features:
 - Vim inspired key bindings are provided by [[https://github.com/Somelauw/evil-org-mode][evil-org-mode]]
-- Nicer bullet via [[https://github.com/sabof/org-bullets][org-bullets]]
+- Nicer bullet via [[https://github.com/integral-dw/org-superstar-mode][org-superstar-mode]]
 - A [[https://cirillocompany.de/pages/pomodoro-technique][pomodoro method]] integration via [[https://github.com/lolownia/org-pomodoro][org-pomodoro]]
 - Presentation mode via [[https://github.com/rlister/org-present][org-present]]
 - Insertion of images via [[https://github.com/abo-abo/org-download][org-download]]
@@ -99,8 +104,8 @@ To use this configuration layer: in the main Spacemacs configuration
 file (=~/.spacemacs=), to the existing =dotspacemacs-configuration-layers= list
 add the =org= entry.
 
-** Github support
-To install Github related extensions like [[https://github.com/larstvei/ox-gfm][ox-gfm]] to export to Github
+** GitHub support
+To install GitHub related extensions like [[https://github.com/larstvei/ox-gfm][ox-gfm]] to export to GitHub
 flavored markdown set the variable =org-enable-github-support= to =t=.
 
 #+BEGIN_SRC emacs-lisp
@@ -249,16 +254,16 @@ To install Trello support set the variable =org-enable-trello-support= to =t=.
 ** Different bullets
 You can tweak the bullets displayed in the org buffer in the function
 =dotspacemacs/user-config= of your dotfile by setting the variable
-=org-bullets-bullet-list=. By default the list is set to =("◉" "○" "✸" "✿")=.
+=org-superstar-headline-bullets-list=. By default the list is set to =("◉" "○" "✸" "✿")=.
 
 #+BEGIN_SRC emacs-lisp
-  (setq org-bullets-bullet-list '("■" "◆" "▲" "▶"))
+  (setq org-superstar-bullet-list '("■" "◆" "▲" "▶"))
 #+END_SRC
 
-You can disable the fancy bullets entirely by adding =org-bullets= to =dotspacemacs-excluded-packages=.
+You can disable the fancy bullets entirely by adding =org-superstar= to =dotspacemacs-excluded-packages=.
 
 #+BEGIN_SRC emacs-lisp
-  (dotspacemacs-excluded-packages '(org-bullets))
+  (dotspacemacs-excluded-packages '(org-superstar))
 #+END_SRC
 
 ** Project support
@@ -334,6 +339,15 @@ you connect, add your authentication credentials to =~/.authinfo.gpg= or
 
 #+BEGIN_SRC authinfo
   machine yourcompany.atlassian.net login you@example.com password yourPassword port 443
+#+END_SRC
+
+** Verb support
+To install [[https://github.com/federicotdn/verb][Verb]], an HTTP client based on Org mode, set the
+=org-enable-verb-support= variable to =t=:
+
+#+BEGIN_SRC emacs-lisp
+  (setq-default dotspacemacs-configuration-layers
+   '((org :variables org-enable-verb-support t)))
 #+END_SRC
 
 * Key bindings
@@ -453,6 +467,7 @@ are also available.
 | ~SPC m t d r~ | Delete the current row or horizontal line from the table                   |
 | ~SPC m t e~   | Replace the table field value at the cursor by the result of a calculation |
 | ~SPC m t E~   | Export table to a file, with configurable format                           |
+| ~SPC m t f~   | Show table field info                                                      |
 | ~SPC m t h~   | Go to the previous field in the table                                      |
 | ~SPC m t H~   | Move column to the left                                                    |
 | ~SPC m t i c~ | Insert a new column into the table                                         |
@@ -583,7 +598,7 @@ execution. During that state, the following bindings are active:
 | ~SPC m x r~ | clear region emphasis      |
 | ~SPC m x s~ | make region strike-through |
 | ~SPC m x u~ | make region underline      |
-| ~SPC m x v~ | make region verbose        |
+| ~SPC m x v~ | make region verbatim       |
 
 ** Navigating in calendar
 
@@ -627,6 +642,7 @@ The evilified org agenda supports the following bindings:
 | ~SPC m d s~          | org-agenda-schedule               |
 | ~SPC m i e~          | org-agenda-set-effort             |
 | ~SPC m i p~          | org-agenda-set-property           |
+| ~SPC m i P~          | org-agenda-priority               |
 | ~SPC m i t~          | org-agenda-set-tags               |
 | ~SPC m s r~          | org-agenda-refile                 |
 | ~M-j~                | next item                         |
@@ -751,6 +767,8 @@ org-present must be activated explicitly by typing: ~SPC SPC org-present~
 | ~SPC a o j j~       | New journal entry                               |
 | ~SPC u SPC a o j j~ | Open today's journal without adding a new entry |
 | ~SPC a o j s~       | Search journal entries                          |
+| ~SPC a o j t~       | New scheduled journal entry                     |
+| ~SPC a o j v~       | View scheduled journal entries                  |
 
 Journal entries are highlighted in the calendar. The following key bindings are
 available for =calendar-mode= for navigating and manipulating the journal.
@@ -833,3 +851,32 @@ are available.
 | ~SPC a o J s g~ | Get subtasks                                     |
 | ~SPC a o J c u~ | Update the comment at point or add a new comment |
 | ~SPC a o J t j~ | Convert the TODO item at point to a Jira ticket  |
+
+** Verb
+*** Verb-mode bindings
+
+| Key binding | Description                                                  |
+|-------------+--------------------------------------------------------------|
+| ~SPC m r r~ | Send request on point in another window, but don't select it |
+| ~SPC m r s~ | Send request on point in another window                      |
+| ~SPC m r m~ | Send request on point, show result status in minibuffer      |
+| ~SPC m r f~ | Send request on point in selected window                     |
+| ~SPC m r k~ | Kill all response buffers and their windows                  |
+| ~SPC m r e~ | Export request on point (prompt for format)                  |
+| ~SPC m r u~ | Export request on point to curl format                       |
+| ~SPC m r b~ | Export request on point to Verb format                       |
+| ~SPC m r v~ | Set value of a Verb variable                                 |
+
+*** Verb-response-body-mode bindings
+
+| Key binding | Description                                 |
+|-------------+---------------------------------------------|
+| ~SPC m r r~ | Toggle display headers for current response |
+| ~SPC m r k~ | Kill current response buffer and its window |
+| ~SPC m r f~ | Re-send current response                    |
+
+*** Verb-response-headers-mode bindings
+
+| Key binding | Description                                         |
+|-------------+-----------------------------------------------------|
+| ~SPC m r q~ | Kill current response headers buffer and its window |

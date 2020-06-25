@@ -1,6 +1,6 @@
 ;;; packages.el --- Go Layer packages File for Spacemacs
 ;;
-;; Copyright (c) 2012-2018 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2020 Sylvain Benner & Contributors
 ;;
 ;; Author: Sylvain Benner <sylvain.benner@gmail.com>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -9,28 +9,29 @@
 ;;
 ;;; License: GPLv3
 
-(setq go-packages
-      '(
-        company
-        (company-go :requires company)
-        counsel-gtags
-        eldoc
-        flycheck
-        (flycheck-golangci-lint :toggle (and go-use-golangci-lint
-                                             (configuration-layer/package-used-p
-                                              'flycheck)))
-        ggtags
-        helm-gtags
-        go-eldoc
-        go-fill-struct
-        go-gen-test
-        go-guru
-        go-impl
-        go-mode
-        go-rename
-        go-tag
-        godoctor
-        popwin))
+(defconst go-packages
+  '(
+    company
+    dap-mode
+    (company-go :requires company)
+    counsel-gtags
+    eldoc
+    flycheck
+    (flycheck-golangci-lint :toggle (and go-use-golangci-lint
+                                         (configuration-layer/package-used-p
+                                          'flycheck)))
+    ggtags
+    helm-gtags
+    go-eldoc
+    go-fill-struct
+    go-gen-test
+    go-guru
+    go-impl
+    go-mode
+    go-rename
+    go-tag
+    godoctor
+    popwin))
 
 (defun go/init-company-go ()
   (use-package company-go
@@ -42,6 +43,11 @@
 
 (defun go/post-init-company ()
   (add-hook 'go-mode-local-vars-hook #'spacemacs//go-setup-company))
+
+(defun go/pre-init-dap-mode ()
+  (pcase (spacemacs//go-backend)
+    (`lsp (add-to-list 'spacemacs--dap-supported-modes 'go-mode)))
+  (add-hook 'go-mode-local-vars-hook #'spacemacs//go-setup-dap))
 
 (defun go/post-init-counsel-gtags ()
   (spacemacs/counsel-gtags-define-keys-for-mode 'go-mode))

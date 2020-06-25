@@ -25,13 +25,19 @@
 (defun spacemacs//go-setup-company ()
   "Conditionally setup go company based on backend"
   (pcase (spacemacs//go-backend)
-    ('go-mode (spacemacs//go-setup-company-go))
-    ('lsp (spacemacs//go-setup-company-lsp))))
+    ('go-mode (spacemacs//go-setup-company-go))))
 
 (defun spacemacs//go-setup-eldoc ()
   "Conditionally setup go eldoc based on backend"
   (pcase (spacemacs//go-backend)
     ('go-mode (go-eldoc-setup))))
+
+
+(defun spacemacs//go-setup-dap ()
+  "Conditionally setup go DAP integration."
+  ;; currently DAP is only available using LSP
+  (pcase (spacemacs//go-backend)
+    (`lsp (spacemacs//go-setup-lsp-dap))))
 
 
 ;; go-mode
@@ -52,25 +58,24 @@
   "Setup lsp backend"
   (if (configuration-layer/layer-used-p 'lsp)
       (progn
-        ;; without setting lsp-prefer-flymake to :none
+        ;; without setting lsp-diagnostic-package to :none
         ;; golangci-lint errors won't be reported
         (when go-use-golangci-lint
-          (message "[go] Setting lsp-prefer-flymake :none to enable golangci-lint support.")
-          (setq-local lsp-prefer-flymake :none))
+          (message "[go] Setting lsp-diagnostic-package :none to enable golangci-lint support.")
+          (setq-local lsp-diagnostic-package :none))
         (lsp))
     (message "`lsp' layer is not installed, please add `lsp' layer to your dotfile.")))
 
-(defun spacemacs//go-setup-company-lsp ()
-  "Setup lsp auto-completion"
-  (if (configuration-layer/layer-used-p 'lsp)
-      (progn
-        (spacemacs|add-company-backends
-          :backends company-lsp
-          :modes go-mode
-          :append-hooks nil
-          :call-hooks t)
-        (company-mode))
-    (message "`lsp' layer is not installed, please add `lsp' layer to your dotfile.")))
+(defun spacemacs//go-setup-dap ()
+  "Conditionally setup go DAP integration."
+  ;; currently DAP is only available using LSP
+  (pcase (spacemacs//go-backend)
+    (`lsp (spacemacs//go-setup-lsp-dap))))
+
+(defun spacemacs//go-setup-lsp-dap ()
+  "Setup DAP integration."
+  (require 'dap-go)
+  (dap-go-setup))
 
 
 ;; flycheck
@@ -80,17 +85,32 @@
   (setq flycheck-disabled-checkers '(go-gofmt
                                      go-golint
                                      go-vet
-                                     go-build
-                                     go-test
-                                     go-errcheck))
-  (flycheck-golangci-lint-setup))
+                                     ;; go-build
+                                     ;; go-test
+                                     go-errcheck
+                                     go-staticcheck
+                                     go-unconvert))
+  (flycheck-golangci-lint-setup)
+
+  ;; Make sure to only run golangci after go-build
+  ;; to ensure we show at least basic errors in the buffer
+  ;; when golangci fails. Make also sure to run go-test if possible.
+  ;; See #13580 for details
+  (flycheck-add-next-checker 'go-build '(warning . golangci-lint) t)
+  (flycheck-add-next-checker 'go-test '(warning . golangci-lint) t)
+
+  ;; Set basic checkers explicitly as flycheck will
+  ;; select the better golangci-lint automatically.
+  ;; However if it fails we require these as fallbacks.
+  (cond ((flycheck-may-use-checker 'go-test) (flycheck-select-checker 'go-test))
+        ((flycheck-may-use-checker 'go-build) (flycheck-select-checker 'go-build))))
 
 
 ;; run
 
 (defun spacemacs/go-run-tests (args)
   (interactive)
-  (compilation-start (concat "go test " (when go-test-verbose "-v ") args " " go-use-test-args)
+  (compilation-start (concat go-test-command " " (when go-test-verbose "-v ") args " " go-use-test-args)
                      nil (lambda (n) go-test-buffer-name) nil))
 
 (defun spacemacs/go-run-package-tests ()
@@ -128,7 +148,7 @@
 (defun spacemacs/go-run-main ()
   (interactive)
   (shell-command
-   (format "go run %s %s"
+   (format (concat go-run-command " %s %s")
            (shell-quote-argument (or (file-remote-p (buffer-file-name (buffer-base-buffer)) 'localname)
                                      (buffer-file-name (buffer-base-buffer))))
            go-run-args)))

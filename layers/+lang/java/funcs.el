@@ -1,4 +1,4 @@
-;;; packages.el --- Java functions File for Spacemacs
+;;; funcs.el --- Java functions File for Spacemacs
 ;;
 ;; Copyright (c) 2012-2018 Sylvain Benner & Contributors
 ;;
@@ -26,8 +26,7 @@
 (defun spacemacs//java-setup-company ()
   "Conditionally setup company based on backend."
   (pcase (spacemacs//java-backend)
-    (`meghanada (spacemacs//java-setup-meghanada-company))
-    (`lsp (spacemacs//java-setup-lsp-company))))
+    (`meghanada (spacemacs//java-setup-meghanada-company))))
 
 (defun spacemacs//java-setup-dap ()
   "Conditionally setup elixir DAP integration."
@@ -119,21 +118,17 @@
         (lsp))
     (message "`lsp' layer is not installed, please add `lsp' layer to your dotfile.")))
 
-(defun spacemacs//java-setup-lsp-company ()
-  "Setup lsp auto-completion."
-  (if (configuration-layer/layer-used-p 'lsp)
-      (progn
-        (spacemacs|add-company-backends
-          :backends company-lsp
-          :modes java-mode
-          :append-hooks nil
-          :call-hooks t)
-        (company-mode))
-    (message "`lsp' layer is not installed, please add `lsp' layer to your dotfile.")))
-
 (defun spacemacs//java-setup-lsp-dap ()
   "Setup DAP integration."
-  (require 'dap-java))
+  (require 'dap-java)
+  (spacemacs/set-leader-keys-for-major-mode 'java-mode
+    ;; debug
+    "ddj" 'dap-java-debug
+    "dtt" 'dap-java-debug-test-method
+    "dtc" 'dap-java-debug-test-class
+    ;; run
+    "tt" 'dap-java-run-test-method
+    "tc" 'dap-java-run-test-class))
 
 (defun spacemacs//java-setup-lsp-flycheck ()
   "Setup LSP Java syntax checking."

@@ -12,24 +12,24 @@
 (setq version-control-packages
       '(
         browse-at-remote
-        (vc :location built-in)
+        (diff-hl            :toggle (eq 'diff-hl version-control-diff-tool))
         diff-mode
-        diff-hl
         evil-unimpaired
-        git-gutter
-        git-gutter+
-        git-gutter-fringe
-        git-gutter-fringe+
+        (git-gutter         :toggle (eq 'git-gutter version-control-diff-tool))
+        (git-gutter-fringe  :toggle (eq 'git-gutter version-control-diff-tool))
+        (git-gutter+        :toggle (eq 'git-gutter+ version-control-diff-tool))
+        (git-gutter-fringe+ :toggle (eq 'git-gutter+ version-control-diff-tool))
         (smerge-mode :location built-in)
+        (vc :location built-in)
         ))
 
 (defun version-control/init-vc ()
   (use-package vc
     :defer t
+    :commands (vc-ignore)
     :init
-    (spacemacs/declare-prefix "gv" "version-control")
-    :config
     (progn
+      (spacemacs/declare-prefix "gv" "version-control")
       (spacemacs/set-leader-keys
         "gvv" 'vc-next-action
         "gvg" 'vc-annotate
@@ -38,12 +38,13 @@
         "gvd" 'vc-dir
         "gv+" 'vc-update
         "gvi" 'vc-register
+        "gvI" 'vc-ignore
         "gvu" 'vc-revert
         "gvl" 'vc-print-log
         "gvL" 'vc-print-root-log
-        "gvI" 'vc-ignore
-        "gvr" 'vc-resolve-conflicts)
-
+        "gvr" 'vc-resolve-conflicts))
+    :config
+    (progn
       (evilified-state-evilify vc-dir-mode vc-dir-mode-map
         "j" 'vc-dir-next-line
         (kbd "M-n") 'vc-dir-next-line
@@ -121,7 +122,6 @@
 
 (defun version-control/init-diff-hl ()
   (use-package diff-hl
-    :if (eq version-control-diff-tool 'diff-hl)
     :defer t
     :init
     (progn
@@ -143,7 +143,6 @@
 
 (defun version-control/init-git-gutter ()
   (use-package git-gutter
-    :if (eq version-control-diff-tool 'git-gutter)
     :defer t
     :init
     (progn
@@ -165,7 +164,6 @@
 
 (defun version-control/init-git-gutter-fringe ()
   (use-package git-gutter-fringe
-    :if (eq version-control-diff-tool 'git-gutter)
     :defer t
     :init
     (progn
@@ -222,7 +220,6 @@
 
 (defun version-control/init-git-gutter-fringe+ ()
   (use-package git-gutter-fringe+
-    :if (eq version-control-diff-tool 'git-gutter+)
     :defer t
     :init
     (progn

@@ -11,7 +11,6 @@
 
 (defconst julia-packages
   '(
-    company-lsp
     evil-surround
     flycheck
     julia-mode
@@ -25,7 +24,7 @@
     :init
     (progn
       (add-hook 'julia-mode-hook #'spacemacs//julia-setup-buffer)
-      (add-hook 'julia-mode-local-vars-hook #'spacemacs//julia-setup-lsp)
+      (add-hook 'julia-mode-local-vars-hook #'spacemacs//julia-setup-backend)
       (if (and (configuration-layer/layer-used-p 'ess)
                julia-mode-enable-ess)
           (add-to-list 'auto-mode-alist
@@ -88,25 +87,22 @@
 
 
 (defun julia/post-init-evil-surround ()
-  (with-eval-after-load 'evil-surround
-    (add-to-list 'evil-surround-pairs-alist '(?b . ("begin " . " end")))
-    (add-to-list 'evil-surround-pairs-alist '(?q . ("quote " . " end")))
-    (add-to-list 'evil-surround-pairs-alist '(?: . (":("     .    ")")))
-    (add-to-list 'evil-surround-pairs-alist '(?l . ("let "   . " end")))))
+  (use-package evil-surround
+    :config
+    (progn
+      (add-hook
+       'julia-mode-hook
+       #'(lambda ()
+           (add-to-list 'evil-surround-pairs-alist '(?b . ("begin " . " end")))
+           (add-to-list 'evil-surround-pairs-alist '(?q . ("quote " . " end")))
+           (add-to-list 'evil-surround-pairs-alist '(?: . (":("     .    ")")))
+           (add-to-list 'evil-surround-pairs-alist '(?l . ("let "   . " end"))))))))
 
 (defun julia/init-lsp-julia ()
   (use-package lsp-julia
     :config
     (progn
       (push 'xref-find-definitions spacemacs-jump-handlers-julia-mode))))
-
-(defun julia/post-init-company-lsp ()
-  (spacemacs|add-company-backends
-    :backends company-lsp
-    :modes julia-mode
-    :variables
-    company-minimum-prefix-length 0
-    company-idle-delay 0.5))
 
 (defun julia/post-init-flycheck ()
   (spacemacs/enable-flycheck 'julia-mode))

@@ -148,7 +148,7 @@ layer variable as follows:
 You just have to install python language server package:
 
 #+BEGIN_SRC sh
-  pip install python-language-server
+  pip install python-language-server[all]
 #+END_SRC
 
 Additionally you can install the following other packages:
@@ -158,6 +158,7 @@ Additionally you can install the following other packages:
   pip install pyls-isort
   # for mypy checking (python 3.4+ is needed)
   pip install pyls-mypy
+  pip install pyls-black
 #+END_SRC
 
 If you've installed the language server and related packages as development
@@ -235,6 +236,9 @@ One of [[https://github.com/google/yapf][YAPF]] (the default), [[https://github.
   (setq-default dotspacemacs-configuration-layers '(
     (python :variables python-formatter 'yapf)))
 #+END_SRC
+
+Alternatively the =lsp= formatter will be automatically chosen if the layer =lsp=
+is used and you did not specify any value for =python-formatter=.
 
 The key binding ~SPC m =~ invokes the selected formatter on the current buffer
 when in non LSP python mode otherwise ~SPC m ==~ is used.

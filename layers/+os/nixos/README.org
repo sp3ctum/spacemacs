@@ -9,6 +9,7 @@
   - [[#features][Features:]]
 - [[#install][Install]]
   - [[#layer][Layer]]
+- [[#configuration][Configuration]]
 - [[#key-bindings][Key bindings]]
   - [[#nixos-options][NixOS Options]]
 
@@ -25,6 +26,10 @@ This layer adds tools for better integration of Emacs in NixOS.
 To use this configuration layer, add it to your =~/.spacemacs=. You will need to
 add =nixos= to the existing =dotspacemacs-configuration-layers= list in this
 file.
+
+* Configuration
+On some systems, =company-nixos-options= may be very slow. If this is the case,
+see the section on disabling the [[https://github.com/syl20bnr/spacemacs/blob/develop/doc/DOCUMENTATION.org#disabling-layer-services-in-other-layers][disabling auto-complete]] for the =nixos= layer.
 
 * Key bindings
 ** NixOS Options

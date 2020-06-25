@@ -23,7 +23,7 @@
   "If non-nil Twitter Bootstrap related packages are configured.")
 
 (defvar org-enable-github-support nil
-  "If non-nil Github related packages are configured.")
+  "If non-nil GitHub related packages are configured.")
 
 (defvar org-enable-reveal-js-support nil
   "If non-nil, enable export to reveal.js.")
@@ -52,3 +52,6 @@ used.")
 (defvar org-enable-jira-support nil
   "If non-nil, Jira (https://www.atlassian.com/software/jira) related packages
 are configured.")
+
+(defvar org-enable-verb-support nil
+  "If non-nil, Verb (https://github.com/federicotdn/verb) is configured.")

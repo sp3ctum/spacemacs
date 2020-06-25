@@ -17,6 +17,14 @@
      ((configuration-layer/layer-used-p 'lsp) 'lsp)
      (t 'anaconda))))
 
+(defun spacemacs//python-formatter ()
+  "Returns selected backend."
+  (if python-formatter
+      python-formatter
+    (cond
+     ((configuration-layer/layer-used-p 'lsp) 'lsp)
+     (t 'yapf))))
+
 (defun spacemacs//python-setup-backend ()
   "Conditionally setup python backend."
   (when python-pipenv-activate (pipenv-activate))
@@ -27,8 +35,7 @@
 (defun spacemacs//python-setup-company ()
   "Conditionally setup company based on backend."
   (pcase (spacemacs//python-backend)
-    (`anaconda (spacemacs//python-setup-anaconda-company))
-    (`lsp (spacemacs//python-setup-lsp-company))))
+    (`anaconda (spacemacs//python-setup-anaconda-company))))
 
 (defun spacemacs//python-setup-dap ()
   "Conditionally setup elixir DAP integration."
@@ -81,18 +88,6 @@
         (lsp))
     (message "`lsp' layer is not installed, please add `lsp' layer to your dotfile.")))
 
-(defun spacemacs//python-setup-lsp-company ()
-  "Setup lsp auto-completion."
-  (if (configuration-layer/layer-used-p 'lsp)
-      (progn
-        (spacemacs|add-company-backends
-          :backends company-lsp
-          :modes python-mode
-          :append-hooks nil
-          :call-hooks t)
-        (company-mode))
-    (message "`lsp' layer is not installed, please add `lsp' layer to your dotfile.")))
-
 (defun spacemacs//python-setup-lsp-dap ()
   "Setup DAP integration."
   (require 'dap-python))
@@ -103,8 +98,8 @@
 (defun spacemacs//python-default ()
   "Defaut settings for python buffers"
   (setq mode-name "Python"
-    tab-width python-tab-width
-    fill-column python-fill-column)
+        tab-width python-tab-width
+        fill-column python-fill-column)
 
   ;; since we changed the tab-width we need to manually call python-indent-guess-indent-offset here
   (when python-spacemacs-indent-guess
@@ -201,10 +196,10 @@ as the pyenv version then also return nil. This works around https://github.com/
   "autoflake --remove-all-unused-imports -i unused_imports.py"
   (interactive)
   (if (executable-find "autoflake")
-    (progn
-      (shell-command (format "autoflake --remove-all-unused-imports -i %s"
-                       (shell-quote-argument (buffer-file-name))))
-      (revert-buffer t t t))
+      (progn
+        (shell-command (format "autoflake --remove-all-unused-imports -i %s"
+                               (shell-quote-argument (buffer-file-name))))
+        (revert-buffer t t t))
     (message "Error: Cannot find autoflake executable.")))
 
 (defun spacemacs//pyenv-mode-set-local-version ()
@@ -218,10 +213,12 @@ as the pyenv version then also return nil. This works around https://github.com/
               (with-temp-buffer
                 (insert-file-contents-literally file-path)
                 (nth 0 (split-string (buffer-substring-no-properties
-                                       (line-beginning-position)
-                                       (line-end-position)))))))
+                                      (line-beginning-position)
+                                      (line-end-position)))))))
         (if (member version (pyenv-mode-versions))
-            (pyenv-mode-set version)
+            (progn
+              (setenv "VIRTUAL_ENV" version)
+              (pyenv-mode-set version))
           (message "pyenv: version `%s' is not installed (set by %s)"
                    version file-path))))))
 
@@ -271,7 +268,7 @@ location of \".venv\" file, then relative to pyvenv-workon-home()."
 (defun spacemacs//python-get-secondary-testrunner ()
   "Get the secondary test runner"
   (cdr (assoc (spacemacs//python-get-main-testrunner) '((pytest . nose)
-                                             (nose . pytest)))))
+                                                        (nose . pytest)))))
 
 (defun spacemacs//python-call-correct-test-function (arg funcalist)
   "Call a test function based on the chosen test framework.
@@ -279,7 +276,7 @@ ARG is the universal-argument which chooses between the main and
 the secondary test runner. FUNCALIST is an alist of the function
 to be called for each testrunner. "
   (when python-save-before-test
-      (save-buffer))
+    (save-buffer))
   (let* ((test-runner (if arg
                           (spacemacs//python-get-secondary-testrunner)
                         (spacemacs//python-get-main-testrunner)))
@@ -292,25 +289,26 @@ to be called for each testrunner. "
 (defun spacemacs/python-test-last (arg)
   "Re-run the last test command"
   (interactive "P")
-  (spacemacs//python-call-correct-test-function arg '((nose . nosetests-again))))
+  (spacemacs//python-call-correct-test-function arg '((pytest . pytest-again)
+                                                      (nose . nosetests-again))))
 
 (defun spacemacs/python-test-all (arg)
   "Run all tests."
   (interactive "P")
   (spacemacs//python-call-correct-test-function arg '((pytest . pytest-all)
-                                           (nose . nosetests-all))))
+                                                      (nose . nosetests-all))))
 
 (defun spacemacs/python-test-pdb-all (arg)
   "Run all tests in debug mode."
   (interactive "P")
   (spacemacs//python-call-correct-test-function arg '((pytest . pytest-pdb-all)
-                                           (nose . nosetests-pdb-all))))
+                                                      (nose . nosetests-pdb-all))))
 
 (defun spacemacs/python-test-module (arg)
   "Run all tests in the current module."
   (interactive "P")
   (spacemacs//python-call-correct-test-function arg '((pytest . pytest-module)
-                                           (nose . nosetests-module))))
+                                                      (nose . nosetests-module))))
 
 (defun spacemacs/python-test-pdb-module (arg)
   "Run all tests in the current module in debug mode."
@@ -334,13 +332,13 @@ to be called for each testrunner. "
   "Run current test."
   (interactive "P")
   (spacemacs//python-call-correct-test-function arg '((pytest . pytest-one)
-                                           (nose . nosetests-one))))
+                                                      (nose . nosetests-one))))
 
 (defun spacemacs/python-test-pdb-one (arg)
   "Run current test in debug mode."
   (interactive "P")
   (spacemacs//python-call-correct-test-function arg '((pytest . pytest-pdb-one)
-                                           (nose . nosetests-pdb-one))))
+                                                      (nose . nosetests-pdb-one))))
 
 (defun spacemacs//bind-python-testing-keys ()
   "Bind the keys for testing in Python."
@@ -379,7 +377,7 @@ Bind formatter to '==' for LSP and '='for all other backends."
 (defun spacemacs/python-format-buffer ()
   "Bind possible python formatters."
   (interactive)
-  (pcase python-formatter
+  (pcase (spacemacs//python-formatter)
     (`yapf (yapfify-buffer))
     (`black (blacken-buffer))
     (`lsp (lsp-format-buffer))

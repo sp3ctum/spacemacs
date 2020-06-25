@@ -82,6 +82,8 @@ seconds to load")
                                              (profiler-report)
                                              (profiler-stop))))))
 
+  (when (version<= "27.0" emacs-version)
+    (require 'time-date))
   (when spacemacs-debug-with-timed-requires
     (with-current-buffer (get-buffer-create "*load-times*")
       (insert (format "Threshold set at %.3f seconds\n\n"
@@ -282,7 +284,7 @@ seconds to load")
   "Major mode for reporting issues with Spacemacs.
 
 When done editing, you can type \\[spacemacs//report-issue-done] to create the
-issue on Github. You must be logged in already for this to work. After you see
+issue on GitHub. You must be logged in already for this to work. After you see
 that the issue has been created successfully, you can close this buffer.
 
 \\{spacemacs/report-issue-mode-map}

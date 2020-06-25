@@ -83,7 +83,8 @@
        (kbd "C-k") 'mu4e-view-headers-prev
        (kbd "J") (lambda ()
                    (interactive)
-                    (mu4e-view-mark-thread '(read))))
+                   (mu4e-view-mark-thread '(read)))
+       (kbd "gu") 'mu4e-view-go-to-url)
 
       (spacemacs/set-leader-keys-for-major-mode 'mu4e-compose-mode
         dotspacemacs-major-mode-leader-key 'message-send-and-exit
@@ -150,11 +151,15 @@ mu4e-use-maildirs-extension-load to be evaluated after mu4e has been loaded."
     :init (with-eval-after-load 'mu4e (mu4e-maildirs-extension-load))))
 
 (defun mu4e/pre-init-org ()
-  ;; load org-mu4e when org is actually loaded
-  (with-eval-after-load 'org (require 'org-mu4e nil 'noerror)))
+  ;; load mu4e-org when org is actually loaded
+  (with-eval-after-load 'org
+    (require 'mu4e nil 'noerror)
+    (require 'mu4e-org nil 'noerror)))
 
 (defun mu4e/pre-init-window-purpose ()
   (spacemacs|use-package-add-hook window-purpose
     :pre-config
-    (dolist (mode mu4e-modes)
-      (add-to-list 'purpose-user-mode-purposes (cons mode 'mail)))))
+    (dolist (mode mu4e-list-modes)
+      (add-to-list 'purpose-user-mode-purposes (cons mode 'mail)))
+    (dolist (mode mu4e-view-modes)
+      (add-to-list 'purpose-user-mode-purposes (cons mode 'mail-view)))))

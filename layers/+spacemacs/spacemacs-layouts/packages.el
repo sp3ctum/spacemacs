@@ -104,6 +104,7 @@
 
 
 (defun spacemacs-layouts/post-init-helm ()
+  (with-eval-after-load 'helm (spacemacs//persp-helm-setup))
   (spacemacs/set-leader-keys
     "bB" 'spacemacs-layouts/non-restricted-buffer-list-helm
     "pl" 'spacemacs/helm-persp-switch-project))
@@ -149,7 +150,7 @@
  [_l_]^^^^        another layout    [_s_/_S_] save all layouts/save by names
  [_o_]^^^^        custom layout     [_t_]^^   show buffer w/o adding to layout
  [_w_]^^^^        workspaces TS     [_x_]^^   kill current w/buffers
- ^^^^^^                             [_X_]^^   kill other w/buffers
+ [_e_]^^^^        select layout     [_X_]^^   kill other w/buffers
  ^^^^^^                             [_<_/_>_] move layout left/right
  ^^^^^^                             [_?_]^^   toggle help")
 
@@ -170,6 +171,7 @@
         ("8" spacemacs/persp-switch-to-8 :exit t)
         ("9" spacemacs/persp-switch-to-9 :exit t)
         ("0" spacemacs/persp-switch-to-0 :exit t)
+        ("e" spacemacs/layout-switch-to :exit t)
         ("C-1" spacemacs/persp-switch-to-1)
         ("C-2" spacemacs/persp-switch-to-2)
         ("C-3" spacemacs/persp-switch-to-3)
@@ -180,7 +182,7 @@
         ("C-8" spacemacs/persp-switch-to-8)
         ("C-9" spacemacs/persp-switch-to-9)
         ("C-0" spacemacs/persp-switch-to-0)
-        ("<tab>" spacemacs/jump-to-last-layout)
+        ("<tab>" spacemacs/jump-to-last-layout :exit t)
         ("<return>" nil :exit t)
         ("TAB" spacemacs/jump-to-last-layout)
         ("RET" nil :exit t)
@@ -222,9 +224,12 @@
       (add-hook 'persp-mode-hook 'spacemacs//layout-autosave)
       (advice-add 'persp-load-state-from-file
                   :before 'spacemacs//layout-wait-for-modeline)
+      (when layouts-enable-local-variables
+        (advice-add 'persp-switch :before #'spacemacs//load-layout-local-vars))
       (dolist (fn spacemacs-layouts-restricted-functions)
         (advice-add fn
                     :around 'spacemacs-layouts//advice-with-persp-buffer-list))
+      (spacemacs/declare-prefix "b" "persp-buffers")
       (spacemacs/set-leader-keys
         "ba"   'persp-add-buffer
         "br"   'persp-remove-buffer))))
@@ -240,4 +245,7 @@
 (defun spacemacs-layouts/init-counsel-projectile ()
   (use-package counsel-projectile
     :defer t
-    :init (spacemacs/set-leader-keys "pl" 'spacemacs/ivy-persp-switch-project)))
+    :init (spacemacs/set-leader-keys "pl" 'spacemacs/ivy-persp-switch-project)
+    :config (ivy-set-actions
+             'spacemacs/ivy-persp-switch-project
+             '(("d" spacemacs/ivy-switch-project-open-dired "dired")))))

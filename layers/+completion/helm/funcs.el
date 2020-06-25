@@ -114,8 +114,8 @@ If DEFAULT-INPUTP is non nil then the current region or symbol at point
   (interactive)
   (call-interactively
    (spacemacs//helm-do-search-find-tool "helm-file-do"
-                                 dotspacemacs-search-tools
-                                 default-inputp)))
+                                        dotspacemacs-search-tools
+                                        default-inputp)))
 
 (defun spacemacs/helm-file-smart-do-search-region-or-symbol ()
   "Search in current file using `dotspacemacs-search-tools' with
@@ -164,9 +164,9 @@ If DEFAULT-INPUTP is non nil then the current region or symbol at point
   ;; --line-number forces line numbers (disabled by default on windows)
   ;; no --vimgrep because it adds column numbers that wgrep can't handle
   ;; see https://github.com/syl20bnr/spacemacs/pull/8065
-  (let* ((root-helm-ag-base-command "rg --smart-case --no-heading --color never --line-number")
+  (let* ((root-helm-ag-base-command "rg --smart-case --no-heading --color=never --line-number")
          (helm-ag-base-command (if spacemacs-helm-rg-max-column-number
-                                   (concat root-helm-ag-base-command " --max-columns " (number-to-string spacemacs-helm-rg-max-column-number))
+                                   (concat root-helm-ag-base-command " --max-columns=" (number-to-string spacemacs-helm-rg-max-column-number))
                                  root-helm-ag-base-command)))
     (helm-do-ag dir)))
 
@@ -183,8 +183,8 @@ If DEFAULT-INPUTP is non nil then the current region or symbol at point
   (interactive)
   (call-interactively
    (spacemacs//helm-do-search-find-tool "helm-files-do"
-                                 dotspacemacs-search-tools
-                                 default-inputp)))
+                                        dotspacemacs-search-tools
+                                        default-inputp)))
 
 (defun spacemacs/helm-files-smart-do-search-region-or-symbol ()
   "Search in files using `dotspacemacs-search-tools' with default input.
@@ -208,6 +208,11 @@ If DEFAULT-INPUTP is non nil then the current region or symbol at point
   "Search in current directory with `ack'."
   (interactive)
   (spacemacs/helm-files-do-ack default-directory))
+
+(defun spacemacs/helm-dir-do-grep ()
+  "Search in current directory with `grep'."
+  (interactive)
+  (spacemacs//helm-do-grep-region-or-symbol (list default-directory) nil))
 
 (defun spacemacs/helm-dir-do-ack-region-or-symbol ()
   "Search in current directory with `ack' with a default input."
@@ -242,8 +247,8 @@ If DEFAULT-INPUTP is non nil then the current region or symbol at point
   (interactive)
   (call-interactively
    (spacemacs//helm-do-search-find-tool "helm-dir-do"
-                                 dotspacemacs-search-tools
-                                 default-inputp)))
+                                        dotspacemacs-search-tools
+                                        default-inputp)))
 
 (defun spacemacs/helm-dir-smart-do-search-region-or-symbol ()
   "Search in current directory using `dotspacemacs-search-tools'.
@@ -292,7 +297,7 @@ If DEFAULT-INPUTP is non nil then the current region or symbol at point
   ;; --line-number forces line numbers (disabled by default on windows)
   ;; no --vimgrep because it adds column numbers that wgrep can't handle
   ;; see https://github.com/syl20bnr/spacemacs/pull/8065
-  (let ((helm-ag-base-command "rg --smart-case --no-heading --color never --line-number --max-columns 150"))
+  (let ((helm-ag-base-command "rg --smart-case --no-heading --color=never --line-number --max-columns=150"))
     (helm-do-ag-buffers)))
 
 (defun spacemacs/helm-buffers-do-rg-region-or-symbol ()
@@ -308,8 +313,8 @@ If DEFAULT-INPUTP is non nil then the current region or symbol at point
   (interactive)
   (call-interactively
    (spacemacs//helm-do-search-find-tool "helm-buffers-do"
-                                 dotspacemacs-search-tools
-                                 default-inputp)))
+                                        dotspacemacs-search-tools
+                                        default-inputp)))
 
 (defun spacemacs/helm-buffers-smart-do-search-region-or-symbol ()
   "Search in opened buffers using `dotspacemacs-search-tools' with
@@ -407,8 +412,8 @@ If DEFAULT-INPUTP is non nil then the current region or symbol at point
   (let ((projectile-require-project-root nil))
     (call-interactively
      (spacemacs//helm-do-search-find-tool "helm-project-do"
-                                   dotspacemacs-search-tools
-                                   default-inputp))))
+                                          dotspacemacs-search-tools
+                                          default-inputp))))
 
 (defun spacemacs/helm-project-smart-do-search-region-or-symbol ()
   "Search in current project using `dotspacemacs-search-tools' with
@@ -572,7 +577,7 @@ to buffers)."
              (when (>= num-buffers-placed num-windows) (cl-return))
              (set-window-buffer (winum-get-window-by-number cur-win) buffer)
              (setq cur-win (+ 1 (mod cur-win num-windows)))
-             (incf num-buffers-placed))))
+             (cl-incf num-buffers-placed))))
 
 (defun spacemacs/helm-find-buffers-windows ()
   (interactive)
@@ -595,9 +600,9 @@ to buffers)."
   (with-current-buffer "*helm ag results*"
     (setq spacemacs--gne-min-line 5
           spacemacs--gne-max-line (save-excursion
-            (goto-char (point-max))
-            (previous-line)
-            (line-number-at-pos))
+                                    (goto-char (point-max))
+                                    (previous-line)
+                                    (line-number-at-pos))
           spacemacs--gne-line-func
           (lambda (c)
             (helm-ag--find-file-action
@@ -631,3 +636,12 @@ to buffers)."
   (interactive)
   (let ((helm-boring-buffer-regexp-list nil))
     (call-interactively #'helm-buffers-list)))
+
+;; Command search ---------------------------------------------------------------------
+
+(defun spacemacs/helm-M-x-fuzzy-matching ()
+  "Helm M-x with fuzzy matching enabled"
+  (interactive)
+  (let ((completion-styles completion-styles))
+    (add-to-list 'completion-styles `,(if (version< emacs-version "27") 'helm-flex 'flex) t)
+    (command-execute 'helm-M-x)))

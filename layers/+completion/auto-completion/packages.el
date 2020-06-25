@@ -18,7 +18,7 @@
         (company-box :toggle auto-completion-use-company-box)
         (all-the-icons :toggle auto-completion-use-company-box)
         (company-quickhelp :toggle auto-completion-enable-help-tooltip)
-        company-statistics
+        (company-statistics :toggle auto-completion-enable-sort-by-usage)
         counsel
         fuzzy
         (helm-company :requires helm)
@@ -90,7 +90,7 @@
     :init
     (progn
       (setq company-idle-delay auto-completion-idle-delay
-            company-minimum-prefix-length 2
+            company-minimum-prefix-length auto-completion-minimum-prefix-length
             company-require-match nil
             company-dabbrev-ignore-case nil
             company-dabbrev-downcase nil)
@@ -124,7 +124,6 @@
 
 (defun auto-completion/init-company-statistics ()
   (use-package company-statistics
-    :if auto-completion-enable-sort-by-usage
     :defer t
     :init
     (progn
@@ -133,9 +132,9 @@
       (add-hook 'company-mode-hook 'company-statistics-mode))))
 
 (defun auto-completion/pre-init-counsel ()
-    (spacemacs|use-package-add-hook company
-      :post-config
-      (define-key company-active-map (kbd "C-/") 'counsel-company)))
+  (spacemacs|use-package-add-hook company
+    :post-config
+    (define-key company-active-map (kbd "C-/") 'counsel-company)))
 
 (defun auto-completion/init-fuzzy ()
   (use-package fuzzy :defer t))
@@ -212,7 +211,7 @@
             company-box-doc-enable nil)
       (add-hook 'company-box-selection-hook
                 (lambda (selection frame) (company-box-doc--hide frame)))
-      (case auto-completion-enable-help-tooltip
+      (cl-case auto-completion-enable-help-tooltip
         ('manual (define-key company-active-map
                    (kbd "M-h") #'company-box-doc-manually))
         ('t (setq company-box-doc-enable t))))))
@@ -302,11 +301,11 @@
       (let* ((spacemacs--auto-completion-dir
               (configuration-layer/get-layer-local-dir 'auto-completion))
              (emacs-directory-snippets-dir (concat
-                                          spacemacs-private-directory
-                                          "snippets/"))
+                                            spacemacs-private-directory
+                                            "snippets/"))
              (spacemacs-layer-snippets-dir (expand-file-name
-                                      "snippets"
-                                      spacemacs--auto-completion-dir))
+                                            "snippets"
+                                            spacemacs--auto-completion-dir))
              (dotspacemacs-directory-snippets-dir
               (when dotspacemacs-directory
                 (let ((snippet-dir (expand-file-name

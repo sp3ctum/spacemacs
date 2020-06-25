@@ -1,4 +1,4 @@
-;;; packages.el --- treemacs Layer packages File for Spacemacs
+;;; packages.el --- Treemacs Layer packages File for Spacemacs
 ;;
 ;; Copyright (c) 2012-2019 Sylvain Benner & Contributors
 ;;
@@ -15,7 +15,9 @@
     golden-ratio
     treemacs
     (treemacs-evil :toggle (memq dotspacemacs-editing-style '(vim hybrid)))
+    (treemacs-icons-dired :toggle treemacs-use-icons-dired)
     (treemacs-magit :requires magit)
+    (treemacs-persp :requires persp-mode)
     treemacs-projectile
     winum
     ))
@@ -28,30 +30,26 @@
 
 (defun treemacs/init-treemacs ()
   (use-package treemacs
-    :commands (treemacs-select-window treemacs--window-number-ten
+    :commands (treemacs-select-window
+               treemacs-select-scope-type
+               treemacs--window-number-ten
                treemacs-current-visibility)
     :defer t
     :init
     (progn
-      (setq treemacs-follow-after-init t
-            treemacs-width 35
-            treemacs-position 'left
-            treemacs-is-never-other-window nil
-            treemacs-silent-refresh nil
-            treemacs-indentation 2
-            treemacs-change-root-without-asking nil
-            treemacs-sorting 'alphabetic-desc
-            treemacs-show-hidden-files t
-            treemacs-never-persist nil
-            treemacs-goto-tag-strategy 'refetch-index)
+      (setq treemacs-follow-after-init t)
       (add-hook 'treemacs-mode-hook
                 #'spacemacs/treemacs-setup-width-lock)
-      (spacemacs/set-leader-keys
-        "ft"    'treemacs
-        "fB"    'treemacs-bookmark
-        "fT"    'treemacs-find-file
-        "f M-t" 'treemacs-find-tag
-        "pt"    'spacemacs/treemacs-project-toggle)
+      (spacemacs|spacebind
+       "Files manipulation."
+       :global
+       (("f" "Files"
+         ("t" treemacs "File tree")
+         ("B" treemacs-bookmark "Find bookmark in file tree")
+         ("T" treemacs-find-file "Focus current file in file tree")
+         ("M-t" treemacs-find-tag "Focus tag in file tree" ))
+        ("p" "Project"
+         ("t" spacemacs/treemacs-project-toggle "Open project in file tree"))))
       (which-key-add-major-mode-key-based-replacements 'treemacs-mode
         "c"         "treemacs-create"
         "o"         "treemacs-visit-node"
@@ -90,6 +88,16 @@
     :after treemacs
     :defer t
     :init (require 'treemacs-projectile)))
+
+(defun treemacs/init-treemacs-persp ()
+  (use-package treemacs-persp
+    :after treemacs persp-mode
+    :config (when (eq treemacs-use-scope-type 'Perspectives)
+              (treemacs-set-scope-type 'Perspectives))))
+
+(defun treemacs/init-treemacs-icons-dired ()
+  (use-package treemacs-icons-dired
+    :hook (dired-mode . treemacs-icons-dired-mode)))
 
 (defun treemacs/pre-init-winum ()
   (spacemacs|use-package-add-hook winum
