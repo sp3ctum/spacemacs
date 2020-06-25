@@ -46,7 +46,8 @@ This function should only modify configuration layer settings."
              colors-colorize-identifiers 'all)
      helm
      syntax-checking
-     org
+     (org :variables
+          org-enable-jira-support t)
      emacs-lisp
      git
      auto-capitalization2
