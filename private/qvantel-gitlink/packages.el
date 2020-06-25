@@ -19,16 +19,16 @@
   (git-link--get-config (format "branch.%s.pushRemote" branch)))
 
 (defun my-git-link-get-qvantel-stash-viewurl ()
-  (let* ((view-url (git-link--get-config
+  (let* ((remote (or (my-git-link--push-remote (git-link--branch))
+                     (git-link--remote)))
+         (view-url (git-link--get-config
                     (s-join ""
-                            (list "remote."
-                                  (or (my-git-link--push-remote (git-link--branch))
-                                      (git-link--remote))
-                                  ".viewurl")))))
+                            (list "remote." remote ".viewurl")))))
     (when (not view-url)
-      (user-error "Missing viewurl base. set remote.foo.viewurl to e.g.
+      (user-error "Missing viewurl base. set remote.%s.viewurl to e.g.
                    https://stash.qvantel.net/projects/API/repos/bssapi-entities/ and try
-                   again. (needs to have a trailing slash)"))
+                   again. (needs to have a trailing slash)"
+                  remote))
     view-url))
 
 (defun my-git-link-qvantel-stash (hostname dirname filename branch commit start end)
