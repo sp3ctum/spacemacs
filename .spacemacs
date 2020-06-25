@@ -663,8 +663,6 @@ executed. Executes that without disrupting the frame window layout."
   (defun org-set-outline-overlay-data (&rest _)))
 
 (defun my-lsp-config ()
-  (add-hook 'lsp-mode-hook (defun my-lsp-mode-hook ()
-                             (pyenv-mode-set "3.6.5/envs/plover-finnish")))
   (spacemacs/set-leader-keys-for-minor-mode 'lsp-mode
     "-" 'lsp-format-buffer
     "m" 'lsp-ui-imenu))
