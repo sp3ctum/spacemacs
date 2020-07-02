@@ -61,7 +61,7 @@ This function should only modify configuration layer settings."
      (ruby :variables
            ruby-test-runner 'rspec)
      (scala :variables
-            scala-backend ':metals)
+            scala-backend 'scala-metals)
      docker
      groovy
      javascript
