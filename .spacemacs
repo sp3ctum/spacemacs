@@ -515,7 +515,11 @@ before packages are loaded. If you are unsure, you should try in setting them in
   (add-hook 'org-mode-hook 'auto-fill-mode)
   (setq org-bullets-bullet-list '("◉" "◎" "⚫" "○" "►" "◇"))
   (setq org-todo-keywords '((sequence "TODO" "ONGOING" "DONE")))
-  (setq org-export-copy-to-kill-ring 'if-interactive))
+  (setq org-todo-keyword-faces '(("ONGOING" . "orange")
+                                 ("DONE" . "lawngreen")))
+  (setq org-export-copy-to-kill-ring 'if-interactive)
+  (setq org-directory "~/git/org/")
+  (setq org-default-notes-file "active.org"))
 
 (defun my-projectile-config ()
   ;; Working with compilation buffers is annoying because any newly generated
@@ -725,6 +729,7 @@ This function is called at the very end of Spacemacs initialization."
    ;; If there is more than one, they won't work right.
    '(c-default-style (quote ((java-mode . "java"))))
    '(lsp-ui-doc-delay 999)
+   '(org-download-screenshot-method "xclip -selection clipboard -t image/png -o > %s")
    '(org-fontify-quote-and-verse-blocks t)
    '(package-selected-packages
      (quote
