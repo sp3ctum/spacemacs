@@ -76,6 +76,7 @@ This function should only modify configuration layer settings."
    ;; '(your-package :location "~/path/to/your-package/")
    ;; Also include the dependencies as they will not be resolved automatically.
    dotspacemacs-additional-packages '(flash-region
+                                      nvm
                                       smart-dash
                                       haml-mode
                                       dtrt-indent
@@ -589,6 +590,7 @@ before packages are loaded. If you are unsure, you should try in setting them in
   (setq web-mode-markup-indent-offset 2)
   (setq javascript-backend 'lsp)
 
+  (nvm-use "10.13")
   ;; https://github.com/emacs-lsp/lsp-mode/issues/666
   (add-to-list 'exec-path "/home/mvilpas/.nvm/versions/node/v10.15.3/bin")
 
