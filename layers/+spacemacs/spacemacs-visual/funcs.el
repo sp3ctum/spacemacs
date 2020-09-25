@@ -1,6 +1,6 @@
 ;;; funcs.el --- Spacemacs UI Layer functions File
 ;;
-;; Copyright (c) 2012-2018 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2020 Sylvain Benner & Contributors
 ;;
 ;; Author: Sylvain Benner <sylvain.benner@gmail.com>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -13,9 +13,10 @@
 ;; ansi-colors
 
 (defun spacemacs-visual//compilation-buffer-apply-ansi-colors ()
-  (let ((inhibit-read-only t))
-    (goto-char compilation-filter-start)
-    (ansi-color-apply-on-region (line-beginning-position) (point-max))))
+  (when (eq major-mode 'compilation-mode)
+    (let ((inhibit-read-only t))
+      (goto-char compilation-filter-start)
+      (ansi-color-apply-on-region (line-beginning-position) (point-max)))))
 
 
 ;; popwin

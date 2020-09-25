@@ -1,6 +1,6 @@
 ;;; packages.el --- Vagrant Layer packages File for Spacemacs
 ;;
-;; Copyright (c) 2012-2018 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2020 Sylvain Benner & Contributors
 ;;
 ;; Author: Brian Hicks <brian@brianthicks.com>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -39,4 +39,4 @@
         (unless spacemacs--vagrant-tramp-loaded
           (vagrant-tramp-add-method)
           (setq spacemacs--vagrant-tramp-loaded t)))
-      (spacemacs/set-leader-keys "atv" 'vagrant-tramp-term))))
+      (spacemacs/set-leader-keys "atvt" 'vagrant-tramp-term))))

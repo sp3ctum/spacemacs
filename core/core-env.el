@@ -1,6 +1,6 @@
 ;;; core-env.el --- Spacemacs Core File
 ;;
-;; Copyright (c) 2012-2018 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2020 Sylvain Benner & Contributors
 ;;
 ;; Author: Sylvain Benner <sylvain.benner@gmail.com>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -63,7 +63,7 @@ current contents of the file will be overwritten."
           "# regexps in `spacemacs-ignored-environment-variables'. If you add any\n"
           "# duplicate settings for a variable, only the first setting is effective.\n"
           "# PATH is a special case: all PATH settings are read, each non-duplicate\n"
-          "# directory entry is appended to the `exec-path' variable, and then PATH is\n"
+          "# directory entry is prepended to the `exec-path' variable, and then PATH is\n"
           "# set to the final value of `exec-path'.\n"
           "#\n"
           "# You can safely edit this file to change values or add or remove entries.\n"

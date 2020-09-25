@@ -224,12 +224,53 @@ To start debugging:
 In =edebug-mode= (=*Debugging*= is displayed in the minor modes segment of the
 mode line)
 
-TODO
+| Key binding | Description                |
+|-------------+----------------------------|
+| ~s~         | step                       |
+| ~i~         | step in                    |
+| ~o~         | step out                   |
+| ~S~         | next                       |
+| ~f~         | forward-sexp               |
+| ~H~         | goto here                  |
+| ~I~         | instrument callee          |
+| ~c~         | go                         |
+| ~C~         | fast continue              |
+| ~t~         | trace                      |
+| ~T~         | fast trace                 |
+| ~q~         | quit                       |
+| ~Q~         | quit nonstop               |
+| ~a~         | stop                       |
+| ~b~         | set breakpoint             |
+| ~u~         | unset breakpoint           |
+| ~B~         | next breakpoint            |
+| ~x~         | set conditional breakpoint |
+| ~r~         | previous result            |
+| ~e~         | evaluate expression        |
+| ~C-x C-e~   | evaluate last sexp         |
+| ~w~         | where                      |
+| ~?~         | help                       |
+| ~d~         | backtrace                  |
 
 In =debugger-mode= (=Debugger= is displayed in major mode segment of the mode
 line)
 
-TODO
+| Key binding | Description              |
+|-------------+--------------------------|
+| ~<tab>~     | forward                  |
+| ~S-<tab>~   | backward                 |
+| ~RET~       | backtrace help follow    |
+| ~p~         | backtrace backward frame |
+| ~c~         | continue                 |
+| ~R~         | record expression        |
+| ~d~         | step through             |
+| ~e~         | eval expression          |
+| ~J~         | jump                     |
+| ~L~         | list functions           |
+| ~b~         | frame                    |
+| ~r~         | return value             |
+| ~u~         | frame clear              |
+| ~C-v~       | backtrace toggle locals  |
+| ~q~         | quit                     |
 
 ** Refactoring with emr
 

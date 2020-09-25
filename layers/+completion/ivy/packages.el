@@ -1,6 +1,6 @@
 ;;; packages.el --- Ivy Layer packages File
 ;;
-;; Copyright (c) 2012-2018 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2020 Sylvain Benner & Contributors
 ;;
 ;; Author: Sylvain Benner <sylvain.benner@gmail.com>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -20,6 +20,7 @@
         helm-make
         imenu
         ivy
+        ivy-avy
         ivy-hydra
         (ivy-rich :toggle ivy-enable-advanced-buffer-information)
         (ivy-spacemacs-help :location local)
@@ -245,6 +246,9 @@
 
       ;; allow to select prompt in some ivy functions
       (setq ivy-use-selectable-prompt t))))
+
+(defun ivy/init-ivy-avy ()
+  (use-package ivy-avy))
 
 (defun ivy/init-ivy-hydra ()
   (use-package ivy-hydra)

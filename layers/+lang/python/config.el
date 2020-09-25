@@ -1,6 +1,6 @@
 ;;; config.el --- Python Layer Configuration File for Spacemacs
 ;;
-;; Copyright (c) 2012-2018 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2020 Sylvain Benner & Contributors
 ;;
 ;; Author: Sylvain Benner <sylvain.benner@gmail.com>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -20,7 +20,7 @@ Possible values are `anaconda'and `lsp'.
 If `nil' then `anaconda' is the default backend unless `lsp' layer is used.")
 
 (defvar python-lsp-server 'pyls
-  "Language server to use for lsp backend. Possible values are `pyls'
+  "Language server to use for lsp backend. Possible values are `pyls', `pyright'
 and `mspyls'")
 
 (defvar python-lsp-git-root nil
@@ -31,7 +31,7 @@ and `mspyls'")
 
 (defvar python-formatter nil
   "The formatter to use. Possible values are `yapf',
-  `black' and 'lsp'.")
+  `black' and `lsp'.")
 
 (defvar python-format-on-save nil
   "If non-nil, automatically format code with formatter selected

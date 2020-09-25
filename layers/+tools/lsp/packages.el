@@ -1,6 +1,6 @@
 ;;; packages.el --- Language Server Protocol Layer packages file for Spacemacs
 ;;
-;; Copyright (c) 2012-2018 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2020 Sylvain Benner & Contributors
 ;;
 ;; Author: Fangrui Song <i@maskray.me>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -11,11 +11,12 @@
 
 (defconst lsp-packages
   '(
-    (lsp-mode :requires yasnippet)
+    lsp-mode
     lsp-ui
     (helm-lsp :requires helm)
     (lsp-ivy :requires ivy)
     (lsp-treemacs :requires treemacs)
+    (lsp-origami :requires lsp-mode)
     popwin))
 
 (defun lsp/init-lsp-mode ()
@@ -23,7 +24,6 @@
     :defer t
     :config
     (progn
-      (require 'lsp-clients)
       (spacemacs/lsp-bind-keys)
       (setq lsp-prefer-capf t)
       (add-hook 'lsp-after-open-hook (lambda ()
@@ -58,6 +58,14 @@
 (defun lsp/init-lsp-treemacs ()
   (use-package lsp-treemacs :defer t))
 
-(defun lsp/post-init-popwin ()
-  (push '("*lsp-help*" :dedicated t :position bottom :stick t :noselect t :height 0.4)
-        popwin:special-display-config))
+(defun lsp/init-lsp-origami ()
+  (use-package lsp-origami
+    :defer t
+    :init
+    (add-hook 'lsp-after-open-hook #'lsp-origami-try-enable)))
+
+(defun lsp/pre-init-popwin ()
+  (spacemacs|use-package-add-hook popwin
+    :post-config
+    (push '("*lsp-help*" :dedicated t :position bottom :stick t :noselect t :height 0.4)
+          popwin:special-display-config)))

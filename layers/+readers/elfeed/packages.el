@@ -1,6 +1,6 @@
 ;;; packages.el --- elfeed Layer packages File for Spacemacs
 ;;
-;; Copyright (c) 2012-2018 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2020 Sylvain Benner & Contributors
 ;;
 ;; Author: Sylvain Benner <sylvain.benner@gmail.com>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -19,7 +19,7 @@
 (defun elfeed/init-elfeed ()
   (use-package elfeed
     :defer t
-    :init (spacemacs/set-leader-keys "af" 'elfeed)
+    :init (spacemacs/set-leader-keys "are" 'elfeed)
     :config
     (progn
       (evilified-state-evilify-map elfeed-search-mode-map

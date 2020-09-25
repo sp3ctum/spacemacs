@@ -1,6 +1,6 @@
 ;;; config.el --- Treemacs Layer configuration File for Spacemacs
 ;;
-;; Copyright (c) 2012-2018 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2020 Sylvain Benner & Contributors
 ;;
 ;; Author: Alexander Miller <alexanderm@web.de>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -39,3 +39,6 @@ There are 2 possible values:
 
 (defvar treemacs-use-icons-dired t
   "When non-nil use `treemacs-icons-dired'")
+
+(defvar treemacs-use-all-the-icons-theme nil
+  "Enable the treemacs supported `all-the-icons' theme")

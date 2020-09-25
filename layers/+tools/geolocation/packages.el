@@ -1,6 +1,6 @@
 ;;; packages.el --- geolocation configuration File for Spacemacs
 ;;
-;; Copyright (c) 2012-2018 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2020 Sylvain Benner & Contributors
 ;;
 ;; Author: Uri Sharf <uri.sharf@me.com>
 ;; URL: https://github.com/usharf/spacemacs
@@ -84,7 +84,9 @@ to not have to set these variables manually when enabling this layer."
     (progn
       (spacemacs/defer-until-after-user-config #'geolocation//activate-theme-changer))))
 
-(defun geolocation/post-init-popwin ()
-  ;; Pin the weather forecast to the bottom window
-  (push '("*Sunshine*" :dedicated t :position bottom)
-        popwin:special-display-config))
+(defun geolocation/pre-init-popwin ()
+  "Pin the weather forecast to the bottom window"
+  (spacemacs|use-package-add-hook popwin
+    :post-config
+    (push '("*Sunshine*" :dedicated t :position bottom)
+          popwin:special-display-config)))

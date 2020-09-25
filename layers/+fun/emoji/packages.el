@@ -1,6 +1,6 @@
 ;;; packages.el --- emoji Layer Packages File for Spacemacs
 ;;
-;; Copyright (c) 2012-2018 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2020 Sylvain Benner & Contributors
 ;;
 ;; Author: Sylvain Benner <sylvain.benner@gmail.com>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -23,7 +23,7 @@
                emoji-cheat-sheet-plus-display-mode)
     :init
     (progn
-      (spacemacs/set-leader-keys "aE" 'emoji-cheat-sheet-plus-buffer)
+      (spacemacs/set-leader-keys "afe" 'emoji-cheat-sheet-plus-buffer)
       (spacemacs/set-leader-keys "ie" 'emoji-cheat-sheet-plus-insert)
       (evilified-state-evilify emoji-cheat-sheet-plus-buffer-mode
         emoji-cheat-sheet-plus-buffer-mode-map

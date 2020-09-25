@@ -1,6 +1,6 @@
 ;;; packages.el --- xkcd Layer packages File for Spacemacs
 ;;
-;; Copyright (c) 2012-2018 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2020 Sylvain Benner & Contributors
 ;;
 ;; Author: Sylvain Benner <sylvain.benner@gmail.com>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -20,7 +20,7 @@
       (when (not (file-directory-p xkcd-cache-dir))
         (make-directory xkcd-cache-dir))
       (spacemacs/set-leader-keys
-        "ax" 'xkcd)
+        "afx" 'xkcd)
       (evilified-state-evilify xkcd-mode xkcd-mode-map
         "h" 'xkcd-prev
         "j" 'xkcd-next

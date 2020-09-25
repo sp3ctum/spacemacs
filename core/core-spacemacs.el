@@ -1,6 +1,6 @@
 ;;; core-spacemacs.el --- Spacemacs Core File
 ;;
-;; Copyright (c) 2012-2018 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2020 Sylvain Benner & Contributors
 ;;
 ;; Author: Sylvain Benner <sylvain.benner@gmail.com>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -52,6 +52,7 @@ the final step of executing code in `emacs-startup-hook'.")
 
 (defun spacemacs/init ()
   "Perform startup initialization."
+  (setq command-line-args (spacemacs//parse-command-line command-line-args))
   (when spacemacs-debugp (spacemacs/init-debug))
   ;; silence ad-handle-definition about advised functions getting redefined
   (setq ad-redefinition-action 'accept)

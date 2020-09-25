@@ -1,6 +1,6 @@
 ;;; config.el --- OSX Layer config File for Spacemacs
 ;;
-;; Copyright (c) 2012-2018 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2020 Sylvain Benner & Contributors
 ;;
 ;; Author: Sylvain Benner <sylvain.benner@gmail.com>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -57,7 +57,7 @@
    Possible values are `super' `meta' `hyper' `alt' `left' `none'.
    Default: `left'.")
 
-(defvar osx-use-dictionary-app t
+(defvar osx-use-dictionary-app (spacemacs/system-is-mac)
   "Use the macOS dictionary app instead of Wordnet.")
 
 (defvar osx-swap-option-and-command nil
