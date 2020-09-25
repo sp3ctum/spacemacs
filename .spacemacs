@@ -649,17 +649,17 @@ executed. Executes that without disrupting the frame window layout."
   ;; https://github.com/proofit404/pyenv-mode#projectile-integration
   ;; (require 'pyenv-mode)
 
-  (defun projectile-pyenv-mode-set ()
-    "Set pyenv version matching project name."
-    (let ((project (projectile-project-name)))
-      (if (--any (s-contains? it project)
-                 (pyenv-mode-versions))
-          (progn
-            (message "Using pyenv %s" project)
-            (pyenv-mode-set project))
-        (progn
-          (message "Unknown project %s. Unsetting pyenv." project)
-          (pyenv-mode-unset)))))
+  ;; (defun projectile-pyenv-mode-set ()
+  ;;   "Set pyenv version matching project name."
+  ;;   (let ((project (projectile-project-name)))
+  ;;     (if (--any (s-contains? it project)
+  ;;                (pyenv-mode-versions))
+  ;;         (progn
+  ;;           (message "Using pyenv %s" project)
+  ;;           (pyenv-mode-set project))
+  ;;       (progn
+  ;;         (message "Unknown project %s. Unsetting pyenv." project)
+  ;;         (pyenv-mode-unset)))))
 
   (add-hook 'projectile-after-switch-project-hook 'projectile-pyenv-mode-set)
   (add-hook 'python-mode-hook (lambda ()
