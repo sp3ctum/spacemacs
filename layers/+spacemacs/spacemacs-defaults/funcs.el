@@ -261,30 +261,35 @@ Dedicated (locked) windows are left untouched."
   "Moves a buffer to a window, using the spacemacs numbering. follow-focus-p
 controls whether focus moves to new window (with buffer), or stays on current"
   (interactive)
-  (let ((b (current-buffer))
-        (w1 (selected-window))
-        (w2 (winum-get-window-by-number windownum)))
-    (unless (eq w1 w2)
-      (set-window-buffer w2 b)
-      (switch-to-prev-buffer)
-      (unrecord-window-buffer w1 b)))
-  (when follow-focus-p (select-window (winum-get-window-by-number windownum))))
+  (if (> windownum (length (window-list)))
+      (message "No window numbered %s" windownum)
+    (let ((b (current-buffer))
+          (w1 (selected-window))
+          (w2 (winum-get-window-by-number windownum)))
+      (unless (eq w1 w2)
+        (set-window-buffer w2 b)
+        (switch-to-prev-buffer)
+        (unrecord-window-buffer w1 b))
+      (when follow-focus-p
+        (select-window (winum-get-window-by-number windownum))))))
 
 (defun spacemacs/swap-buffers-to-window (windownum follow-focus-p)
   "Swaps visible buffers between active window and selected window.
 follow-focus-p controls whether focus moves to new window (with buffer), or
 stays on current"
   (interactive)
-  (let* ((b1 (current-buffer))
-         (w1 (selected-window))
-         (w2 (winum-get-window-by-number windownum))
-         (b2 (window-buffer w2)))
-    (unless (eq w1 w2)
-      (set-window-buffer w1 b2)
-      (set-window-buffer w2 b1)
-      (unrecord-window-buffer w1 b1)
-      (unrecord-window-buffer w2 b2)))
-  (when follow-focus-p (winum-select-window-by-number windownum)))
+  (if (> windownum (length (window-list)))
+      (message "No window numbered %s" windownum)
+    (let* ((b1 (current-buffer))
+           (w1 (selected-window))
+           (w2 (winum-get-window-by-number windownum))
+           (b2 (window-buffer w2)))
+      (unless (eq w1 w2)
+        (set-window-buffer w1 b2)
+        (set-window-buffer w2 b1)
+        (unrecord-window-buffer w1 b1)
+        (unrecord-window-buffer w2 b2)))
+    (when follow-focus-p (winum-select-window-by-number windownum))))
 
 (dotimes (i 9)
   (let ((n (+ i 1)))
@@ -1515,7 +1520,8 @@ if prefix argument ARG is given, switch to it in an other, possibly new window."
     (when (and (not exists)
                (not (eq major-mode dotspacemacs-scratch-mode))
                (fboundp dotspacemacs-scratch-mode))
-      (funcall dotspacemacs-scratch-mode))))
+      (funcall dotspacemacs-scratch-mode)
+      (run-hooks 'spacemacs-scratch-mode-hook))))
 
 (defvar spacemacs--killed-buffer-list nil
   "List of recently killed buffers.")
@@ -1718,3 +1724,44 @@ Decision is based on `dotspacemacs-line-numbers'."
            (mapcar 'cdr
                    (sort (mapcar (lambda (x) (cons (random) (concat x "\n"))) lines)
                          (lambda (a b) (< (car a) (car b))))))))
+
+
+;; narrow region
+
+(defun spacemacs/clone-indirect-buffer-de-activate-mark ()
+  "This is a workaround for the evil visual state error message like:
+Error in post-command-hook (evil-visual-post-command):
+(error \"Marker points into wrong buffer\" #<marker at 27875 in .spacemacs<2>>)"
+  (let ((region-was-active (region-active-p)))
+    (when region-was-active (deactivate-mark))
+    (call-interactively 'clone-indirect-buffer)
+    (when region-was-active (activate-mark))))
+
+(defun spacemacs/narrow-to-indirect-buffer (narrower target-name)
+  "Use the function `narrower' to narrow within an indirect buffer, except where
+the starting buffer is in a state (such as visual block mode) that would cause
+this to work incorrectly. `target-name' is the string name of the entity being
+narrowed to."
+  ;; There may be a way to get visual block mode working similar to the
+  ;; workaround we did for visual line mode; this usecase however seems like an
+  ;; edgecase at best, so let's patch it if we find out it's needed; otherwise
+  ;; let's not hold up the base functionality anymore.
+  (if (and (eq evil-state 'visual) (eq evil-visual-selection 'block))
+      (message "Cannot narrow to indirect buffer from visual block mode.")
+    (when evil-ex-active-highlights-alist
+      (spacemacs/evil-search-clear-highlight))
+    (spacemacs/clone-indirect-buffer-de-activate-mark)
+    (call-interactively narrower)
+    (message (format "%s narrowed to an indirect buffer" target-name))))
+
+(defun spacemacs/narrow-to-defun-indirect-buffer ()
+  (interactive)
+  (spacemacs/narrow-to-indirect-buffer 'narrow-to-defun "Function"))
+
+(defun spacemacs/narrow-to-page-indirect-buffer ()
+  (interactive)
+  (spacemacs/narrow-to-indirect-buffer 'narrow-to-page "Page"))
+
+(defun spacemacs/narrow-to-region-indirect-buffer ()
+  (interactive)
+  (spacemacs/narrow-to-indirect-buffer 'narrow-to-region "Region"))

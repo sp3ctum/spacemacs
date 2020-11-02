@@ -43,8 +43,8 @@
            spacemacs--symbol-highlight-transient-state-doc
            "  Search: [_s_] swiper  [_b_] buffers  [_f_] files  [_/_] project"))
     (spacemacs/transient-state-register-add-bindings 'symbol-highlight
-      '(("s" spacemacs/swiper-region-or-symbol :exit t)
-        ("b" spacemacs/swiper-all-region-or-symbol :exit t)
+      '(("s" swiper-thing-at-point :exit t)
+        ("b" swiper-all-thing-at-point :exit t)
         ("f" spacemacs/search-auto-region-or-symbol :exit t)
         ("/" spacemacs/search-project-auto-region-or-symbol :exit t)))))
 
@@ -58,7 +58,7 @@
       (spacemacs/set-leader-keys
         dotspacemacs-emacs-command-key 'counsel-M-x
         ;; files
-        "ff"  'counsel-find-file
+        "ff"  'spacemacs/counsel-find-file
         "fel" 'counsel-find-library
         "fL"  'counsel-locate
         ;; help
@@ -206,12 +206,14 @@
         "Ce" 'counsel-colors-emacs
         "Cf" 'counsel-faces
         "Cw" 'counsel-colors-web
-        "fr" 'counsel-recentf
+        "fr" 'spacemacs/counsel-recentf
         "rl" 'ivy-resume
+        "sl" 'ivy-resume
         "bb" 'ivy-switch-buffer)
       ;; Moved C-k to C-M-k
-      (define-key ivy-switch-buffer-map (kbd "C-M-k") 'ivy-switch-buffer-kill))
-
+      (define-key ivy-switch-buffer-map (kbd "C-M-k") 'ivy-switch-buffer-kill)
+      (define-key ivy-reverse-i-search-map
+        (kbd "C-M-k") 'ivy-reverse-i-search-kill))
     :config
     (progn
       ;; custom actions for recentf
@@ -225,6 +227,7 @@
       ;; mappings to quit minibuffer or enter transient state
       (define-key ivy-minibuffer-map [escape] 'minibuffer-keyboard-quit)
       (define-key ivy-minibuffer-map (kbd "M-SPC") 'hydra-ivy/body)
+      (define-key ivy-minibuffer-map (kbd "C-<return>") #'ivy-alt-done)
 
       (when ivy-ret-visits-directory
         (define-key ivy-minibuffer-map (kbd "RET") #'ivy-alt-done)
@@ -248,11 +251,14 @@
       (setq ivy-use-selectable-prompt t))))
 
 (defun ivy/init-ivy-avy ()
-  (use-package ivy-avy))
+  (use-package ivy-avy
+    :after ivy))
 
 (defun ivy/init-ivy-hydra ()
-  (use-package ivy-hydra)
-  (define-key hydra-ivy/keymap [escape] 'hydra-ivy/keyboard-escape-quit-and-exit))
+  (use-package ivy-hydra
+    :after ivy
+    :config
+    (define-key hydra-ivy/keymap [escape] 'hydra-ivy/keyboard-escape-quit-and-exit)))
 
 (defun ivy/init-ivy-rich ()
   (use-package ivy-rich
@@ -370,9 +376,9 @@
     (progn
       (spacemacs/set-leader-keys
         "ss" 'swiper
-        "sS" 'spacemacs/swiper-region-or-symbol
+        "sS" 'swiper-thing-at-point
         "sb" 'swiper-all
-        "sB" 'spacemacs/swiper-all-region-or-symbol)
+        "sB" 'swiper-all-thing-at-point)
       (global-set-key "\C-s" 'swiper))))
 
 (defun ivy/init-wgrep ()

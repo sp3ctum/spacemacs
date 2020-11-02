@@ -1,16 +1,14 @@
-;;; layers.el --- Purescript Layer layers File for Spacemacs
+;;; layers.el --- Erlang Layer declarations File for Spacemacs
 ;;
 ;; Copyright (c) 2012-2020 Sylvain Benner & Contributors
 ;;
-;; Author: Ryan L. Bell
+;; Author: Carlos F. Clavijo <arkan1313@gmail.com>
 ;; URL: https://github.com/syl20bnr/spacemacs
 ;;
 ;; This file is not part of GNU Emacs.
 ;;
 ;;; License: GPLv3
 
-(configuration-layer/declare-layer-dependencies '(node))
-
-(when (and (boundp 'purescript-backend)
-           (eq purescript-backend 'lsp))
+(when (and (boundp 'erlang-backend)
+           (eq erlang-backend 'lsp))
   (configuration-layer/declare-layer-dependencies '(lsp)))
