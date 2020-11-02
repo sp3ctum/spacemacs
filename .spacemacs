@@ -32,10 +32,11 @@ This function should only modify configuration layer settings."
    ;; List of configuration layers to load. If it is the symbol `all' instead
    ;; of a list then all discovered layers will be installed.
    dotspacemacs-configuration-layers
-   '(typescript
+   '(nginx
+     typescript
      c-c++
      rust
-     org
+     (org :variables org-enable-reveal-js-support t)
      lsp
      dap                                ;debugger
      python
@@ -76,6 +77,7 @@ This function should only modify configuration layer settings."
    ;; '(your-package :location "~/path/to/your-package/")
    ;; Also include the dependencies as they will not be resolved automatically.
    dotspacemacs-additional-packages '(flash-region
+                                      prettier
                                       nvm
                                       smart-dash
                                       haml-mode
@@ -488,6 +490,10 @@ before packages are loaded. If you are unsure, you should try in setting them in
   (set-face-attribute 'default nil :font "DejaVu Sans Mono-9"))
 
 (defun my-custom-normal-mode-commands ()
+  (setq auto-save-default nil)
+  (setq make-backup-files nil)
+  (setq create-lockfiles nil)
+
   ;; I liked this, but spacemacs took it away from me
   (evil-define-key 'normal global-map
     "gs" #'save-buffer
@@ -594,16 +600,22 @@ before packages are loaded. If you are unsure, you should try in setting them in
   ;; https://github.com/emacs-lsp/lsp-mode/issues/666
   (add-to-list 'exec-path "/home/mvilpas/.nvm/versions/node/v10.15.3/bin")
 
+  (add-to-list 'aggressive-indent-excluded-modes 'js2-mode)
+
   (add-hook 'web-mode-hook
             (lambda ()
+              (prettier-js-mode)
               (smartparens-mode 1)
               (dtrt-indent-mode)))
 
   (setq js2-strict-missing-semi-warning nil)
   (setq js2-mode-assume-strict t)
+  (add-hook 'css-mode-hook (lambda ()
+                             (prettier-js-mode)))
   (add-hook 'js2-mode-hook
             (defun my-js2-mode-hook ()
               (interactive)
+              (prettier-js-mode)
               (dtrt-indent-mode)
               (spacemacs/toggle-rainbow-identifier-off)))
 
@@ -661,7 +673,7 @@ executed. Executes that without disrupting the frame window layout."
   ;;         (message "Unknown project %s. Unsetting pyenv." project)
   ;;         (pyenv-mode-unset)))))
 
-  (add-hook 'projectile-after-switch-project-hook 'projectile-pyenv-mode-set)
+  ;; (add-hook 'projectile-after-switch-project-hook 'projectile-pyenv-mode-set)
   (add-hook 'python-mode-hook (lambda ()
                                 (lsp)
                                 (lsp-ui-mode t)))
@@ -680,6 +692,11 @@ executed. Executes that without disrupting the frame window layout."
   (add-hook 'dockerfile-mode-hook
             (lambda ()
               (setq-local indent-line-function #'sh-indent-line))))
+
+(defun my-java-config ()
+  (add-hook 'java-mode-hook (lambda ()
+                              (add-to-list 'aggressive-indent-excluded-modes
+                                           'java-mode))))
 
 (defun dotspacemacs/user-config ()
   "Configuration function for user code.
@@ -707,7 +724,8 @@ you should place you code here."
   (my-windows-customizations)
   (my-neotree-customizations)
   (fix-expand-region)
-  (my-docker-customizations))
+  (my-docker-customizations)
+  (my-java-config))
 
 (defun dotspacemacs/user-env ()
   "Environment variables setup.
@@ -731,11 +749,12 @@ This function is called at the very end of Spacemacs initialization."
    ;; If there is more than one, they won't work right.
    '(c-default-style (quote ((java-mode . "java"))))
    '(lsp-ui-doc-delay 999)
+   '(lsp-ui-sideline-show-code-actions nil)
    '(org-download-screenshot-method "xclip -selection clipboard -t image/png -o > %s")
    '(org-fontify-quote-and-verse-blocks t)
    '(package-selected-packages
      (quote
-      (nvm lsp-metals tide typescript-mode import-js grizzl add-node-modules-path toml-mode racer helm-gtags ggtags flycheck-rust counsel-gtags cargo rust-mode dap-mode bui tree-mode copy-as-format lsp-mode zenburn-theme yasnippet-snippets yapfify yaml-mode ws-butler writeroom-mode winum which-key web-mode web-beautify volatile-highlights vi-tilde-fringe uuidgen use-package treemacs-projectile treemacs-evil toc-org tagedit symon string-inflection spaceline-all-the-icons smeargle smart-dash slim-mode seeing-is-believing scss-mode sass-mode rvm ruby-tools ruby-test-mode ruby-refactor ruby-hash-syntax rubocop rspec-mode robe restclient-helm restart-emacs rbenv rake rainbow-mode rainbow-identifiers rainbow-delimiters pytest pyenv-mode py-isort pug-mode prodigy prettier-js popwin pippel pipenv pip-requirements persp-mode password-generator paradox overseer orgit org-projectile org-present org-pomodoro org-mime org-download org-bullets org-brain open-junk-file ob-restclient ob-http noflet nameless mvn move-text mmm-mode minitest meghanada maven-test-mode markdown-toc magit-svn magit-gitflow macrostep lsp-ui lsp-java lorem-ipsum livid-mode live-py-mode link-hint json-navigator js2-refactor js-doc indent-guide importmagic impatient-mode hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-pydoc helm-purpose helm-projectile helm-org-rifle helm-mode-manager helm-make helm-gitignore helm-git-grep helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag groovy-mode groovy-imports gradle-mode google-translate golden-ratio gnuplot gitignore-templates gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md fuzzy font-lock+ flycheck-pos-tip flx-ido flash-region fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-org evil-numbers evil-nerd-commenter evil-matchit evil-magit evil-lispy evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu ensime emmet-mode elisp-slime-nav editorconfig dumb-jump dtrt-indent dotenv-mode doom-modeline dockerfile-mode docker diminish define-word cython-mode csv-mode counsel-projectile company-web company-tern company-statistics company-restclient company-lsp company-emacs-eclim company-anaconda column-enforce-mode color-identifiers-mode coffee-mode clojure-snippets clean-aindent-mode cider-eval-sexp-fu cider chruby centered-cursor-mode bundler auto-yasnippet auto-highlight-symbol auto-compile auto-capitalize aggressive-indent ace-link ace-jump-helm-line ac-ispell)))
+      (prettier iter2 org-re-reveal nginx-mode nvm lsp-metals tide typescript-mode import-js grizzl add-node-modules-path toml-mode racer helm-gtags ggtags flycheck-rust counsel-gtags cargo rust-mode dap-mode bui tree-mode copy-as-format lsp-mode zenburn-theme yasnippet-snippets yapfify yaml-mode ws-butler writeroom-mode winum which-key web-mode web-beautify volatile-highlights vi-tilde-fringe uuidgen use-package treemacs-projectile treemacs-evil toc-org tagedit symon string-inflection spaceline-all-the-icons smeargle smart-dash slim-mode seeing-is-believing scss-mode sass-mode rvm ruby-tools ruby-test-mode ruby-refactor ruby-hash-syntax rubocop rspec-mode robe restclient-helm restart-emacs rbenv rake rainbow-mode rainbow-identifiers rainbow-delimiters pytest pyenv-mode py-isort pug-mode prodigy prettier-js popwin pippel pipenv pip-requirements persp-mode password-generator paradox overseer orgit org-projectile org-present org-pomodoro org-mime org-download org-bullets org-brain open-junk-file ob-restclient ob-http noflet nameless mvn move-text mmm-mode minitest meghanada maven-test-mode markdown-toc magit-svn magit-gitflow macrostep lsp-ui lsp-java lorem-ipsum livid-mode live-py-mode link-hint json-navigator js2-refactor js-doc indent-guide importmagic impatient-mode hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-pydoc helm-purpose helm-projectile helm-org-rifle helm-mode-manager helm-make helm-gitignore helm-git-grep helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag groovy-mode groovy-imports gradle-mode google-translate golden-ratio gnuplot gitignore-templates gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md fuzzy font-lock+ flycheck-pos-tip flx-ido flash-region fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-org evil-numbers evil-nerd-commenter evil-matchit evil-magit evil-lispy evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu ensime emmet-mode elisp-slime-nav editorconfig dumb-jump dtrt-indent dotenv-mode doom-modeline dockerfile-mode docker diminish define-word cython-mode csv-mode counsel-projectile company-web company-tern company-statistics company-restclient company-lsp company-emacs-eclim company-anaconda column-enforce-mode color-identifiers-mode coffee-mode clojure-snippets clean-aindent-mode cider-eval-sexp-fu cider chruby centered-cursor-mode bundler auto-yasnippet auto-highlight-symbol auto-compile auto-capitalize aggressive-indent ace-link ace-jump-helm-line ac-ispell)))
    '(safe-local-variable-values
      (quote
       ((eval progn
